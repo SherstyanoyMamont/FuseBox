@@ -1,0 +1,6 @@
+@FuseBox_HostAddress = http://localhost:5133
+
+GET {{FuseBox_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
