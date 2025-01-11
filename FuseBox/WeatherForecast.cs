@@ -1,44 +1,26 @@
 ﻿namespace FuseBox
 {
-    public class InitialSettings
+    // Added a separate class of equipment
+    public class Equipment
     {
-        public int Phases { get; set; } // 1 или 3
-        public int MainCircuitBreaker { get; set; } // 25А, 32А и т.д.
-        public int ShieldWidth { get; set; } // 12, 16, 18
-        public int VoltageStandard { get; set; } // 220 или 230
-    }
-
-    public class ShieldDevice
-    {
-        public bool SurgeProtectionKit { get; set; }
-        public bool MainCircuitBreaker { get; set; }
-        public bool ModularContactor { get; set; }
-        public string VoltageRelay { get; set; } // "Один" или "Три"
-        public bool DinRailSocket { get; set; }
-        public bool LoadSwitch { get; set; }
-        public bool DinRailMeter { get; set; }
-        public bool FireProtectionUZO { get; set; }
-        public bool NonDisconnectableLine { get; set; }
-        public bool CrossBlock { get; set; }
-    }
-
-    public class FloorGrouping
-    {
-        public bool IndividualFloorGrouping { get; set; }
-        public bool SeparateUZOPerFloor { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public int Power { get; set; }
+        public bool Contactor { get; set; } // Connected to contactor?
+        public bool SeparateRCD { get; set; } // Separate RCD?
     }
 
     public class Room
     {
-        public string Name { get; set; }
-        public string ZoneType { get; set; } // "Сухая" или "Мокрая"
-        public List<string> LoadTypes { get; set; } // Список нагрузки
-        public int CircuitBreakerRating { get; set; } // 2, 4, 6 и т.д.
+        public string? Name { get; set; }
+        public string? ZoneType { get; set; } // "Dry" or "Wet"
+        public List<Equipment> Equipments { get; set; } // Load list
+        public int CircuitBreakerRating { get; set; } // 2, 4, 6...
     }
 
     public class Floor
     {
-        public string FloorName { get; set; }
+        public string? FloorName { get; set; }
         public List<Room> Rooms { get; set; } = new();
     }
 
@@ -47,61 +29,17 @@
         public InitialSettings InitialSettings { get; set; }
         public ShieldDevice ShieldDevice { get; set; }
         public FloorGrouping FloorGrouping { get; set; }
+        public GlobalGroupingParameters GlobalGroupingParameters { get; set; }
         public List<Floor> Floors { get; set; } = new();
-    }
-    /// <summary>
-    /// /////////////////////////////////////////////////////////////////////////////
-    /// </summary>
+        public int TotalPower { get; set; }
 
-    public class ConfigurationService
-    {
-        public ProjectConfiguration GenerateConfiguration(ProjectConfiguration input)
+        // Calculates the total power of the entire object
+        public int CalculateTotalPower(ProjectConfiguration projectConfiguration)
         {
-            // Проверка первичных данных
-            ValidateInitialSettings(input.InitialSettings);
-
-            // Расчет параметров устройства электрощита
-            var shield = ConfigureShield(input.ShieldDevice, input.InitialSettings);
-
-            // Группировка линий по этажам
-            var floors = GroupFloors(input.Floors, input.FloorGrouping);
-
-            return new ProjectConfiguration
-            {
-                InitialSettings = input.InitialSettings,
-                ShieldDevice = shield,
-                FloorGrouping = input.FloorGrouping,
-                Floors = floors
-            };
-        }
-
-        private void ValidateInitialSettings(InitialSettings settings)
-        {
-            if (settings.Phases != 1 && settings.Phases != 3)
-                throw new ArgumentException("Invalid phase count");
-            // Дополнительные проверки...
-        }
-
-        private ShieldDevice ConfigureShield(ShieldDevice device, InitialSettings settings)
-        {
-            // Логика конфигурации устройств...
-            return device;
-        }
-
-        private List<Floor> GroupFloors(List<Floor> floors, FloorGrouping grouping)
-        {
-            // Логика группировки этажей...
-            return floors;
+            return projectConfiguration.Floors
+                .SelectMany(floor => floor.Rooms)
+                .SelectMany(room => room.Equipments)
+                .Sum(equipment => equipment.Power);
         }
     }
-    //public class WeatherForecast
-    //{
-    //    public DateOnly Date { get; set; }
-
-    //    public int TemperatureC { get; set; }
-
-    //    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-
-    //    public string? Summary { get; set; }
-    //}
 }

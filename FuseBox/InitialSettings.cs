@@ -1,0 +1,29 @@
+﻿namespace FuseBox
+{
+    public class InitialSettings
+    {
+        public int Phases { get; set; } // 1 or 3
+        public int MainBreakerA { get; set; } // 25А, 32А ...
+        public int ShieldWidth { get; set; } // size 12, 16, 18
+        public int VoltageStandard { get; set; } // 220 or 230
+    }
+
+    public class ShieldDevice
+    {
+        public bool MainCircuitBreaker { get; set; }
+        public bool SurgeProtectionKit { get; set; }
+        public bool ModularContactor { get; set; }
+        public bool VoltageRelay { get; set; }
+        public bool DinRailSocket { get; set; }
+        public bool LoadSwitch { get; set; }
+        public bool DinRailMeter { get; set; }
+        public bool FireProtectionUZO { get; set; }
+        public bool NonDisconnectableLine { get; set; }
+        public bool CrossBlock { get; set; }
+        public List<Fuse> Fuses { get; set; } = new(); // List of devices
+        public void AddFuse(Fuse fuse)
+        {
+            Fuses.Add(fuse);
+        }
+    }
+}
