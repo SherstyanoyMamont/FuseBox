@@ -1,4 +1,5 @@
-﻿namespace FuseBox
+﻿// Am i Join tp this rep?
+namespace FuseBox
 {
     public class InitialSettings
     {
