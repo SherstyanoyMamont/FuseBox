@@ -3,24 +3,29 @@
     // Added class Fuse
     public class Fuse
     {
-        public int Id { get; set; }
+        private static int _idCounter = 0; // Static counter for all objects of this class
+        public int Id { get; private set; } // Assigned automatically
         public string? Name { get; set; }
+        public int Amper { get; set; }
         public int Slots { get; set; }
-        public int Rating { get; set; }
+        public bool Area { get; set; } // Wet or dry zone
         public bool IsCritical { get; set; } // Critical line (non-switchable)
+        public int Price { get; set; }
 
-        public Fuse(int id, string? name, int slots, int rating, bool isCritical = false)
+        public Fuse(string? name, int amper, int slots, bool area, bool isCritical, int price)
         {
-            Id = id;
+            Id = ++_idCounter; // Increment the counter and assign the ID
             Name = name;
+            Amper = amper;
             Slots = slots;
-            Rating = rating;
+            Area = area;
             IsCritical = isCritical;
+            Price = price;
         }
 
         public override string ToString()
         {
-            return $"{Name}: {Id} {Rating}A {Slots} (Critical: {IsCritical})";
+            return $"{Name}: {Id} {Area}A {Slots} (Critical: {IsCritical})";
         }
     }
 }

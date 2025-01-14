@@ -12,18 +12,20 @@
     {
         public bool MainCircuitBreaker { get; set; }
         public bool SurgeProtectionKit { get; set; }
+        public bool LoadSwitch2P { get; set; }
         public bool ModularContactor { get; set; }
-        public bool VoltageRelay { get; set; }
-        public bool DinRailSocket { get; set; }
-        public bool LoadSwitch { get; set; }
         public bool DinRailMeter { get; set; }
         public bool FireProtectionUZO { get; set; }
+        public bool VoltageRelay { get; set; }
+        public bool DinRailSocket { get; set; }
         public bool NonDisconnectableLine { get; set; }
-        public bool CrossBlock { get; set; }
+        public bool LoadSwitch { get; set; }
+        public bool CrossModule { get; set; }
         public List<Fuse> Fuses { get; set; } = new(); // List of devices
         public void AddFuse(Fuse fuse)
         {
             Fuses.Add(fuse);
+            ModularContactor = false;
         }
     }
 }
