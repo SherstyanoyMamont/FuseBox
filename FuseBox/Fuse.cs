@@ -7,25 +7,35 @@
         public int Id { get; private set; } // Assigned automatically
         public string? Name { get; set; }
         public int Amper { get; set; }
-        public int Slots { get; set; }
-        public bool Area { get; set; } // Wet or dry zone
-        public bool IsCritical { get; set; } // Critical line (non-switchable)
+        public double Slots { get; set; }
         public int Price { get; set; }
 
-        public Fuse(string? name, int amper, int slots, bool area, bool isCritical, int price)
+        public List<Consumers> Equipments { get; set; } = new(); // List of Equipment
+
+        public Fuse(string? name, int amper, int slots, bool isCritical, int price)
         {
             Id = ++_idCounter; // Increment the counter and assign the ID
             Name = name;
             Amper = amper;
             Slots = slots;
-            Area = area;
-            IsCritical = isCritical;
             Price = price;
         }
+    }
 
-        public override string ToString()
+    public interface IMonitorable
+    {
+        void Monitor();
+    }
+
+    public class CircuitBreaker : Fuse, IMonitorable
+    {
+        public List<Consumers> Equipments { get; set; } = new(); // List of Equipment
+        public bool IsCritical { get; set; } // Critical line (non-switchable)
+        public VoltageRelay(string name, int rating) : base(name, rating) { }
+
+        public void Monitor()
         {
-            return $"{Name}: {Id} {Area}A {Slots} (Critical: {IsCritical})";
+            Console.WriteLine($"{Name} is monitoring voltage.");
         }
     }
 }

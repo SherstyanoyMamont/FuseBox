@@ -18,7 +18,7 @@
             int totalPower = GetTotalPower(input);
 
             // Расчет параметров устройства электрощита
-            var shield = ConfigureShield(input.ShieldDevice, input.InitialSettings, input.Floors, input.GlobalGroupingParameters, totalPower);
+            var shield = ConfigureShield(input.ShieldDevice, input.InitialSettings, input.Floors, input.GlobalGroupingParameters, totalPower, input.AllEquipments);
 
             // Группировка линий по этажам
             var floors = GroupFloors(input.Floors, input.FloorGrouping, input.GlobalGroupingParameters);
@@ -35,40 +35,39 @@
         }
 
         // Логика конфигурации устройств...
-        private ShieldDevice ConfigureShield(ShieldDevice device, InitialSettings settings, List<Floor> floors, GlobalGroupingParameters globalGroupingParameters, int totalPower)
+        private ShieldDevice ConfigureShield(ShieldDevice device, InitialSettings settings, List<Floor> floors, GlobalGroupingParameters globalGroupingParameters, int totalPower, List<Consumers> allEquipments)
         {
-
             // Настройки опцыонных автоматов \\
 
             // Проверяем наличие вводного автомата
             if (device.MainCircuitBreaker)
             {
                 // Если Да то добавляем в список устройств щитка
-                device.AddFuse(new Fuse("Introductory", 63, 2, false, false, 35));
+                device.AddFuse(new Fuse("Introductory", 63, 2, false, 35));
             }
             // Проверяем наличие УЗПП
             if (device.SurgeProtectionKit)
             {
-                device.AddFuse(new Fuse("SPD", 100, 2, false, false, 65));
+                device.AddFuse(new Fuse("SPD", 100, 2, false, 65));
             }
 
             // Проверяем наличие выключателя 2P
             if (device.LoadSwitch2P)
             {
                 // Если Да то добавляем в список устройств щитка
-                device.AddFuse(new Fuse("LoadSwitch", 63, 2, false, false, 35));
+                device.AddFuse(new Fuse("LoadSwitch", 63, 2, false, 35));
             }
 
             // Проверяем наличие счетчика на DIN-рейку
             if (device.DinRailMeter)
             {
-                device.AddFuse(new Fuse("DinRailMeter", 63 , 6, false, false, 145));
+                device.AddFuse(new Fuse("DinRailMeter", 63 , 6, false, 145));
             }
 
             // Проверяем наличие противопожарного УЗО
             if (device.FireProtectionUZO)
             {
-                device.AddFuse(new Fuse("RCDFire", 63, 2, false, false, 75)); // УЗО часто критическое
+                device.AddFuse(new Fuse("RCDFire", 63, 2, false, 75)); // УЗО часто критическое
             }
 
             // Проверяем наличие модульный контактор
@@ -80,32 +79,32 @@
             // Проверяем наличие реле напряжения
             if (device.VoltageRelay)
             {
-                device.AddFuse(new Fuse("VoltageRelay", 16 , 2, false, false, 40));
+                device.AddFuse(new Fuse("VoltageRelay", 16 , 2, false, 40));
             }
 
             // Проверяем наличие розетки на DIN-рейку
             if (device.DinRailSocket)
             {
-                device.AddFuse(new Fuse("DinRailSocket", 16, 2, false, false, 22));
+                device.AddFuse(new Fuse("DinRailSocket", 16, 3, false, 22));
             }
 
             // Проверяем наличие УЗО неотключаемой линии
             if (device.NonDisconnectableLine)
             {
-                device.AddFuse(new Fuse("NonDisconnectableLine", 2, 25, false, false, 43)); // Обязательно критическая линия
+                device.AddFuse(new Fuse("NonDisconnectableLine", 25, 2, false, 43)); // Обязательно критическая линия
             }
 
             // Проверяем наличие общего выключателя
             if (device.LoadSwitch)
             {
                 // Если Да то добавляем в список устройств щитка
-                device.AddFuse(new Fuse("LoadSwitch", 63, 2, false, false, 35));
+                device.AddFuse(new Fuse("LoadSwitch", 63, 2, false, 35));
             }
 
             // Проверяем наличие кросс-модуля
             if (device.CrossModule)
             {
-                device.AddFuse(new Fuse("CrossBlock", 100, 4, false, false, 25)); // Кросс-блок может быть без номинала
+                device.AddFuse(new Fuse("CrossBlock", 100, 4, false, 25)); // Кросс-блок может быть без номинала
             }
 
             // Настройки автоматов для техники \\
@@ -120,32 +119,100 @@
 
             // 118 A
 
-            int totalAmper = totalPower / 220; // A
+            decimal totalAmper = totalPower / settings.VoltageStandard; // A !!!
 
+            // Создаем список всех АВ автоматов для оборудовния
+            List<Fuse> AVFuses = new List<Fuse>();
+
+            int countAVFuses = AVFuses.Count;
+
+            // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
+            if (allEquipments.Any(e => e.Name.Equals("lighting", StringComparison.OrdinalIgnoreCase))) 
+            {
+                for (int i = 0; i < globalGroupingParameters.Lighting; i++)
+                {
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
+                }
+            }
+            if (allEquipments.Any(e => e.Name.Equals("socket", StringComparison.OrdinalIgnoreCase)))
+            {
+                for (int i = 0; i < globalGroupingParameters.Sockets; i++)
+                {
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
+                }
+            }
+            if (allEquipments.Any(e => e.Name.Equals("air conditioner", StringComparison.OrdinalIgnoreCase)))
+            {
+                for (int i = 0; i < globalGroupingParameters.Conditioners; i++)
+                {
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
+                }
+            }
+
+            // Добавляем втоматы без сортировки
+            foreach (var Equipment in allEquipments)
+            {
+                if (Equipment.Name != "lighting" && Equipment.Name != "socket" && Equipment.Name != "air conditioner") 
+                {
+                    AVFuses.Add(new Fuse(Equipment.Name, 16, 1, false, 10));
+                }
+            }
+
+            int avIndex = 0;
+
+            // Логика распределения УЗО от нагрузки
             if (totalAmper <= 16)
             {
-                device.AddFuse(new Fuse("RCD", 2, 16, false, false, 43));
+                // Создаем УЗО
+                device.AddFuse(new Fuse("RCD", 16, 2, false, 43));
 
+                // Добавляем созданые ранее АВ автоматы в список
+                foreach (var fuse in AVFuses)
+                {
+                    device.AddFuse(fuse);
+                }
             }
             else if (totalAmper > 16 && totalAmper <= 32)
             {
-                device.AddFuse(new Fuse("RCD", 2, 63, false, false, 43));
+                device.AddFuse(new Fuse("RCD", 32, 2, false, 43));
 
+                // Добавляем созданые ранее АВ автоматы в список
+                foreach (var fuse in AVFuses)
+                {
+                    device.AddFuse(fuse);
+                }
             }
             else if (totalAmper > 32 && totalAmper <= 63)
             {
-                device.AddFuse(new Fuse("RCD", 2, 63, false, false, 43));
+                device.AddFuse(new Fuse("RCD", 63, 2, false, 43));
 
+                // Добавляем созданые ранее АВ автоматы в список
+                foreach (var fuse in AVFuses)
+                {
+                    device.AddFuse(fuse);
+                }
             }
             else
             {
-                int countOfRCD = totalPower / 63;
+                double countOfRCD = Math.Ceiling(totalPower / 63.00);
+                int countABPerRCD = Convert.ToInt32(Math.Ceiling(countAVFuses / countOfRCD));
+
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    device.AddFuse(new Fuse("RCD", 2, 63, false, false, 43));
+                    device.AddFuse(new Fuse("RCD", 63, 2, false, 43));
+
+                    // Добавляем созданые ранее АВ автоматы в список
+                    for (int ii = 0; ii < countABPerRCD && avIndex < countABPerRCD; ii++) // !!!
+                    {
+                        device.AddFuse(AVFuses[avIndex]);
+
+                        // Обновляем индекс
+                        avIndex++;
+                    }
                 }
 
             }
+
 
 
             return device;

@@ -7,7 +7,6 @@
         public int ShieldWidth { get; set; } // size 12, 16, 18
         public int VoltageStandard { get; set; } // 220 or 230
     }
-
     public class ShieldDevice
     {
         public bool MainCircuitBreaker { get; set; }
