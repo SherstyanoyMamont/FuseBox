@@ -1,4 +1,5 @@
-﻿namespace FuseBox
+﻿// Am i Join tp this rep?
+namespace FuseBox
 {
     // Added a separate class of equipment
     public class Consumers
