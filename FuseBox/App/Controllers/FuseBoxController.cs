@@ -1,20 +1,26 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace FuseBox.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // Устанавливает маршрут для контроллера.
     public class ConfigurationController : ControllerBase
     {
+        // Для хранения экземпляра службы ConfigurationService
         private readonly ConfigurationService _configurationService;
 
+        // Конструктор контроллера
         public ConfigurationController(ConfigurationService configurationService)
         {
             _configurationService = configurationService;
+
         }
 
-        [HttpPost("generate")]
-        public IActionResult GenerateConfiguration([FromBody] ProjectConfiguration config)
+        // Атрибут, указывающий, что метод будет обрабатывать HTTP-запросы типа POST по маршруту api/configuration/generate.
+        [HttpPost(Name = "GetProjectConfig")]
+
+        // Mетод GenerateConfiguration. Он принимает объект ProjectConfiguration, который передается в теле запроса ([FromBody]) и возвращает объект типа IActionResult (результат выполнения действия).
+        public IActionResult GenerateConfiguration([FromBody] Project config)
         {
             try
             {

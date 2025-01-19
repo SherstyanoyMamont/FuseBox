@@ -1,13 +1,8 @@
-﻿namespace FuseBox
+﻿using System.Collections.Generic;
+
+namespace FuseBox
 {
-    public class InitialSettings
-    {
-        public int Phases { get; set; } // 1 or 3
-        public int MainBreakerA { get; set; } // 25А, 32А ...
-        public int ShieldWidth { get; set; } // size 12, 16, 18
-        public int VoltageStandard { get; set; } // 220 or 230
-    }
-    public class ShieldDevice
+    public class Shield
     {
         public bool MainCircuitBreaker { get; set; }
         public bool SurgeProtectionKit { get; set; }
@@ -21,8 +16,8 @@
         public bool LoadSwitch { get; set; }
         public bool CrossModule { get; set; }
         public int CountOfDINLines { get; set; }
-        public List<SimpleFuse> Fuses { get; set; } = new(); // List of devices
-        public void AddFuse(SimpleFuse fuse)
+        public List<List<IFuse>> Fuses { get; set; } = new() ; // List of devices // Список в списке!
+        public void AddFuse(List<IFuse> fuse)                  // Interface IFuse*
         {
             Fuses.Add(fuse);
             ModularContactor = false;
