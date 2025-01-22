@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Controllers" Category="CodeSchema_Namespace" Bounds="20,40,206.626666666667,86" Group="Expanded" Label="Controllers" />
+    <Node Id="FuseBox" Category="CodeSchema_Namespace" Bounds="0,0,550.17,370" Group="Expanded" Label="FuseBox" />
+    <Node Id="FuseBox.ConfigurationService" Category="CodeSchema_Class" Bounds="47.7433333333334,156,151.14,26" Label="ConfigurationService" />
+    <Node Id="FuseBox.Consumer" Category="CodeSchema_Class" Bounds="20,268,94.92,26" Label="Consumer" />
+    <Node Id="FuseBox.Controllers.ConfigurationController" Category="CodeSchema_Class" Bounds="40,80,166.626666666667,26" Label="ConfigurationController" />
+    <Node Id="FuseBox.Floor" Category="CodeSchema_Class" Bounds="256.626666666667,207.96,68,26" Label="Floor" />
+    <Node Id="FuseBox.FloorGrouping" Category="CodeSchema_Class" Bounds="287.436666666667,268,118.043333333333,26" Label="FloorGrouping" />
+    <Node Id="FuseBox.Fuse" Category="CodeSchema_Class" Bounds="412.04,40,65.02,26" Label="Fuse" />
+    <Node Id="FuseBox.GlobalGrouping" Category="CodeSchema_Class" Bounds="20,324,125.28,26" Label="GlobalGrouping" />
+    <Node Id="FuseBox.IFuse" Category="CodeSchema_Interface" Bounds="410.443333333333,152,68.2133333333333,25.96" Label="IFuse" />
+    <Node Id="FuseBox.IFuseWithEquipment" Category="CodeSchema_Interface" Bounds="369.278333333333,96.02,150.543333333333,25.96" Label="IFuseWithEquipment" />
+    <Node Id="FuseBox.InitialSettings" Category="CodeSchema_Class" Bounds="144.92,268,112.516666666667,26" Label="InitialSettings" />
+    <Node Id="FuseBox.Module" Category="CodeSchema_Class" Bounds="256.626666666667,96,81.8466666666666,26" Label="Module" />
+    <Node Id="FuseBox.Project" Category="CodeSchema_Class" Bounds="84.455,212,77.7166666666667,26" Label="Project" />
+    <Node Id="FuseBox.Room" Category="CodeSchema_Class" Bounds="354.626666666667,207.96,72.2233333333334,26" Label="Room" />
+    <Node Id="FuseBox.Shield" Category="CodeSchema_Class" Bounds="456.85,207.96,73.3200000000001,26" Label="Shield" />
+  </Nodes>
+  <Links>
+    <Link Source="Controllers" Target="FuseBox.Controllers.ConfigurationController" Category="Contains" />
+    <Link Source="FuseBox" Target="Controllers" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.ConfigurationService" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Consumer" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Floor" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.FloorGrouping" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Fuse" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.GlobalGrouping" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.IFuse" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.IFuseWithEquipment" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.InitialSettings" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Module" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Project" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Room" Category="Contains" />
+    <Link Source="FuseBox" Target="FuseBox.Shield" Category="Contains" />
+    <Link Source="FuseBox.ConfigurationService" Target="FuseBox.Project" Category="Uses" Bounds="123.313331604004,182,0,21" />
+    <Link Source="FuseBox.Controllers.ConfigurationController" Target="FuseBox.ConfigurationService" Category="Uses" />
+    <Link Source="FuseBox.Fuse" Target="FuseBox.IFuseWithEquipment" Category="Implements" Bounds="444.549987792969,66,0,21.0199966430664" />
+    <Link Source="FuseBox.IFuseWithEquipment" Target="FuseBox.IFuse" Category="Implements" Bounds="444.549987792969,121.980003356934,0,21.0199966430664" />
+    <Link Source="FuseBox.Module" Target="FuseBox.IFuse" Category="Implements" Bounds="331.687194824219,122,71.6846008300781,27.2986755371094" />
+  </Links>
+  <Categories>
+    <Category Id="CodeSchema_Class" Label="Class" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Classes" />
+    <Category Id="CodeSchema_Interface" Label="Interface" BasedOn="CodeSchema_Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Interface" NavigationActionLabel="Interfaces" />
+    <Category Id="CodeSchema_Namespace" Label="Namespace" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Type" Icon="CodeSchema_Namespace" NavigationActionLabel="Namespaces" />
+    <Category Id="CodeSchema_Type" Label="Type" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_Member" Icon="CodeSchema_Class" NavigationActionLabel="Types" />
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+    <Category Id="Implements" Label="Implements" CanBeDataDriven="True" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Implemented by" OutgoingActionLabel="Implements" />
+    <Category Id="Uses" Background="#FF000000" />
+  </Categories>
+  <Properties>
+    <Property Id="Background" Label="Background" Description="The background color" DataType="System.Windows.Media.Brush" />
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="DefaultAction" Label="DefaultAction" Description="DefaultAction" DataType="System.String" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="Icon" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Link" GroupLabel="Inherits" ValueLabel="True">
+      <Condition Expression="HasCategory('Inherits')" />
+      <Setter Property="Stroke" Value="#FF000000" />
+      <Setter Property="StrokeThickness" Value="2" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Implements" ValueLabel="True">
+      <Condition Expression="HasCategory('Implements')" />
+      <Setter Property="Stroke" Value="#FF000000" />
+      <Setter Property="StrokeThickness" Value="2" />
+      <Setter Property="StrokeDashArray" Value="4,2" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Composes" ValueLabel="True">
+      <Condition Expression="HasCategory('Composes')" />
+      <Setter Property="Stroke" Value="#FFFFA500" />
+      <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Aggregates" ValueLabel="True">
+      <Condition Expression="HasCategory('Aggregates')" />
+      <Setter Property="Stroke" Value="#FFFFA500" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="StrokeDashArray" Value="2,4" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Uses" ValueLabel="True">
+      <Condition Expression="HasCategory('Uses')" />
+      <Setter Property="Stroke" Value="#FF000000" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="StrokeDashArray" Value="1,2" />
+    </Style>
+  </Styles>
+</DirectedGraph>

@@ -14,7 +14,7 @@ namespace FuseBox
             // Расчет параметров устройства электрощита
             Shield shield;
 
-            if (input.InitialSettings.PhaseCount == 1) // Колличество фаз
+            if (input.InitialSettings.PhasesCount == 1) // Колличество фаз
             {
                 shield = ConfigureShield(input);
             }

@@ -4,8 +4,9 @@ namespace FuseBox
 {
     public class Shield
     {
-        public bool MainCircuitBreaker { get; set; }
-        public bool SurgeProtectionKit { get; set; }
+        public bool MainBreaker { get; set; }
+        public bool Main3PN { get; set; }
+        public bool SurgeProtection { get; set; }
         public bool LoadSwitch2P { get; set; }
         public bool ModularContactor { get; set; }
         public bool RailMeter { get; set; }
