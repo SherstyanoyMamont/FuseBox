@@ -3,10 +3,13 @@ namespace FuseBox
 {
     public class Room
     {
+        private static int _idCounter = 0;             // Static counter for all objects of this class
+        public int Id { get; set; }
         public string? Name { get; set; }
-        public bool Area { get; set; } // "Dry" or "Wet"
-        public int RoomPower { get; set; } // Add room Power
+        public bool Area { get; set; }                 // "Dry" or "Wet"
+        public int Rating { get; set; }                // ... 10А, 16А, 20А ...
         public List<Consumer> Equipments { get; set; } // Load list
-        public int CircuitBreakerRating { get; set; } // 2, 4, 6...
+        public int TPower { get; set; }                // Calculated power of all equipment in the room
+        
     }
 }
