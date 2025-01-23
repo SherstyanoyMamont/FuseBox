@@ -3,45 +3,53 @@
   <Nodes>
     <Node Id="(@5)" Category="File" Bounds="308.287178984713,266.32367476994,95.0813334782915,25.9980001449585" Label="Module.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Module.cs" UseManualLocation="True" />
     <Node Id="(@8)" Category="File" Bounds="435.654749317143,265.840312859576,78.2546668116252,25.9980001449585" Label="Fuse.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Fuse.cs" UseManualLocation="True" />
-    <Node Id="@10" Category="File" Bounds="499.613821379344,25.5490345954895,138.514666811625,25.9980001449585" Label="GlobalGrouping.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\GlobalGrouping.cs" UseManualLocation="True" />
-    <Node Id="@12" Category="File" Bounds="499.16684709549,-30.449065549469,131.278000144958,25.9980001449585" Label="FloorGrouping.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\FloorGrouping.cs" UseManualLocation="True" />
+    <Node Id="@10" Category="File" Bounds="602.013845793406,21.0157017707825,138.514666811625,25.9980001449585" Label="GlobalGrouping.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\GlobalGrouping.cs" UseManualLocation="True" />
+    <Node Id="@12" Category="File" Bounds="601.566840991974,-34.982398374176,131.278000144958,25.9980001449585" Label="FloorGrouping.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\FloorGrouping.cs" UseManualLocation="True" />
     <Node Id="@14" Category="File" Bounds="157.489952315149,180.66751519775,85.4580001449584,25.9980001449585" Label="Room.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Room.cs" UseManualLocation="True" />
     <Node Id="@16" Category="File" Bounds="229.714774067018,-176.106362075071,150.454666811625,25.9980001449585" Label="FuseBoxController.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Controllers\FuseBoxController.cs" UseManualLocation="True" />
     <Node Id="@18" Category="File" Bounds="147.192486427105,266.547021769265,108.154666811625,25.9980001449585" Label="Consumer.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Consumer.cs" UseManualLocation="True" />
     <Node Id="@2" Category="File" Bounds="352.068134907876,94.677906215735,86.5546668116249,25.9980001449585" Label="Shield.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Shield.cs" UseManualLocation="True" />
-    <Node Id="@20" Category="File" Bounds="159.322569673993,99.427502368725,81.2346668116251,25.9980001449585" Label="Floor.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Floor.cs" UseManualLocation="True" />
-    <Node Id="@22" Category="File" Bounds="501.980357336818,81.547134740448,125.751333478292,25.9980001449585" Label="InitialSettings.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\InitialSettings.cs" UseManualLocation="True" />
+    <Node Id="@20" Category="File" Bounds="162.596617705027,105.895566862869,81.2346668116251,25.9980001449585" Label="Floor.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Floor.cs" UseManualLocation="True" />
+    <Node Id="@22" Category="File" Bounds="602.780339120229,77.013801915741,125.751333478292,25.9980001449585" Label="InitialSettings.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Configurations\InitialSettings.cs" UseManualLocation="True" />
     <Node Id="@24" Category="File" Bounds="260.305553454934,13.5163520441471,90.9513334782919,25.9980001449585" Label="Project.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Models\Project.cs" UseManualLocation="True" />
     <Node Id="@26" Category="File" Bounds="250.997220832404,-270.01150466998,108.211333478292,25.9980001449585" Label="EntryPoint.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\EntryPoint.cs" UseManualLocation="True" />
     <Node Id="@4" Category="File" Bounds="223.142348275465,-82.5809041022706,164.374666811626,25.9980001449585" Label="ConfigurationService.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Services\ConfigurationService.cs" UseManualLocation="True" />
     <Node Id="@7" Category="File" Bounds="356.887868850191,175.119273934236,81.4480001449583,25.9980001449585" Label="IFuse.cs" NeighborhoodCenter="True" Reference="$(VsSolution)\FuseBox\App\Interfaces\IFuse.cs" UseManualLocation="True" />
+    <Node Id="Connection" Category="Comment" Bounds="-6.15712395985919,-71.8091038513183,80.6533333333333,25.96" UseManualLocation="True" />
+    <Node Id="DataBase" Category="Comment" Bounds="-106.007123959859,7.97261535644527,69.05,25.96" UseManualLocation="True" />
+    <Node Id="User" Category="Comment" Bounds="105.088199615479,11.5354668628692,50,25.96" UseManualLocation="True" />
   </Nodes>
   <Links>
-    <Link Source="(@5)" Target="@7" Bounds="361.783135781964,209.29947962133,26.1248645240519,57.0241979184956" />
-    <Link Source="(@8)" Target="@7" Bounds="414.500595097879,207.972601309272,49.2241427669844,57.8677235694208" />
+    <Link Source="(@5)" Target="@7" Bounds="361.783156165164,209.299468810058,26.1248440085005,57.0242059598823" />
+    <Link Source="(@8)" Target="@7" Bounds="414.500584082584,207.972589680723,49.2241339246884,57.8677231788527" />
     <Link Source="@10" Target="@24" Bounds="360.241807708451,29.6686175765156,131.241337401362,7.5988671927631" Visibility="Hidden" />
-    <Link Source="@10" Target="@24" Index="1" Bounds="360.247457449372,29.0064167797209,139.366363929971,6.37405281142163" />
+    <Link Source="@10" Target="@24" Index="1" Bounds="360.254992969221,27.633078781627,241.758852824186,4.96055812798197" />
     <Link Source="@12" Target="@24" Bounds="360.141403144102,-4.11450766634402,135.022149771082,21.8378796693373" Visibility="Hidden" />
-    <Link Source="@12" Target="@24" Index="1" Bounds="360.129947337375,-6.34474668941713,139.248338214742,23.6352403307299" />
+    <Link Source="@12" Target="@24" Index="1" Bounds="360.176936475079,-13.1754497049541,241.389904516895,32.3915639849743" />
     <Link Source="@14" Target="@20" Bounds="231.260684201688,132.139221026832,0.158837665912898,46.2420584417046" Visibility="Hidden" />
-    <Link Source="@14" Target="@20" Index="1" Bounds="200.015444943875,134.425460650855,0.158837665912927,46.2420584417046" />
-    <Link Source="@16" Target="@4" Index="1" Bounds="304.995950299694,-150.10835313797,0.24255971097341,58.5275263258074" />
+    <Link Source="@14" Target="@20" Index="1" Bounds="200.739628784152,140.886355830157,1.59343877171969,39.7811593675932" />
+    <Link Source="@16" Target="@4" Index="1" Bounds="304.995975983853,-150.108361930112,0.242541053342904,58.5275351060371" />
     <Link Source="@16" Target="@4" Bounds="303.959389002546,-150.10835313797,1.50221863445813,52.4345087060237" Visibility="Hidden" />
     <Link Source="@18" Target="@14" Bounds="231.733364822407,213.378605845709,0.622642723583681,50.8821749656012" Visibility="Hidden" />
-    <Link Source="@18" Target="@14" Index="1" Bounds="200.488125564594,215.664845469732,0.622642723583709,50.8821749656013" />
+    <Link Source="@18" Target="@14" Index="1" Bounds="200.488135641419,215.664841621,0.622621493739416,50.8821801482655" />
+    <Link Source="@2" Target="@24" Index="1" Bounds="326.795119427611,45.557779835339,54.2055562107559,49.120126380396" />
     <Link Source="@2" Target="@24" Bounds="326.795091182588,45.5577774897983,54.2055726594202,49.1201328381131" Visibility="Hidden" />
-    <Link Source="@2" Target="@24" Index="1" Bounds="326.795091182588,45.5577774897983,54.2055726594202,49.1201328381131" />
-    <Link Source="@20" Target="@24" Index="1" Bounds="215.954460138747,45.1863070732398,66.8243806264726,54.241206526156" />
+    <Link Source="@20" Target="@24" Index="1" Bounds="217.646547673425,45.5375081076485,67.0146554702486,60.3580587552208" />
     <Link Source="@20" Target="@24" Bounds="242.780637660265,46.2305434105158,45.4139773030884,50.9107305648565" Visibility="Hidden" />
     <Link Source="@22" Target="@24" Bounds="358.270460124006,41.6831115497898,154.232808720675,44.5684682117153" Visibility="Hidden" />
-    <Link Source="@22" Target="@24" Index="1" Bounds="359.371121049023,40.5875994607898,155.982111417447,40.9595430448559" />
-    <Link Source="@26" Target="@16" Index="1" Bounds="304.979754430989,-244.013504505157,0.100887969422331,58.9071644216258" />
+    <Link Source="@22" Target="@24" Index="1" Bounds="360.119980540533,36.1030555307591,242.854163359111,42.8499597033317" />
+    <Link Source="@24" Target="User" Bounds="164.087616610379,24.9024750531545,96.2179368445552,1.09523436136973" />
+    <Link Source="@26" Target="@16" Index="1" Bounds="304.979773133993,-244.013504525022,0.100858142990035,58.9071556415479" />
     <Link Source="@26" Target="@16" Bounds="303.209723513807,-252.270035266876,0.284173100353314,67.1637625408169" Visibility="Hidden" />
-    <Link Source="@4" Target="@24" Index="1" Bounds="305.390782876011,-56.5828785896301,0.287052444474796,61.0993281831198" />
+    <Link Source="@4" Target="@24" Index="1" Bounds="305.390760939896,-56.5829039573121,0.287091569056315,61.0993553526196" />
     <Link Source="@4" Target="@24" Bounds="305.848052544224,-62.6795582771301,0.204235202508926,67.1959501168769" Visibility="Hidden" />
-    <Link Source="@7" Target="@2" Bounds="395.965175493465,129.672340414948,1.28045791719211,45.4469456453851" />
+    <Link Source="@7" Target="@2" Bounds="395.965180005812,129.672336358256,1.28044773379537,45.4469375759803" />
+    <Link Source="Connection" Target="DataBase" Bounds="-47.1109988005333,-45.8491130065918,64.0916633898221,48.398133930895" />
+    <Link Source="DataBase" Target="User" Bounds="-36.9571243286133,21.5628627201023,133.046729512404,2.35166144557065" />
+    <Link Source="User" Target="Connection" Bounds="55.901476732139,-39.9460437084099,59.2484490891678,51.4815084911248" />
   </Links>
   <Categories>
+    <Category Id="Comment" Label="Comment" Description="Represents a user defined comment on the diagram" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Comments" />
     <Category Id="File" Label="File" CanBeDataDriven="True" DefaultAction="Microsoft.Contains" Icon="File" NavigationActionLabel="Files" />
   </Categories>
   <Properties>
@@ -53,6 +61,7 @@
     <Property Id="GroupLabel" DataType="System.String" />
     <Property Id="Icon" Label="Icon" Description="Icon" DataType="System.String" />
     <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
     <Property Id="IsReference" Label="IsReference" Description="Annotation to make a property into a reference property" DataType="System.Boolean" />
     <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
     <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
@@ -102,6 +111,14 @@
       <Condition Expression="HasValue('NeighborhoodCenter')" />
       <Setter Property="Stroke" Value="#C0A0B862" />
       <Setter Property="StrokeThickness" Value="4" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFFFFACD" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
     </Style>
   </Styles>
   <Paths>

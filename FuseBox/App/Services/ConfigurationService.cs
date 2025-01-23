@@ -54,10 +54,10 @@ namespace FuseBox
             }
 
             // Создаем список всех АВ автоматов для оборудовния
-            List<Module> AVFuses = new List<Module>();
+            List<Fuse> AVFuses = new List<Fuse>();
 
             // Создаем список входной группы устройств
-            List<Module> InputGroupOfModules = new List<Module>();
+            List<Component> InputGroupOfModules = new List<Component>();
 
 
             if (project.Shield.MainBreaker)
@@ -85,10 +85,10 @@ namespace FuseBox
                 InputGroupOfModules.Add(new Module("RCDFire", 63, 2, false, 75)); // УЗО часто критическое
             }
 
-            //if (project.Shield.ModularContactor)
-            //{
-            //    InputGroupOfModules.Add(new Module("ModularContactor", 25, 1, false, 84));
-            //}
+            if (project.Shield.ModularContactor)
+            {
+                InputGroupOfModules.Add(new Module("ModularContactor", 25, 1, false, 84));
+            }
 
             if (project.Shield.VoltageRelay)
             {
@@ -135,37 +135,40 @@ namespace FuseBox
             {
                 for (int i = 0; i < project.GlobalGrouping.Lighting; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("socket", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Sockets; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("air conditioner", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Conditioners; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("heated floor", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Conditioners; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
 
             // Добавляем втоматы без сортировки
-            foreach (var Equipment in AllConsumers)
+            foreach (var consumer in AllConsumers)
             {
-                if (Equipment.Name != "lighting" && Equipment.Name != "socket" && Equipment.Name != "air conditioner")
+
+                if (consumer.Name != "lighting" && consumer.Name != "socket" && consumer.Name != "air conditioner")
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    //List<Consumer> Consumers = new List<Consumer>();
+                    //Consumers.Add(consumer);
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10)); // Consumers
                 }
             }
 
@@ -222,7 +225,7 @@ namespace FuseBox
             }
 
             // Делаем единый список модулей в Щите
-            List<Module> shieldModuleSet = new List<Module>(InputGroupOfModules);
+            List<Component> shieldModuleSet = new List<Component>(InputGroupOfModules);
 
 
             // Компоновка Щита по уровням...
@@ -254,10 +257,10 @@ namespace FuseBox
             }
 
             // Создаем список всех АВ автоматов для оборудовния
-            List<Module> AVFuses = new List<Module>();
+            List<Fuse> AVFuses = new List<Fuse>();
 
             // Создаем список входной группы устройств
-            List<Module> InputGroupOfModules = new List<Module>();
+            List<Component> InputGroupOfModules = new List<Component>();
 
             // Настройки опцыонных автоматов \\
 
@@ -280,20 +283,14 @@ namespace FuseBox
                 InputGroupOfModules.Add(new Module("SPD", 100, 2, false, 65));
             }
 
-            //// Проверяем наличие выключателя 2P
-            //if (project.Shield.LoadSwitch2P)
-            //{
-            //    project.Shield.Fuses.Add(new Module("LoadSwitch", 63, 2, false, 35));
-            //}
-
             if (project.Shield.RailMeter)
             {
-                InputGroupOfModules.Add(new Module("DinRailMeter", 63, 6, false, 145));
+                InputGroupOfModules.Add(new Module("DIN Rail Meter 3P", 63, 8, false, 145));
             }
 
             if (project.Shield.FireUZO)
             {
-                InputGroupOfModules.Add(new Module("RCDFire", 63, 2, false, 75)); // УЗО часто критическое
+                InputGroupOfModules.Add(new Module("RCD Fire 3P", 63, 2, false, 75)); // УЗО часто критическое
             }
 
             if (project.Shield.ModularContactor)
@@ -323,12 +320,6 @@ namespace FuseBox
             {
                 InputGroupOfModules.Add(new Module("DinRailSocket", 16, 3, false, 22));
             }
-
-            //// Проверяем наличие УЗО неотключаемой линии
-            //if (project.Shield.NDisconnectableLine)
-            //{
-            //    project.Shield.Fuses.Add(new Module("NonDisconnectableLine", 25, 2, false, 43)); // Обязательно критическая линия
-            //}
 
             // Проверяем наличие общего выключателя
             if (project.Shield.LoadSwitch)
@@ -362,28 +353,28 @@ namespace FuseBox
             {
                 for (int i = 0; i < project.GlobalGrouping.Lighting; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("socket", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Sockets; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("air conditioner", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Conditioners; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("heated floor", StringComparison.OrdinalIgnoreCase)))
             {
                 for (int i = 0; i < project.GlobalGrouping.Conditioners; i++)
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
 
@@ -392,7 +383,7 @@ namespace FuseBox
             {
                 if (Equipment.Name != "lighting" && Equipment.Name != "socket" && Equipment.Name != "air conditioner")
                 {
-                    AVFuses.Add(new Module("AV", 16, 1, false, 10));
+                    AVFuses.Add(new Fuse("AV", 16, 1, false, 10));
                 }
             }
 
@@ -453,7 +444,7 @@ namespace FuseBox
 
 
             // Делаем единый список модулей в Щите
-            List<Module> shieldModuleSet = new List<Module>(InputGroupOfModules);
+            List<Component> shieldModuleSet = new List<Component>(InputGroupOfModules);
             // shieldModuleSet.AddRange(Fuses);
 
             ShieldByLevel(project, shieldModuleSet);
@@ -461,7 +452,7 @@ namespace FuseBox
             return project.Shield;
         }
 
-        public List<Module> ShieldByLevel(Project project, List<Module>  shieldModuleSet) // Логика распределения модулей по уровням
+        public List<Component> ShieldByLevel(Project project, List<Component>  shieldModuleSet) // Логика распределения модулей по уровням
         {
 
             // Логика распределения модулей по уровням
@@ -479,7 +470,7 @@ namespace FuseBox
             // Инициализируем списки каждого уровня щита
             for (int i = 0; i < countOfDINLevels; i++)
             {
-                project.Shield.Fuses.Add(new List<Module>());
+                project.Shield.Fuses.Add(new List<Component>());
             }
 
             project.Shield.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)

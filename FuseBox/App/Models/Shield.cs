@@ -2,7 +2,7 @@
 
 namespace FuseBox
 {
-    public class Shield
+    public class Shield : BaseEntity
     {
         public bool MainBreaker { get; set; }
         public bool Main3PN { get; set; }
@@ -18,6 +18,6 @@ namespace FuseBox
         public bool LoadSwitch { get; set; }
         public bool CrossModule { get; set; }
         public int DINLines { get; set; }
-        public List<List<Module>> Fuses { get; set; } = new(); // List of devices // Список в списке!
+        public List<List<Component>> Fuses { get; set; } = new(); // List of devices // Список в списке!
     }
 }

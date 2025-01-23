@@ -59,7 +59,7 @@ namespace FuseBox
                 {
                     new Floor
                     {
-                        FloorName = "Первый этаж",
+                        Name = "Первый этаж",
                         Rooms = new List<Room>
                         {
                             new Room
@@ -84,7 +84,7 @@ namespace FuseBox
                     },
                     new Floor
                     {
-                        FloorName = "Второй этаж",
+                        Name = "Второй этаж",
                         Rooms = new List<Room>
                         {
                             new Room

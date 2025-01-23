@@ -1,0 +1,73 @@
+Project Architecture:
+
+1. **Frontend** (React.js)
+   - Handles user interface and interactions.
+   - Makes API calls to the backend for data and calculations.
+   - Key Features:
+     - User Authentication (login, registration).
+     - Project Management (creating, editing, and deleting projects).
+     - Display of equipment, rooms, and floors.
+
+2. **Backend** (ASP.NET Core)
+   - Acts as the business logic layer of the system.
+   - Interacts with the database and processes calculations.
+   - Key Components:
+     - **Controllers**: Handle API requests from the frontend.
+       - ProjectController: Manages CRUD operations for projects.
+       - UserController: Handles authentication and user data.
+       - StatisticsController: Returns energy consumption statistics.
+     - **Services**:
+       - ConfigurationService: Handles project and equipment configuration.
+       - CalculationService: Provides methods like CalculateTotalPower.
+       - NotificationService: Sends alerts to the frontend.
+     - **Models**: Represent objects like `ProjectConfiguration`, `Room`, `Floor`, etc.
+
+3. **Database** (MySQL on PHPMyAdmin)
+   - Stores persistent data.
+   - Tables:
+     - `Users`:
+       - `UserId` (PK), `Username`, `Email`, `PasswordHash`, etc.
+     - `Projects`:
+       - `ProjectId` (PK), `ProjectName`, `UserId` (FK), `CreatedDate`, etc.
+     - `Floors`:
+       - `FloorId` (PK), `ProjectId` (FK), `FloorName`, etc.
+     - `Rooms`:
+       - `RoomId` (PK), `FloorId` (FK), `Name`, `ZoneType`, etc.
+     - `Equipment`:
+       - `EquipmentId` (PK), `RoomId` (FK), `Name`, `Power`, etc.
+     - `Logs` (for diagnostics):
+       - `LogId` (PK), `Timestamp`, `LogLevel`, `Message`, etc.
+
+4. **Data Flow**:
+   - **Frontend to Backend**:
+     - User submits data (e.g., creates a project or room).
+     - Data is sent via API calls to the backend.
+   - **Backend Processing**:
+     - Backend validates and processes the data.
+     - Interacts with the database to store or retrieve information.
+     - Performs calculations using `CalculationService` if required.
+   - **Backend to Frontend**:
+     - Processed data or results (e.g., total power calculations, project details) are sent back to the frontend for display.
+
+5. **Scalability Considerations**:
+   - **Frontend**:
+     - Optimize React components and state management.
+     - Use a content delivery network (CDN) for faster asset delivery.
+   - **Backend**:
+     - Deploy on cloud platforms like Azure or AWS for scaling.
+     - Implement load balancing to handle high traffic.
+     - Use caching (e.g., Redis) for frequently accessed data.
+   - **Database**:
+     - Normalize tables for efficient storage.
+     - Index frequently queried columns.
+     - Scale horizontally using read replicas for high read traffic.
+   - **Security**:
+     - Use HTTPS for all communications.
+     - Encrypt sensitive data like passwords (e.g., bcrypt hashing).
+     - Validate all inputs to prevent SQL injection and XSS attacks.
+
+6. **Future Enhancements**:
+   - Add real-time notifications using SignalR or WebSocket.
+   - Implement a mobile-friendly UI.
+   - Add advanced analytics for energy consumption trends.
+   - Introduce multi-language support.
