@@ -39,19 +39,9 @@ namespace FuseBox
         {
             int totalPower = project.CalculateTotalPower();
 
-            // Создаем список всех потребителей и записываем их
-            List<Consumer> AllConsumers = new List<Consumer>();
 
-            foreach (var floor in project.Floors)
-            {
-                foreach (var room in floor.Rooms)
-                {
-                    foreach (var equipment in room.Equipments)
-                    {
-                        AllConsumers.Add(equipment);
-                    }
-                }
-            }
+            // Создаем список всех потребителей и записываем их
+            List<Consumer> AllConsumers = CalculateAllConsumers(project);
 
             // Создаем список всех АВ автоматов для оборудовния
             List<Fuse> AVFuses = new List<Fuse>();
@@ -243,18 +233,7 @@ namespace FuseBox
             int totalPower = project.CalculateTotalPower();
 
             // Создаем список всех потребителей и записываем их
-            List<Consumer> AllConsumers = new List<Consumer>();
-
-            foreach (var floor in project.Floors)
-            {
-                foreach (var room in floor.Rooms)
-                {
-                    foreach (var equipment in room.Equipments)
-                    {
-                        AllConsumers.Add(equipment);
-                    }
-                }
-            }
+            List<Consumer> AllConsumers = CalculateAllConsumers(project);
 
             // Создаем список всех АВ автоматов для оборудовния
             List<Fuse> AVFuses = new List<Fuse>();
@@ -452,7 +431,7 @@ namespace FuseBox
             return project.Shield;
         }
 
-        public List<Component> ShieldByLevel(Project project, List<Component>  shieldModuleSet) // Логика распределения модулей по уровням
+        public List<Component> ShieldByLevel(Project project, List<Component> shieldModuleSet) // Логика распределения модулей по уровням
         {
 
             // Логика распределения модулей по уровням
@@ -518,23 +497,39 @@ namespace FuseBox
 
                 }
                 if (currentLevel > countOfDINLevels) break;
-                
+
             }
             return shieldModuleSet;
         }
 
-        //Проверка первичных данных***
-        //private void ValidateInitialSettings(InitialSettings settings)
-        //{
-        //    if (settings.Phases != 1 && settings.Phases != 3)
-        //        throw new ArgumentException("Invalid phase count");
-        //    // Дополнительные проверки...
-        //}
-
-        //PlantUML: @startuml
-
-        //PlantUML: @enduml
+        public List<Consumer> CalculateAllConsumers(Project project)
+        {
+            List<Consumer> AllConsumers = new List<Consumer>();
+            foreach (var floor in project.Floors)
+            {
+                foreach (var room in floor.Rooms)
+                {
+                    foreach (var equipment in room.Equipments)
+                    {
+                        AllConsumers.Add(equipment);
+                    }
+                }
+            }
+            return AllConsumers;
+        }
     }
+
+    //Проверка первичных данных***
+    //private void ValidateInitialSettings(InitialSettings settings)
+    //{
+    //    if (settings.Phases != 1 && settings.Phases != 3)
+    //        throw new ArgumentException("Invalid phase count");
+    //    // Дополнительные проверки...
+    //}
+
+    //PlantUML: @startuml
+
+    //PlantUML: @enduml
 }
 
 
