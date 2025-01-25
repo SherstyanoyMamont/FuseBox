@@ -12,7 +12,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -51,55 +51,206 @@ namespace FuseBox
             }
             else
             {
-                Console.OutputEncoding = Encoding.UTF8; // вывод русских символов в консоль
-                ConfigurationService configurationService = new ConfigurationService();
-                var project = new Project
+                Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
+                ConfigurationService configurationService = new ConfigurationService();       // создание экземпляра сервиса конфигурации
+
+                string jsonData = @"
                 {
-                    Floors = new List<Floor>
-                {
-                    new Floor
-                    {
-                        Name = "Первый этаж",
-                        Rooms = new List<Room>
-                        {
-                            new Room
-                            {
-                                Name = "Кухня",
-                                Equipments = new List<Consumer>
-                                {
-                                    new Consumer { Name = "Духовой шкаф", Watt = 2200 },
-                                    new Consumer { Name = "Варочная поверхность", Watt = 2000 }
-                                }
-                            },
-                            new Room
-                            {
-                                Name = "Гостиная",
-                                Equipments = new List<Consumer>
-                                {
-                                    new Consumer { Name = "Освещение", Watt = 150 },
-                                    new Consumer { Name = "Розетки", Watt = 300 }
-                                }
-                            }
-                        }
+                  ""floorGrouping"": {
+                    ""FloorGroupingP"": true,
+                    ""separateUZO"": true
                     },
-                    new Floor
-                    {
-                        Name = "Второй этаж",
-                        Rooms = new List<Room>
+                  ""globalGrouping"": {
+                    ""Sockets"": 1,
+                    ""Lighting"": 1,
+                    ""Conditioners"": 1
+                  },
+                  ""initialSettings"": {
+                    ""PhaseCount"": 1,
+                    ""MainAmperage"": 25,
+                    ""ShieldWidth"": 16,
+                    ""VoltageStandard"": 220,
+                    ""PowerCoefficient"": 1
+                  },
+                  ""shield"": {
+                    ""MainBreaker"": true,
+                    ""Main3PN"": false,
+                    ""SurgeProtection"": true,
+                    ""LoadSwitch2P"": true,
+                    ""ModularContactor"": true,
+                    ""RailMeter"": true,
+                    ""FireUZO"": true,
+                    ""VoltageRelay"": true,
+                    ""RailSocket"": true,
+                    ""NDisconnectableLine"": true,
+                    ""LoadSwitch"": true,
+                    ""CrossModule"": true,
+                    ""DINLines"": 1
+                  },
+                    ""floors"": [
+                      {
+                      ""floorName"": ""Ground Floor"",
+                      ""rooms"": [
                         {
-                            new Room
+                          ""name"": ""Living Room"",
+                          ""area"": true,
+                          ""rating"": 5,
+                          ""equipments"": [
                             {
-                                Name = "Спальня",
-                                Equipments = new List<Consumer>
-                                {
-                                    new Consumer { Name = "Освещение", Watt = 100 },
-                                    new Consumer { Name = "Розетки", Watt = 200 }
-                                }
+                              ""id"": 1,
+                              ""name"": ""TV"",
+                              ""watt"": 150,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
+                            },
+                            {
+                              ""id"": 2,
+                              ""name"": ""Air Conditioner"",
+                              ""watt"": 2000,
+                              ""contactor"": true,
+                              ""separateRCD"": true,
+                              ""isCritical"": true
+                            },
+                            {
+                              ""id"": 3,
+                              ""name"": ""Lighting"",
+                              ""watt"": 300,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
                             }
+                          ],
+                          ""tPower"": 2450
+                        },
+                        {
+                          ""name"": ""Kitchen"",
+                          ""area"": true,
+                          ""rating"": 4,
+                          ""equipments"": [
+                            {
+                              ""id"": 4,
+                              ""name"": ""Refrigerator"",
+                              ""watt"": 800,
+                              ""contactor"": false,
+                              ""separateRCD"": true,
+                              ""isCritical"": true
+                            },
+                            {
+                              ""id"": 5,
+                              ""name"": ""Microwave"",
+                              ""watt"": 1200,
+                              ""contactor"": false,
+                              ""separateRCD"": true,
+                              ""isCritical"": false
+                            },
+                            {
+                              ""id"": 6,
+                              ""name"": ""Oven"",
+                              ""watt"": 2500,
+                              ""contactor"": true,
+                              ""separateRCD"": true,
+                              ""isCritical"": true
+                            }
+                          ],
+                          ""tPower"": 4500
                         }
+                      ]
+                    },
+                    {
+                      ""floorName"": ""First Floor"",
+                      ""rooms"": [
+                        {
+                          ""name"": ""Bedroom 1"",
+                          ""area"": true,
+                          ""rating"": 3,
+                          ""equipments"": [
+                            {
+                              ""id"": 7,
+                              ""name"": ""Heater"",
+                              ""watt"": 1000,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": true
+                            },
+                            {
+                              ""id"": 8,
+                              ""name"": ""Fan"",
+                              ""watt"": 100,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
+                            }
+                          ],
+                          ""tPower"": 1100
+                        },
+                        {
+                          ""name"": ""Bathroom"",
+                          ""area"": false,
+                          ""rating"": 4,
+                          ""equipments"": [
+                            {
+                              ""id"": 9,
+                              ""name"": ""Water Heater"",
+                              ""watt"": 3000,
+                              ""contactor"": true,
+                              ""separateRCD"": true,
+                              ""isCritical"": true
+                            },
+                            {
+                              ""id"": 10,
+                              ""name"": ""Hair Dryer"",
+                              ""watt"": 1500,
+                              ""contactor"": false,
+                              ""separateRCD"": true,
+                              ""isCritical"": false
+                            }
+                          ],
+                          ""tPower"": 4500
+                        }
+                      ]
+                    },
+                    {
+                      ""floorName"": ""Second Floor"",
+                      ""rooms"": [
+                        {
+                          ""name"": ""Office"",
+                          ""area"": true,
+                          ""rating"": 4,
+                          ""equipments"": [
+                            {
+                              ""id"": 11,
+                              ""name"": ""Computer"",
+                              ""watt"": 400,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": true
+                            },
+                            {
+                              ""id"": 12,
+                              ""name"": ""Printer"",
+                              ""watt"": 200,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
+                            },
+                            {
+                              ""id"": 13,
+                              ""name"": ""Lighting"",
+                              ""watt"": 300,
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
+                            }
+                          ],
+                          ""tPower"": 900
+                        }
+                      ]
                     }
-                }
-                };
+                  ]
+                }";                                                                   
+
+                Project project = JsonConvert.DeserializeObject<Project>(jsonData);        // десериализация данных
 
                 var pc = configurationService.GenerateConfiguration(project);
                 var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
