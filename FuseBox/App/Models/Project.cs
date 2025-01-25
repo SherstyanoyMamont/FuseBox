@@ -23,7 +23,7 @@
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
-                .SelectMany(room => room.Equipments)
+                .SelectMany(room => room.Consumer)
                 .Sum(equipment => equipment.Watt);
         }
     }

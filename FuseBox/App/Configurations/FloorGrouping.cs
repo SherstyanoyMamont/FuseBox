@@ -3,8 +3,8 @@
     // Grouping by floors
     public class FloorGrouping
     {
-        public bool IndividualFloorGrouping { get; set; }
-        public bool SeparateUZOPerFloor { get; set; }
+        public bool FloorGroupingP { get; set; }
+        public bool separateUZO { get; set; }
     }
 
 }

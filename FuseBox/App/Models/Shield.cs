@@ -18,6 +18,6 @@ namespace FuseBox
         public bool LoadSwitch { get; set; }
         public bool CrossModule { get; set; }
         public int DINLines { get; set; }
-        public List<List<Component>> Fuses { get; set; } = new(); // List of devices // Список в списке!
+        public List<List<Component>> Fuses { get; set; } = new();
     }
 }
