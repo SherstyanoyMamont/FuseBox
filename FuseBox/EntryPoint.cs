@@ -93,9 +93,9 @@ namespace FuseBox
                       ""rooms"": [
                         {
                           ""name"": ""Living Room"",
-                          ""area"": true,
+                          ""area"": false,
                           ""rating"": 5,
-                          ""equipments"": [
+                          ""consumer"": [
                             {
                               ""id"": 1,
                               ""name"": ""TV"",
@@ -108,9 +108,9 @@ namespace FuseBox
                               ""id"": 2,
                               ""name"": ""Air Conditioner"",
                               ""watt"": 2000,
-                              ""contactor"": true,
-                              ""separateRCD"": true,
-                              ""isCritical"": true
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
                             },
                             {
                               ""id"": 3,
@@ -127,14 +127,14 @@ namespace FuseBox
                           ""name"": ""Kitchen"",
                           ""area"": true,
                           ""rating"": 4,
-                          ""equipments"": [
+                          ""consumer"": [
                             {
                               ""id"": 4,
                               ""name"": ""Refrigerator"",
                               ""watt"": 800,
                               ""contactor"": false,
-                              ""separateRCD"": true,
-                              ""isCritical"": true
+                              ""separateRCD"": false,
+                              ""isCritical"": false
                             },
                             {
                               ""id"": 5,
@@ -148,9 +148,9 @@ namespace FuseBox
                               ""id"": 6,
                               ""name"": ""Oven"",
                               ""watt"": 2500,
-                              ""contactor"": true,
-                              ""separateRCD"": true,
-                              ""isCritical"": true
+                              ""contactor"": false,
+                              ""separateRCD"": false,
+                              ""isCritical"": false
                             }
                           ],
                           ""tPower"": 4500
@@ -164,7 +164,7 @@ namespace FuseBox
                           ""name"": ""Bedroom 1"",
                           ""area"": true,
                           ""rating"": 3,
-                          ""equipments"": [
+                          ""consumer"": [
                             {
                               ""id"": 7,
                               ""name"": ""Heater"",
@@ -188,21 +188,21 @@ namespace FuseBox
                           ""name"": ""Bathroom"",
                           ""area"": false,
                           ""rating"": 4,
-                          ""equipments"": [
+                          ""consumer"": [
                             {
                               ""id"": 9,
                               ""name"": ""Water Heater"",
                               ""watt"": 3000,
                               ""contactor"": true,
-                              ""separateRCD"": true,
-                              ""isCritical"": true
+                              ""separateRCD"": false,
+                              ""isCritical"": false
                             },
                             {
                               ""id"": 10,
                               ""name"": ""Hair Dryer"",
                               ""watt"": 1500,
                               ""contactor"": false,
-                              ""separateRCD"": true,
+                              ""separateRCD"": false,
                               ""isCritical"": false
                             }
                           ],
@@ -217,14 +217,14 @@ namespace FuseBox
                           ""name"": ""Office"",
                           ""area"": true,
                           ""rating"": 4,
-                          ""equipments"": [
+                          ""consumer"": [
                             {
                               ""id"": 11,
                               ""name"": ""Computer"",
                               ""watt"": 400,
                               ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": true
+                              ""separateRCD"": true,
+                              ""isCritical"": false
                             },
                             {
                               ""id"": 12,
