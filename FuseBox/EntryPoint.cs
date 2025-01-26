@@ -248,7 +248,7 @@ namespace FuseBox
                       ]
                     }
                   ]
-                }";                                                                   
+                }";
 
                 Project project = JsonConvert.DeserializeObject<Project>(jsonData);        // десериализация данных
 

@@ -229,11 +229,8 @@ namespace FuseBox
             // Создаем список всех АВ автоматов для оборудовния
             List<Fuse> AVFuses = new List<Fuse>();
 
-            // Создаем список входной группы устройств
-            List<Component> InputGroupOfModules = new List<Component>();
-
             // Делаем единый список модулей в Щите
-            List<Component> shieldModuleSet = new List<Component>(InputGroupOfModules);
+            List<Component> shieldModuleSet = new List<Component>();
 
             // Настройки опцыонных автоматов \\
             if (project.Shield.MainBreaker)
@@ -241,34 +238,33 @@ namespace FuseBox
                 // Если да, то добавляем 3 фазы + ноль
                 if (project.Shield.Main3PN)
                 {
-                    InputGroupOfModules.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, false, 35, false, false));
+                    shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, false, 35, false, false));
                 }
                 else
                 {
-                    InputGroupOfModules.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, false, 35, false, false));
+                    shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, false, 35, false, false));
                 }
-
             }
 
             if (project.Shield.SurgeProtection)
             {
-                InputGroupOfModules.Add(new Module("SPD", 100, 2, false, 65, false, "class 2"));
+                shieldModuleSet.Add(new Module("SPD", 100, 2, false, 65, false, "class 2"));
             }
 
             if (project.Shield.RailMeter)
             {
-                InputGroupOfModules.Add(new Module("DinRailMeter", 63, 6, false, 145, false, ""));
+                shieldModuleSet.Add(new Module("DinRailMeter", 63, 6, false, 145, false, ""));
             }
 
             if (project.Shield.FireUZO)
             {
-                InputGroupOfModules.Add(new RCDFire("RCDFire", 63, 2, false, 75, 300, false)); // УЗО часто критическое
+                shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, false, 75, 300, false)); // УЗО часто критическое
             }
 
             if (project.Shield.ModularContactor)
             {
-                InputGroupOfModules.Add(new Contactor());
-                InputGroupOfModules.Add(new Contactor());
+                shieldModuleSet.Add(new Contactor());
+                shieldModuleSet.Add(new Contactor());
             }
 
             // Проверяем наличие реле напряжения
@@ -276,38 +272,36 @@ namespace FuseBox
             {
                 if (project.Shield.ThreePRelay)
                 {
-                    InputGroupOfModules.Add(new Module("Three-Phase Relay", 16, 6, false, 60, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
+                    shieldModuleSet.Add(new Module("Three-Phase Relay", 16, 6, false, 60, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
 
                 }
                 else
                 {
-                    InputGroupOfModules.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
-                    InputGroupOfModules.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
-                    InputGroupOfModules.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
+                    shieldModuleSet.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
+                    shieldModuleSet.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
+                    shieldModuleSet.Add(new Module("VoltageRelay", 16, 2, false, 40, false, Convert.ToString(project.InitialSettings.VoltageStandard) + "v"));
                 }
-
             }
 
             // Проверяем наличие розетки на DIN-рейку
             if (project.Shield.RailSocket)
             {
-                InputGroupOfModules.Add(new Module("DinRailSocket", 16, 3, false, 22, false, "UK"));
+                shieldModuleSet.Add(new Module("DinRailSocket", 16, 3, false, 22, false, "UK"));
             }
 
             // Проверяем наличие общего выключателя
             if (project.Shield.LoadSwitch)
             {
-                InputGroupOfModules.Add(new Module("LoadSwitch", 63, 2, false, 35, false, "class 2"));
+                shieldModuleSet.Add(new Module("LoadSwitch", 63, 2, false, 35, false, "class 2"));
             }
 
             // Проверяем наличие кросс-модуля
             if (project.Shield.CrossModule)
             {
-                InputGroupOfModules.Add(new Module("CrossBlock", 100, 4, false, 25, false, "class 2")); // Кросс-блок может быть без номинала
+                shieldModuleSet.Add(new Module("CrossBlock", 100, 4, false, 25, false, "class 2")); // Кросс-блок может быть без номинала
             }
 
             // Настройки автоматов для техники \\
-
             // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
             if (AllConsumers.Any(e => e.Name.Equals("lighting", StringComparison.OrdinalIgnoreCase)))
             {
@@ -354,30 +348,30 @@ namespace FuseBox
             if (totalAmper <= 8)
             {
                 // Создаем УЗО
-                InputGroupOfModules.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
+                shieldModuleSet.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
 
                 // Добавляем созданые ранее АВ автоматы в список
                 foreach (var fuse in AVFuses)
                 {
-                    InputGroupOfModules.Add(fuse);
+                    shieldModuleSet.Add(fuse);
                 }
             }
             else if (totalAmper > 8 && totalAmper <= 16)
             {
-                InputGroupOfModules.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
+                shieldModuleSet.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
 
                 foreach (var fuse in AVFuses)
                 {
-                    InputGroupOfModules.Add(fuse);
+                    shieldModuleSet.Add(fuse);
                 }
             }
             else if (totalAmper > 16 && totalAmper <= 32)
             {
-                InputGroupOfModules.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
+                shieldModuleSet.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
 
                 foreach (var fuse in AVFuses)
                 {
-                    InputGroupOfModules.Add(fuse);
+                    shieldModuleSet.Add(fuse);
                 }
             }
             else
@@ -388,99 +382,184 @@ namespace FuseBox
 
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    InputGroupOfModules.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
+                    shieldModuleSet.Add(new RCD("RCD", 16, 2, false, 43, 2, false));
 
                     // Добавляем созданые ранее АВ автоматы в список
                     for (int ii = 0; ii < countABPerRCD && avIndex < AVFuses.Count - 1; ii++) // !!!
                     {
-                        InputGroupOfModules.Add(AVFuses[avIndex]);
+                        shieldModuleSet.Add(AVFuses[avIndex]);
                         avIndex++;
                     }
                 }
             }
 
-
             // Компоновка Щита по уровням...
-
-
-
-            // shieldModuleSet.AddRange(Fuses);
-
             ShieldByLevel(project, shieldModuleSet);
 
             return project.Shield;
         }
 
-        public List<Component> ShieldByLevel(Project project, List<Component> shieldModuleSet) // Логика распределения модулей по уровням
+        // Логика распределения модулей по уровням...
+        public void ShieldByLevel(Project project, List<Component> shieldModuleSet)
         {
 
-            // Логика распределения модулей по уровням
-
             double countOfSlots = 0;
-
             // Вычисляем общее количество слотов для Щитовой панели
             for (int i = 0; i < shieldModuleSet.Count; i++)
-            {
                 countOfSlots += shieldModuleSet[i].Slots;
-            }
 
             var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
 
-            // Инициализируем списки каждого уровня щита
+            // Инициализируем списки каждого уровня щита по ПЕРВИЧНЫМ ДАННЫМ (без учёта потенциальных пустых мест)
             for (int i = 0; i < countOfDINLevels; i++)
-            {
                 project.Shield.Fuses.Add(new List<Component>());
-            }
 
             project.Shield.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
-
-            int startPos = 0;
-            int endPos = 0;
             int occupiedSlots = 0;
             int currentLevel = 0;
-            int emptySlotsOnDINLevel = 0;
             int shieldWidth = project.InitialSettings.ShieldWidth;
 
             for (int i = 0; i < shieldModuleSet.Count; i++)
             {
-                occupiedSlots += (int)shieldModuleSet[i].Slots;
+                if (currentLevel >= project.Shield.Fuses.Count)
+                    project.Shield.Fuses.Add(new List<Component>()); // Добавляем новый уровень, если его ещё нет
 
-                if (occupiedSlots >= shieldWidth)
-                {
-                    if ((occupiedSlots > shieldWidth) && (occupiedSlots != shieldWidth))
-                    {
-                        emptySlotsOnDINLevel = shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots);
-                        shieldModuleSet.Insert(i, new Module("{empty space}", 0, emptySlotsOnDINLevel, false, 0, false, "")); // i-ый элемент становится i+1, а пустой - i-ым
-                        endPos = i + 1;
-                        project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-                        startPos = endPos;
-                        occupiedSlots = 0;
-                        currentLevel++;
-                        continue;
-                    }
-                    if (occupiedSlots == shieldWidth)
-                    {
-                        endPos = i + 1;
-                        project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-                        startPos = endPos;
-                        occupiedSlots = 0;
-                        currentLevel++;
-                    }
+                if (shieldModuleSet[i].Name == "RCD") // i-й элемент - УЗО, значит дальше автоматы, с ними связанные                
+                    IsRCDBlockFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);
 
-                }
-                if (i == shieldModuleSet.Count - 1 && occupiedSlots != shieldWidth)
-                {
-                    endPos = i + 1;
-                    project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-                    project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, ""));
-                    currentLevel++;
+                else // i-й элемент - другой модуль, значит применяется обычная логика                
+                    IsModuleFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);
 
-                }
-                if (currentLevel > countOfDINLevels) break;
-
+                if (occupiedSlots < shieldWidth && i == shieldModuleSet.Count - 1)
+                    project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, "empty space"));
             }
-            return shieldModuleSet;
         }
+
+        public static void IsRCDBlockFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
+        {
+            double rcdBlockSlots = shieldModuleSet[i].Slots;
+            int j = i + 1;
+            while (j < shieldModuleSet.Count && shieldModuleSet[j].Name?.StartsWith("AV") == true)
+            {
+                rcdBlockSlots += shieldModuleSet[j].Slots;
+                j++;
+            }
+
+            if (occupiedSlots + rcdBlockSlots > shieldWidth)
+            {
+                if (occupiedSlots < shieldWidth)
+                    project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, "empty space")); // Добавлена проверка на добавление доп. уровня ниже
+
+                occupiedSlots = 0;
+                currentLevel++;
+                if (currentLevel >= project.Shield.Fuses.Count)
+                    project.Shield.Fuses.Add(new List<Component>()); // Добавляем новый уровень, если его ещё нет                
+
+                for (int k = i; k < j; k++)
+                    project.Shield.Fuses[currentLevel].Add(shieldModuleSet[k]);
+
+                occupiedSlots += (int)rcdBlockSlots;
+            }
+            else
+            {
+                occupiedSlots += (int)rcdBlockSlots;
+                for (int k = i; k < j; k++)
+                    project.Shield.Fuses[currentLevel].Add(shieldModuleSet[k]);
+            }
+            i = j - 1; // Пропускаем обработанные AV
+        }
+        public static void IsModuleFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
+        {
+            occupiedSlots += (int)shieldModuleSet[i].Slots;
+            if (occupiedSlots < shieldWidth)                // место есть как для модуля, так и после него на уровне
+            {
+                project.Shield.Fuses[currentLevel].Add(shieldModuleSet[i]);
+            }
+            else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. Проверку и добавление уровней делать не надо!
+            {
+                project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots), false, 0, false, "empty space"));
+                currentLevel++;
+                occupiedSlots = (int)shieldModuleSet[i].Slots;
+                project.Shield.Fuses[currentLevel].Add(shieldModuleSet[i]);
+            }
+            else // Слотов на уровне аккурат равно длине шины
+            {
+                project.Shield.Fuses[currentLevel].Add(shieldModuleSet[i]);
+                currentLevel++;
+                occupiedSlots = 0;
+            }
+        }
+
+        //public List<Component> ShieldByLevel(Project project, List<Component> shieldModuleSet) // Логика распределения модулей по уровням
+        //{
+
+        //    // Логика распределения модулей по уровням
+
+        //    double countOfSlots = 0;
+
+        //    // Вычисляем общее количество слотов для Щитовой панели
+        //    for (int i = 0; i < shieldModuleSet.Count; i++)
+        //    {
+        //        countOfSlots += shieldModuleSet[i].Slots;
+        //    }
+
+        //    var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
+
+        //    // Инициализируем списки каждого уровня щита
+        //    for (int i = 0; i < countOfDINLevels; i++)
+        //    {
+        //        project.Shield.Fuses.Add(new List<Component>());
+        //    }
+
+        //    project.Shield.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
+
+        //    int startPos = 0;
+        //    int endPos = 0;
+        //    int occupiedSlots = 0;
+        //    int currentLevel = 0;
+        //    int emptySlotsOnDINLevel = 0;
+        //    int shieldWidth = project.InitialSettings.ShieldWidth;
+
+        //    for (int i = 0; i < shieldModuleSet.Count; i++)
+        //    {
+        //        occupiedSlots += (int)shieldModuleSet[i].Slots;
+
+        //        if (occupiedSlots >= shieldWidth)
+        //        {
+        //            if ((occupiedSlots > shieldWidth) && (occupiedSlots != shieldWidth))
+        //            {
+        //                emptySlotsOnDINLevel = shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots);
+        //                shieldModuleSet.Insert(i, new Module("{empty space}", 0, emptySlotsOnDINLevel, false, 0, false, "")); // i-ый элемент становится i+1, а пустой - i-ым
+        //                endPos = i + 1;
+        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //                startPos = endPos;
+        //                occupiedSlots = 0;
+        //                currentLevel++;
+        //                continue;
+        //            }
+        //            if (occupiedSlots == shieldWidth)
+        //            {
+        //                endPos = i + 1;
+        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //                startPos = endPos;
+        //                occupiedSlots = 0;
+        //                currentLevel++;
+        //            }
+
+        //        }
+        //        if (i == shieldModuleSet.Count - 1 && occupiedSlots != shieldWidth)
+        //        {
+        //            endPos = i + 1;
+        //            project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //            project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, ""));
+        //            currentLevel++;
+
+        //        }
+        //        if (currentLevel > countOfDINLevels) break;
+
+        //    }
+        //    return shieldModuleSet;
+        //}
 
         public List<Consumer> CalculateAllConsumers(Project project)
         {
