@@ -2,7 +2,7 @@
 
 namespace FuseBox
 {
-    public class Shield : BaseEntity
+    public class Shield// : BaseEntity
     {
         public bool MainBreaker { get; set; }
         public bool Main3PN { get; set; }
