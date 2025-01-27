@@ -13,10 +13,13 @@ namespace FuseBox.Controllers
         {
             try
             {
-                ConfigurationService configurationService = new ConfigurationService();
-                var pc = configurationService.GenerateConfiguration(input); // Эта часть уходин в игнор
+                if(input.InitialSettings.PhasesCount == 1 || input.InitialSettings.PhasesCount == 3) {
+                    ConfigurationService configurationService = new ConfigurationService();
+                    var pc = configurationService.GenerateConfiguration(input); // Эта часть уходин в игнор
 
-                return Ok(input.Shield.Fuses);                              // Вывожу только список предохранителей
+                    return Ok(input.Shield.Fuses);                              // Вывожу только список предохранителей
+                }
+                return BadRequest($"Wrong phases number (You entered {input.InitialSettings.PhasesCount}).");
             }
             catch (Exception ex)
             {

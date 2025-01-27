@@ -605,7 +605,7 @@ namespace FuseBox
     "Conditioners": 1
   },
   "initialSettings": {
-        "PhaseCount": 1,
+        "PhasesCount": 1,
     "MainAmperage": 25,
     "ShieldWidth": 16,
     "VoltageStandard": 220,

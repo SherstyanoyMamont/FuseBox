@@ -9,12 +9,12 @@ namespace FuseBox
         public int ShieldWidth { get; set; } // size 12, 16, 18
         public int VoltageStandard { get; set; } // 220 or 230
 
-        public InitialSettings()
-        {
-            PhasesCount = 1;
-            MainAmperage = 25;
-            ShieldWidth = 12;
-            VoltageStandard = 220;
-        }
+        //public InitialSettings()
+        //{
+        //    PhasesCount = 1;
+        //    MainAmperage = 25;
+        //    ShieldWidth = 12;
+        //    VoltageStandard = 220;
+        //}
     }
 }
