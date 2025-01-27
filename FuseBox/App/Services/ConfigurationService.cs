@@ -490,76 +490,6 @@ namespace FuseBox
             }
         }
 
-        //public List<Component> ShieldByLevel(Project project, List<Component> shieldModuleSet) // Логика распределения модулей по уровням
-        //{
-
-        //    // Логика распределения модулей по уровням
-
-        //    double countOfSlots = 0;
-
-        //    // Вычисляем общее количество слотов для Щитовой панели
-        //    for (int i = 0; i < shieldModuleSet.Count; i++)
-        //    {
-        //        countOfSlots += shieldModuleSet[i].Slots;
-        //    }
-
-        //    var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
-
-        //    // Инициализируем списки каждого уровня щита
-        //    for (int i = 0; i < countOfDINLevels; i++)
-        //    {
-        //        project.Shield.Fuses.Add(new List<Component>());
-        //    }
-
-        //    project.Shield.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
-
-        //    int startPos = 0;
-        //    int endPos = 0;
-        //    int occupiedSlots = 0;
-        //    int currentLevel = 0;
-        //    int emptySlotsOnDINLevel = 0;
-        //    int shieldWidth = project.InitialSettings.ShieldWidth;
-
-        //    for (int i = 0; i < shieldModuleSet.Count; i++)
-        //    {
-        //        occupiedSlots += (int)shieldModuleSet[i].Slots;
-
-        //        if (occupiedSlots >= shieldWidth)
-        //        {
-        //            if ((occupiedSlots > shieldWidth) && (occupiedSlots != shieldWidth))
-        //            {
-        //                emptySlotsOnDINLevel = shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots);
-        //                shieldModuleSet.Insert(i, new Module("{empty space}", 0, emptySlotsOnDINLevel, false, 0, false, "")); // i-ый элемент становится i+1, а пустой - i-ым
-        //                endPos = i + 1;
-        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-        //                startPos = endPos;
-        //                occupiedSlots = 0;
-        //                currentLevel++;
-        //                continue;
-        //            }
-        //            if (occupiedSlots == shieldWidth)
-        //            {
-        //                endPos = i + 1;
-        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-        //                startPos = endPos;
-        //                occupiedSlots = 0;
-        //                currentLevel++;
-        //            }
-
-        //        }
-        //        if (i == shieldModuleSet.Count - 1 && occupiedSlots != shieldWidth)
-        //        {
-        //            endPos = i + 1;
-        //            project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
-        //            project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, ""));
-        //            currentLevel++;
-
-        //        }
-        //        if (currentLevel > countOfDINLevels) break;
-
-        //    }
-        //    return shieldModuleSet;
-        //}
 
         public List<Consumer> CalculateAllConsumers(Project project)
         {
@@ -592,201 +522,200 @@ namespace FuseBox
 }
 
 
-/*
 
-{
-    "floorGrouping": {
-        "FloorGroupingP": true,
-        "separateUZO": true
-    },
-  "globalGrouping": {
-        "Sockets": 1,
-    "Lighting": 1,
-    "Conditioners": 1
-  },
-  "initialSettings": {
-        "PhaseCount": 1,
-    "MainAmperage": 25,
-    "ShieldWidth": 16,
-    "VoltageStandard": 220,
-    "PowerCoefficient": 1
-  },
-  "shield": {
-        "MainBreaker": true,
-    "Main3PN": false,
-    "SurgeProtection": true,
-    "LoadSwitch2P": true,
-    "ModularContactor": true,
-    "RailMeter": true,
-    "FireUZO": true,
-    "VoltageRelay": true,
-    "RailSocket": true,
-    "NDisconnectableLine": true,
-    "LoadSwitch": true,
-    "CrossModule": true,
-    "DINLines": 1
-  },
-    "floor": [
-      {
-        "Name": "Ground Floor",
-      "room": [
-        {
-            "Name": "Living Room",
-          "area": true,
-          "rating": 5,
-          "Consumer": [
-            {
-                "Id": 1,
-              "name": "TV",
-              "watt": 150,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": false
-            },
-            {
-                "Id": 2,
-              "name": "Air Conditioner",
-              "watt": 2000,
-              "contactor": true,
-              "separateRCD": true,
-              "isCritical": true
-            },
-            {
-                "Id": 3,
-              "name": "Lighting",
-              "watt": 300,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": false
-            }
-          ],
-          "tPower": 2450
-        },
-        {
-            "name": "Kitchen",
-          "area": true,
-          "rating": 4,
-          "Consumer": [
-            {
-                "Id": 4,
-              "name": "Refrigerator",
-              "watt": 800,
-              "contactor": false,
-              "separateRCD": true,
-              "isCritical": true
-            },
-            {
-                "Id": 5,
-              "name": "Microwave",
-              "watt": 1200,
-              "contactor": false,
-              "separateRCD": true,
-              "isCritical": false
-            },
-            {
-                "Id": 6,
-              "name": "Oven",
-              "watt": 2500,
-              "contactor": true,
-              "separateRCD": true,
-              "isCritical": true
-            }
-          ],
-          "tPower": 4500
-        }
-      ]
-    },
-    {
-        "Name": "First Floor",
-      "room": [
-        {
-            "name": "Bedroom 1",
-          "area": true,
-          "rating": 3,
-          "Consumer": [
-            {
-                "id": 7,
-              "name": "Heater",
-              "watt": 1000,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": true
-            },
-            {
-                "id": 8,
-              "name": "Fan",
-              "watt": 100,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": false
-            }
-          ],
-          "tPower": 1100
-        },
-        {
-            "name": "Bathroom",
-          "area": false,
-          "rating": 4,
-          "Consumer": [
-            {
-                "id": 9,
-              "name": "Water Heater",
-              "watt": 3000,
-              "contactor": true,
-              "separateRCD": true,
-              "isCritical": true
-            },
-            {
-                "id": 10,
-              "name": "Hair Dryer",
-              "watt": 1500,
-              "contactor": false,
-              "separateRCD": true,
-              "isCritical": false
-            }
-          ],
-          "tPower": 4500
-        }
-      ]
-    },
-    {
-        "Name": "Second Floor",
-      "room": [
-        {
-            "name": "Office",
-          "area": true,
-          "rating": 4,
-          "Consumer": [
-            {
-                "id": 11,
-              "name": "Computer",
-              "watt": 400,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": true
-            },
-            {
-                "id": 12,
-              "name": "Printer",
-              "watt": 200,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": false
-            },
-            {
-                "id": 13,
-              "name": "Lighting",
-              "watt": 300,
-              "contactor": false,
-              "separateRCD": false,
-              "isCritical": false
-            }
-          ],
-          "tPower": 900
-        }
-      ]
-    }
-  ]
-}
 
-*/
+//{
+//    "floorGrouping": {
+//        "FloorGroupingP": true,
+//        "separateUZO": true
+//    },
+//  "globalGrouping": {
+//        "Sockets": 1,
+//    "Lighting": 1,
+//    "Conditioners": 1
+//  },
+//  "initialSettings": {
+//        "PhaseCount": 1,
+//    "MainAmperage": 25,
+//    "ShieldWidth": 16,
+//    "VoltageStandard": 220,
+//    "PowerCoefficient": 1
+//  },
+//  "shield": {
+//        "MainBreaker": true,
+//    "Main3PN": false,
+//    "SurgeProtection": true,
+//    "LoadSwitch2P": true,
+//    "ModularContactor": true,
+//    "RailMeter": true,
+//    "FireUZO": true,
+//    "VoltageRelay": true,
+//    "RailSocket": true,
+//    "NDisconnectableLine": true,
+//    "LoadSwitch": true,
+//    "CrossModule": true,
+//    "DINLines": 1
+//  },
+//    "floors": [
+//      {
+//        "floorName": "Ground Floor",
+//      "rooms": [
+//        {
+//            "name": "Living Room",
+//          "area": true,
+//          "rating": 5,
+//          "Consumer": [
+//            {
+//                "Id": 1,
+//              "name": "TV",
+//              "watt": 150,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": false
+//            },
+//            {
+//                "Id": 2,
+//              "name": "Air Conditioner",
+//              "watt": 2000,
+//              "contactor": true,
+//              "separateRCD": true,
+//              "isCritical": true
+//            },
+//            {
+//                "Id": 3,
+//              "name": "Lighting",
+//              "watt": 300,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": false
+//            }
+//          ],
+//          "tPower": 2450
+//        },
+//        {
+//            "name": "Kitchen",
+//          "area": true,
+//          "rating": 4,
+//          "Consumer": [
+//            {
+//                "Id": 4,
+//              "name": "Refrigerator",
+//              "watt": 800,
+//              "contactor": false,
+//              "separateRCD": true,
+//              "isCritical": true
+//            },
+//            {
+//                "Id": 5,
+//              "name": "Microwave",
+//              "watt": 1200,
+//              "contactor": false,
+//              "separateRCD": true,
+//              "isCritical": false
+//            },
+//            {
+//                "Id": 6,
+//              "name": "Oven",
+//              "watt": 2500,
+//              "contactor": true,
+//              "separateRCD": true,
+//              "isCritical": true
+//            }
+//          ],
+//          "tPower": 4500
+//        }
+//      ]
+//    },
+//    {
+//        "floorName": "First Floor",
+//      "rooms": [
+//        {
+//            "name": "Bedroom 1",
+//          "area": true,
+//          "rating": 3,
+//          "Consumer": [
+//            {
+//                "id": 7,
+//              "name": "Heater",
+//              "watt": 1000,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": true
+//            },
+//            {
+//                "id": 8,
+//              "name": "Fan",
+//              "watt": 100,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": false
+//            }
+//          ],
+//          "tPower": 1100
+//        },
+//        {
+//            "name": "Bathroom",
+//          "area": false,
+//          "rating": 4,
+//          "Consumer": [
+//            {
+//                "id": 9,
+//              "name": "Water Heater",
+//              "watt": 3000,
+//              "contactor": true,
+//              "separateRCD": true,
+//              "isCritical": true
+//            },
+//            {
+//                "id": 10,
+//              "name": "Hair Dryer",
+//              "watt": 1500,
+//              "contactor": false,
+//              "separateRCD": true,
+//              "isCritical": false
+//            }
+//          ],
+//          "tPower": 4500
+//        }
+//      ]
+//    },
+//    {
+//        "floorName": "Second Floor",
+//      "rooms": [
+//        {
+//            "name": "Office",
+//          "area": true,
+//          "rating": 4,
+//          "Consumer": [
+//            {
+//                "id": 11,
+//              "name": "Computer",
+//              "watt": 400,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": true
+//            },
+//            {
+//                "id": 12,
+//              "name": "Printer",
+//              "watt": 200,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": false
+//            },
+//            {
+//                "id": 13,
+//              "name": "Lighting",
+//              "watt": 300,
+//              "contactor": false,
+//              "separateRCD": false,
+//              "isCritical": false
+//            }
+//          ],
+//          "tPower": 900
+//        }
+//      ]
+//    }
+//  ]
+//}
+
