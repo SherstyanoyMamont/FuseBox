@@ -1,24 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using FuseBox.App.Interfaces;
+using Newtonsoft.Json;
 
 namespace FuseBox
 {
     public class Introductory : Component
     {
-        private bool _isDependentOption;
-
-        [JsonProperty(Order = 8)]
-        public bool Type3PN { get; set; }
-
-
-        public Introductory(string? name, int amper, int slots, bool isCritical, int price, bool type3PN, bool phases3)
+        public enum Type3PN 
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
-            Phases3 = phases3;
-            Type3PN = type3PN;
+            P1,
+            P3,
+            P3_N
+        }
+
+        public Introductory(string name, int amper, int slots, int poles, decimal price, string type3PN) : base(name, amper, slots, poles, price)
+        {
+            Type3PN type3PN1 = new Type3PN();
+
         }
     }
 }

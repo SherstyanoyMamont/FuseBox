@@ -1,24 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
+using Newtonsoft.Json;
+using static System.Reflection.Metadata.BlobBuilder;
+using System.Xml.Linq;
 
 namespace FuseBox
 {
-    public class Contactor : Component
+    public class Contactor : Component, IHasConsumer
     {
-        //[JsonProperty(Order = 8)]
-        //public List<Consumer> Consumers { get; set; } = new(); // List of Equipment
-
-        [JsonProperty(Order = 9)]
-        public List<Component> Components { get; set; } = new(); // List of Equipment
-
-        public Contactor() //List<Consumer> consumers
+        public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
+        public Contactor(string name, int amper, int slots, int poles, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, poles, price)
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
-            Name = "Contactor";
-            Amper = 16;
-            Slots = 2;
-            Price = 50;
-            Phases3 = false;
-            // Consumers = consumers;
+            Electricals = electricals;
         }
     }
 }

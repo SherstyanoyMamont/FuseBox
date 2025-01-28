@@ -1,21 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
+using Newtonsoft.Json;
 
 namespace FuseBox
 {
-    public class Fuse : Component
+    public class Fuse : Component, IHasConsumer
     {
         [JsonProperty(Order = 8)]
-        public List<Consumer> Consumers { get; set; } = new(); // List of Equipment
+        public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
 
-        public Fuse(string? name, int amper, int slots, bool isCritical, int price, bool phases) //List<Consumer> consumers
+        public Fuse(string name, int amper, int slots, int poles, decimal price/*, List<BaseElectrical> electricals*/) : base(name, amper, slots, poles, price)
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
-            Phases3 = phases;
-            // Consumers = consumers;
+            /*Electricals = electricals;*/
         }
     }
 }

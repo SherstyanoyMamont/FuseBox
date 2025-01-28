@@ -13,10 +13,10 @@ namespace FuseBox.Controllers
         {
             try
             {
-                ConfigurationService configurationService = new ConfigurationService();
-                var pc = configurationService.GenerateConfiguration(input); // Эта часть уходин в игнор
+                ConfigurationService configurationService = new ConfigurationService();   // Создаю объект сервиса
+                configurationService.GenerateConfiguration(input);                        // Модифицирую конфигурацию входного объекта
 
-                return Ok(input.Shield.Fuses);                              // Вывожу только список предохранителей
+                return Ok(input.FuseBox.Components);                                            // Вывожу только список предохранителей
             }
             catch (Exception ex)
             {

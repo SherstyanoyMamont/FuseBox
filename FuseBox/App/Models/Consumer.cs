@@ -1,11 +1,9 @@
-﻿namespace FuseBox
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
+
+namespace FuseBox
 {
-    public class Consumer : BaseEntity
+    public class Consumer : BaseElectrical, IZone
     {
-        public int Watt { get; set; }
-        // public bool Contactor { get; set; }   // Connected to contactor?
-        public bool SeparateRCD { get; set; } // Separate RCD?
-        public bool IsCritical { get; set; }  // Critical line (non-switchable)
-        public bool Area { get; set; }        // "Dry" or "Wet"
     }
 }

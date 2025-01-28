@@ -2,17 +2,15 @@
 
 namespace FuseBox
 {
-    public class RCDFire : BaseRCD
+    public class RCDFire : Component
     {
-        public RCDFire(string? name, int amper, int slots, bool isCritical, int price, int capacity, bool phases3)
+
+        [JsonProperty(Order = 8)]
+        public int Capacity { get; set; }
+
+        public RCDFire(int capacity, string name, int amper, int slots, int poles, decimal price) : base(name, amper, slots, poles, price)
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
             Capacity = capacity;
-            Phases3 = phases3;
         }
     }
 }

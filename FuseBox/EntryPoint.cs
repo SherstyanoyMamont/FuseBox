@@ -5,14 +5,13 @@ using System.Text;
 
 namespace FuseBox
 {
-
     internal class EntryPoint
     {
         //public static void Main(string[] args)
         static void Main(string[] args)
         {
             // testing switch
-            if (false)
+            if (true)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -54,6 +53,7 @@ namespace FuseBox
                 Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
                 ConfigurationService configurationService = new ConfigurationService();       // создание экземпляра сервиса конфигурации
 
+                // JSON-строка с данными о проекте
                 string jsonData = @"
                 {
                   ""floorGrouping"": {
@@ -72,7 +72,7 @@ namespace FuseBox
                     ""VoltageStandard"": 220,
                     ""PowerCoefficient"": 1
                   },
-                  ""shield"": {
+                  ""FuseBox"": {
                     ""MainBreaker"": true,
                     ""Main3PN"": false,
                     ""SurgeProtection"": true,
@@ -85,165 +85,120 @@ namespace FuseBox
                     ""NDisconnectableLine"": true,
                     ""LoadSwitch"": true,
                     ""CrossModule"": true,
-                    ""DINLines"": 1
+                    ""DINLines"": 3,
+                    ""Price"": 1000,
                   },
                     ""floors"": [
                       {
-                      ""floorName"": ""Ground Floor"",
+                      ""Id"": 1,
+                      ""Name"": ""Ground Floor"",
                       ""rooms"": [
                         {
                           ""name"": ""Living Room"",
-                          ""area"": false,
-                          ""rating"": 5,
-                          ""consumer"": [
+                          ""Consumer"": [
                             {
                               ""id"": 1,
                               ""name"": ""TV"",
-                              ""watt"": 150,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 1,
                             },
                             {
                               ""id"": 2,
                               ""name"": ""Air Conditioner"",
-                              ""watt"": 2000,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 8,
                             },
                             {
                               ""id"": 3,
                               ""name"": ""Lighting"",
-                              ""watt"": 300,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 1,
                             }
                           ],
-                          ""tPower"": 2450
+                          ""tPower"": 10
                         },
                         {
                           ""name"": ""Kitchen"",
-                          ""area"": true,
-                          ""rating"": 4,
-                          ""consumer"": [
+                          ""Consumer"": [
                             {
                               ""id"": 4,
                               ""name"": ""Refrigerator"",
-                              ""watt"": 800,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 3,
                             },
                             {
                               ""id"": 5,
                               ""name"": ""Microwave"",
-                              ""watt"": 1200,
-                              ""contactor"": false,
-                              ""separateRCD"": true,
-                              ""isCritical"": false
+                              ""Amper"": 5,
                             },
                             {
                               ""id"": 6,
                               ""name"": ""Oven"",
-                              ""watt"": 2500,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 7,
                             }
                           ],
-                          ""tPower"": 4500
+                          ""tPower"": 15
                         }
                       ]
                     },
                     {
-                      ""floorName"": ""First Floor"",
+                      ""Id"": 2,
+                      ""Name"": ""First Floor"",
                       ""rooms"": [
                         {
                           ""name"": ""Bedroom 1"",
-                          ""area"": true,
-                          ""rating"": 3,
-                          ""consumer"": [
+                          ""Consumer"": [
                             {
                               ""id"": 7,
                               ""name"": ""Heater"",
-                              ""watt"": 1000,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": true
+                              ""Amper"": 4,
                             },
                             {
                               ""id"": 8,
                               ""name"": ""Fan"",
-                              ""watt"": 100,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 1,
                             }
                           ],
-                          ""tPower"": 1100
+                          ""tPower"": 5
                         },
                         {
                           ""name"": ""Bathroom"",
-                          ""area"": false,
-                          ""rating"": 4,
-                          ""consumer"": [
+                          ""Consumer"": [
                             {
                               ""id"": 9,
                               ""name"": ""Water Heater"",
-                              ""watt"": 3000,
-                              ""contactor"": true,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 13,
                             },
                             {
                               ""id"": 10,
                               ""name"": ""Hair Dryer"",
-                              ""watt"": 1500,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 7,
                             }
                           ],
-                          ""tPower"": 4500
+                          ""tPower"": 20
                         }
                       ]
                     },
                     {
-                      ""floorName"": ""Second Floor"",
+                      ""Id"": 3,      
+                      ""Name"": ""Second Floor"",
                       ""rooms"": [
                         {
                           ""name"": ""Office"",
-                          ""area"": true,
-                          ""rating"": 4,
-                          ""consumer"": [
+                          ""Consumer"": [
                             {
                               ""id"": 11,
                               ""name"": ""Computer"",
-                              ""watt"": 400,
-                              ""contactor"": false,
-                              ""separateRCD"": true,
-                              ""isCritical"": false
+                              ""Amper"": 2,
                             },
                             {
                               ""id"": 12,
                               ""name"": ""Printer"",
-                              ""watt"": 200,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 1,
                             },
                             {
                               ""id"": 13,
                               ""name"": ""Lighting"",
-                              ""watt"": 300,
-                              ""contactor"": false,
-                              ""separateRCD"": false,
-                              ""isCritical"": false
+                              ""Amper"": 2,
                             }
                           ],
-                          ""tPower"": 900
+                          ""tPower"": 40
                         }
                       ]
                     }

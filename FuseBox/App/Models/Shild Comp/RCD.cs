@@ -1,22 +1,21 @@
-﻿using Newtonsoft.Json;
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
+using Newtonsoft.Json;
+using System.Xml.Linq;
 
 namespace FuseBox
 {
-    public class RCD : BaseRCD
+    public class RCD : Component, IHasConsumer
     {
-        [JsonProperty(Order = 9)]
-        public List<Fuse> FusesGroup { get; set; } = new(); // List of Equipment
+        public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
 
-        public RCD(string? name, int amper, int slots, bool isCritical, int price, int capacity, bool phases3) // List<Fuse> fusesGroup,
+        [JsonProperty(Order = 8)]
+        public int Capacity { get; set; }
+
+        public RCD(string name, int amper, int slots, int poles, decimal price, int capacity/*, List<BaseElectrical> electricals*/) : base(name, amper, slots, poles, price) // List<Electricals> electricals,
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
             Capacity = capacity;
-            // FusesGroup = fusesGroup;
-            Phases3 = phases3;
+            /*Electricals = electricals;*/
         }
     }
 }

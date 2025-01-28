@@ -1,24 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
+using Newtonsoft.Json;
 
 namespace FuseBox
 {
-    public abstract class Component : BaseEntity
+    public class Component : BaseElectrical, IPricedComponent // Abstract?
     {
         public static int _idCounter = 0; // Static counter for all objects of this class
-
-        [JsonProperty(Order = 3)]
-        public int Amper { get; set; }
 
         [JsonProperty(Order = 4)]
         public int Slots { get; set; }
 
-        [JsonProperty(Order = 5)]
-        public decimal Price { get; set; }
-
         [JsonProperty(Order = 6)]
         public int Poles { get; set; }
+        public decimal Price { get; set; }
 
-        [JsonProperty(Order = 7)]
-        public bool Phases3 { get; set; }
+        public Component(string name, int amper, int slots, int poles, decimal price)
+        {
+            Id = ++_idCounter; // Increment the counter and assign the ID
+            Name = name;
+            Amper = amper;
+            Slots = slots;
+            Poles = poles;
+            Price = price;
+        }
     }
 }
