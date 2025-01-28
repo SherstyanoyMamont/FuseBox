@@ -5,17 +5,17 @@
   },
   "Nodes": [
     {
-      "Id": "1",
+      "Id": "3",
       "Name": "FuseBox",
       "Stereotype": "Namespace",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5326046Z",
-      "AbsoluteTopLeft": "-1208.5318,-875.0932",
-      "HeaderContentSize": "1334.4413,27",
+      "CreatedAtUtc": "2025-01-28T13:31:00.4936279Z",
+      "AbsoluteTopLeft": "-1835.2799,-920.7196",
+      "HeaderContentSize": "1709.4644,27",
       "PreferredHeaderSize": "139.4367,27",
       "Tooltip": "namespace FuseBox\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "1334.4413,1574.9988",
+      "NodeTotalSize": "1709.4644,1042.8967",
       "ChildrenAreaTopLeft": "1,27",
-      "ChildrenAreaSize": "1332.4413,1546.9988",
+      "ChildrenAreaSize": "1707.4644,1014.8967",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynNamespace",
@@ -32,18 +32,16 @@
       }
     },
     {
-      "Id": "2",
-      "ParentId": "1",
+      "Id": "4",
+      "ParentId": "3",
       "Name": "FloorGrouping",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5326046Z",
-      "AbsoluteTopLeft": "-121.8949,-568.5439",
-      "HeaderContentSize": "187.83,50",
+      "CreatedAtUtc": "2025-01-28T13:31:00.4936279Z",
+      "AbsoluteTopLeft": "-1799.3991,-377.9002",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "93.4967,39.4",
       "Tooltip": "class FuseBox.FloorGrouping\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "187.83,97",
-      "ChildrenAreaTopLeft": "1,50",
-      "ChildrenAreaSize": "185.83,46",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -58,66 +56,16 @@
       }
     },
     {
-      "Id": "20",
-      "ParentId": "2",
-      "Name": "bool IndividualFloorGrouping",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:21.0575358Z",
-      "AbsoluteTopLeft": "-120.8949,-518.5439",
-      "HeaderContentSize": "185.83,23",
-      "PreferredHeaderSize": "185.83,23",
-      "Tooltip": "public bool IndividualFloorGrouping { get; set; }",
-      "NodeTotalSize": "185.83,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "IndividualFloorGrouping",
-        "FullName": "public bool IndividualFloorGrouping { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"IndividualFloorGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "21",
-      "ParentId": "2",
-      "Name": "bool SeparateUZOPerFloor",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:22.7178419Z",
-      "AbsoluteTopLeft": "-120.8949,-495.5439",
-      "HeaderContentSize": "185.83,23",
-      "PreferredHeaderSize": "171.6,23",
-      "Tooltip": "public bool SeparateUZOPerFloor { get; set; }",
-      "NodeTotalSize": "185.83,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "SeparateUZOPerFloor",
-        "FullName": "public bool SeparateUZOPerFloor { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"SeparateUZOPerFloor\",\"C\":{\"K\":\"NamedType\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "3",
-      "ParentId": "1",
+      "Id": "5",
+      "ParentId": "3",
       "Name": "GlobalGrouping",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5336039Z",
-      "AbsoluteTopLeft": "-121.5998,-441.5439",
-      "HeaderContentSize": "189.1245,52.5669",
+      "CreatedAtUtc": "2025-01-28T13:31:00.4976313Z",
+      "AbsoluteTopLeft": "-1788.4879,-490.4318",
+      "HeaderContentSize": "100.8633,50",
       "PreferredHeaderSize": "100.8633,39.4",
       "Tooltip": "class FuseBox.GlobalGrouping\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "189.1245,122.5669",
-      "ChildrenAreaTopLeft": "1,52.5669",
-      "ChildrenAreaSize": "187.1245,69",
+      "NodeTotalSize": "100.8633,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -132,90 +80,16 @@
       }
     },
     {
-      "Id": "22",
+      "Id": "6",
       "ParentId": "3",
-      "Name": "int Conditioners",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:25.7899296Z",
-      "AbsoluteTopLeft": "-120.5998,-388.977",
-      "HeaderContentSize": "187.1245,23",
-      "PreferredHeaderSize": "114.61,23",
-      "Tooltip": "public int Conditioners { get; set; }",
-      "NodeTotalSize": "187.1245,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Conditioners",
-        "FullName": "public int Conditioners { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Conditioners\",\"C\":{\"K\":\"NamedType\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "23",
-      "ParentId": "3",
-      "Name": "int Lighting",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:26.7028235Z",
-      "AbsoluteTopLeft": "-120.5998,-365.977",
-      "HeaderContentSize": "187.1245,23",
-      "PreferredHeaderSize": "90.2933,23",
-      "Tooltip": "public int Lighting { get; set; }",
-      "NodeTotalSize": "187.1245,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Lighting",
-        "FullName": "public int Lighting { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Lighting\",\"C\":{\"K\":\"NamedType\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "24",
-      "ParentId": "3",
-      "Name": "int Sockets",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:27.4046481Z",
-      "AbsoluteTopLeft": "-120.5998,-342.977",
-      "HeaderContentSize": "187.1245,23",
-      "PreferredHeaderSize": "87.3967,23",
-      "Tooltip": "public int Sockets { get; set; }",
-      "NodeTotalSize": "187.1245,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Sockets",
-        "FullName": "public int Sockets { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Sockets\",\"C\":{\"K\":\"NamedType\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "4",
-      "ParentId": "1",
       "Name": "InitialSettings",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5336039Z",
-      "AbsoluteTopLeft": "-124.6262,-288.977",
-      "HeaderContentSize": "189.8195,54.492",
+      "CreatedAtUtc": "2025-01-28T13:31:00.4996271Z",
+      "AbsoluteTopLeft": "-1780.1888,-573.9411",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "89.36,39.4",
       "Tooltip": "class FuseBox.InitialSettings\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "189.8195,147.492",
-      "ChildrenAreaTopLeft": "1,54.492",
-      "ChildrenAreaSize": "187.8195,92",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -230,147 +104,23 @@
       }
     },
     {
-      "Id": "25",
-      "ParentId": "4",
-      "Name": "int MainAmperage",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:29.1271424Z",
-      "AbsoluteTopLeft": "-123.6262,-234.485",
-      "HeaderContentSize": "187.8195,23",
-      "PreferredHeaderSize": "128.66,23",
-      "Tooltip": "public int MainAmperage { get; set; }",
-      "NodeTotalSize": "187.8195,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "MainAmperage",
-        "FullName": "public int MainAmperage { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"MainAmperage\",\"C\":{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "26",
-      "ParentId": "4",
-      "Name": "int PhasesCount",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:29.8154179Z",
-      "AbsoluteTopLeft": "-123.6262,-211.485",
-      "HeaderContentSize": "187.8195,23",
-      "PreferredHeaderSize": "115.2367,23",
-      "Tooltip": "public int PhasesCount { get; set; }",
-      "NodeTotalSize": "187.8195,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "PhasesCount",
-        "FullName": "public int PhasesCount { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"PhasesCount\",\"C\":{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "27",
-      "ParentId": "4",
-      "Name": "int ShieldWidth",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:30.3655345Z",
-      "AbsoluteTopLeft": "-123.6262,-188.485",
-      "HeaderContentSize": "187.8195,23",
-      "PreferredHeaderSize": "111.41,23",
-      "Tooltip": "public int ShieldWidth { get; set; }",
-      "NodeTotalSize": "187.8195,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "ShieldWidth",
-        "FullName": "public int ShieldWidth { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"ShieldWidth\",\"C\":{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "28",
-      "ParentId": "4",
-      "Name": "int VoltageStandard",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:32:32.5863562Z",
-      "AbsoluteTopLeft": "-123.6262,-165.485",
-      "HeaderContentSize": "187.8195,23",
-      "PreferredHeaderSize": "134.5567,23",
-      "Tooltip": "public int VoltageStandard { get; set; }",
-      "NodeTotalSize": "187.8195,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "VoltageStandard",
-        "FullName": "public int VoltageStandard { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"VoltageStandard\",\"C\":{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "7",
-      "ParentId": "1",
-      "Name": "FuseBox.App.Models",
-      "Stereotype": "Namespace",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5336039Z",
-      "AbsoluteTopLeft": "-1131.422,-774.4908",
-      "HeaderContentSize": "205.6333,27",
-      "PreferredHeaderSize": "205.6333,27",
-      "Tooltip": "namespace FuseBox.App.Models\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "205.6333,118",
-      "ChildrenAreaTopLeft": "1,27",
-      "ChildrenAreaSize": "203.6333,90",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "RoslynNamespace",
-        "SymbolName": "Models",
-        "FullyQualifiedName": "FuseBox.App.Models",
-        "FullName": "namespace FuseBox.App.Models",
-        "Symbols": [
-          "{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode",
-        "NamespaceLevel": 3
-      }
-    },
-    {
       "Id": "8",
-      "ParentId": "7",
-      "Name": "Class",
+      "ParentId": "3",
+      "Name": "Cabel",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-1054.5315,-727.4908",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5006272Z",
+      "AbsoluteTopLeft": "-1173.2944,-398.7194",
       "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
-      "Tooltip": "class FuseBox.App.Models.Class\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Tooltip": "class FuseBox.App.Models.Shild_Comp.Cabel\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
-        "SymbolName": "Class",
-        "FullName": "class FuseBox.App.Models.Class",
+        "SymbolName": "Cabel",
+        "FullName": "class FuseBox.App.Models.Shild_Comp.Cabel",
         "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Class\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+          "{\"K\":\"NamedType\",\"N\":\"Cabel\",\"C\":{\"K\":\"Namespace\",\"N\":\"Shild_Comp\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -379,17 +129,187 @@
     },
     {
       "Id": "9",
-      "ParentId": "1",
+      "ParentId": "3",
+      "Name": "Component",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5016295Z",
+      "AbsoluteTopLeft": "-676.3092,-544.121",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "77.2767,39.4",
+      "Tooltip": "class FuseBox.Component\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "Component",
+        "FullName": "class FuseBox.Component",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "12",
+      "ParentId": "3",
+      "Name": "Introductory",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5016295Z",
+      "AbsoluteTopLeft": "-633.2009,-334.1209",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "82.9233,39.4",
+      "Tooltip": "class FuseBox.Introductory\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "Introductory",
+        "FullName": "class FuseBox.Introductory",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"Introductory\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "13",
+      "ParentId": "3",
+      "Name": "RCD",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5026270Z",
+      "AbsoluteTopLeft": "-496.0253,-334.143",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "57,39.4",
+      "Tooltip": "class FuseBox.RCD\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "RCD",
+        "FullName": "class FuseBox.RCD",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"RCD\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "14",
+      "ParentId": "3",
+      "Name": "RCDFire",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5026270Z",
+      "AbsoluteTopLeft": "-355.7746,-339.2685",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "57,39.4",
+      "Tooltip": "class FuseBox.RCDFire\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "RCDFire",
+        "FullName": "class FuseBox.RCDFire",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"RCDFire\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "16",
+      "ParentId": "3",
+      "Name": "BaseElectrical",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5036272Z",
+      "AbsoluteTopLeft": "-682.4996,-652.4016",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "88.9233,39.4",
+      "Tooltip": "class FuseBox.App.Models.BaseElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,74",
+      "ChildrenAreaTopLeft": "1,50",
+      "ChildrenAreaSize": "98,23",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "BaseElectrical",
+        "FullName": "class FuseBox.App.Models.BaseElectrical",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "IsAbstract": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "31",
+      "ParentId": "16",
+      "Name": "int Amper",
+      "Stereotype": "Property",
+      "CreatedAtUtc": "2025-01-28T13:59:41.5619824Z",
+      "AbsoluteTopLeft": "-681.4996,-602.4016",
+      "HeaderContentSize": "98,23",
+      "PreferredHeaderSize": "82.63,23",
+      "Tooltip": "public int Amper { get; set; }",
+      "NodeTotalSize": "98,23",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "Other",
+        "SymbolName": "Amper",
+        "FullName": "public int Amper { get; set; }",
+        "Symbols": [
+          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "17",
+      "ParentId": "3",
+      "Name": "BaseEntity",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5036272Z",
+      "AbsoluteTopLeft": "-1145.8248,-823.983",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "70.1967,39.4",
+      "Tooltip": "class FuseBox.BaseEntity\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "BaseEntity",
+        "FullName": "class FuseBox.BaseEntity",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"BaseEntity\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "IsAbstract": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "18",
+      "ParentId": "3",
       "Name": "Consumer",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-612.4097,394.7233",
-      "HeaderContentSize": "187.2742,64.8835",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5036272Z",
+      "AbsoluteTopLeft": "-1556.4881,-171.4024",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "67.8867,39.4",
       "Tooltip": "class FuseBox.Consumer\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "187.2742,203.8835",
-      "ChildrenAreaTopLeft": "1,64.8835",
-      "ChildrenAreaSize": "185.2742,138",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -404,162 +324,16 @@
       }
     },
     {
-      "Id": "45",
-      "ParentId": "9",
-      "Name": "int Id",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:35.8745401Z",
-      "AbsoluteTopLeft": "-611.4097,459.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "57.31,23",
-      "Tooltip": "public int Id { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Id",
-        "FullName": "public int Id { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Id\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "46",
-      "ParentId": "9",
-      "Name": "string? Name",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:37.5456045Z",
-      "AbsoluteTopLeft": "-611.4097,482.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "100.46,23",
-      "Tooltip": "public string? Name { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Name",
-        "FullName": "public string? Name { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Name\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "47",
-      "ParentId": "9",
-      "Name": "bool Contactor",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:40.7426442Z",
-      "AbsoluteTopLeft": "-611.4097,505.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "109.5433,23",
-      "Tooltip": "public bool Contactor { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Contactor",
-        "FullName": "public bool Contactor { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Contactor\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "48",
-      "ParentId": "9",
-      "Name": "bool IsCritical",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:41.6712478Z",
-      "AbsoluteTopLeft": "-611.4097,528.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "101.6333,23",
-      "Tooltip": "public bool IsCritical { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "IsCritical",
-        "FullName": "public bool IsCritical { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"IsCritical\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "49",
-      "ParentId": "9",
-      "Name": "bool SeparateRCD",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:42.5542812Z",
-      "AbsoluteTopLeft": "-611.4097,551.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "126.59,23",
-      "Tooltip": "public bool SeparateRCD { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "SeparateRCD",
-        "FullName": "public bool SeparateRCD { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"SeparateRCD\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "50",
-      "ParentId": "9",
-      "Name": "int Watt",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:43.6481860Z",
-      "AbsoluteTopLeft": "-611.4097,574.6068",
-      "HeaderContentSize": "185.2742,23",
-      "PreferredHeaderSize": "72.03,23",
-      "Tooltip": "public int Watt { get; set; }",
-      "NodeTotalSize": "185.2742,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Watt",
-        "FullName": "public int Watt { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Watt\",\"C\":{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "10",
-      "ParentId": "1",
+      "Id": "19",
+      "ParentId": "3",
       "Name": "Floor",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-485.006,-249.1125",
-      "HeaderContentSize": "182.4007,58.2028",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
+      "AbsoluteTopLeft": "-1556.5292,-399.9908",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
       "Tooltip": "class FuseBox.Floor\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "182.4007,128.2028",
-      "ChildrenAreaTopLeft": "1,58.2028",
-      "ChildrenAreaSize": "180.4007,69",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -574,97 +348,23 @@
       }
     },
     {
-      "Id": "34",
-      "ParentId": "10",
-      "Name": "string? FloorName",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:38:47.6639045Z",
-      "AbsoluteTopLeft": "-484.006,-190.9097",
-      "HeaderContentSize": "180.4007,23",
-      "PreferredHeaderSize": "127.46,23",
-      "Tooltip": "public string? FloorName { get; set; }",
-      "NodeTotalSize": "180.4007,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "FloorName",
-        "FullName": "public string? FloorName { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"FloorName\",\"C\":{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "35",
-      "ParentId": "10",
-      "Name": "int FloorPower",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:38:48.7222086Z",
-      "AbsoluteTopLeft": "-484.006,-167.9097",
-      "HeaderContentSize": "180.4007,23",
-      "PreferredHeaderSize": "106.48,23",
-      "Tooltip": "public int FloorPower { get; set; }",
-      "NodeTotalSize": "180.4007,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "FloorPower",
-        "FullName": "public int FloorPower { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"FloorPower\",\"C\":{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "36",
-      "ParentId": "10",
-      "Name": "List<Room> Rooms",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:38:49.3984361Z",
-      "AbsoluteTopLeft": "-484.006,-144.9097",
-      "HeaderContentSize": "180.4007,23",
-      "PreferredHeaderSize": "134.9633,23",
-      "Tooltip": "public List<Room> Rooms { get; set; }",
-      "NodeTotalSize": "180.4007,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Rooms",
-        "FullName": "public List<Room> Rooms { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Rooms\",\"C\":{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "11",
-      "ParentId": "1",
-      "Name": "Fuse",
+      "Id": "20",
+      "ParentId": "3",
+      "Name": "FuseBox",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-772.3508,55.5753",
-      "HeaderContentSize": "192.1805,67.0324",
-      "PreferredHeaderSize": "57,39.4",
-      "Tooltip": "class FuseBox.Fuse\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "192.1805,206.0324",
-      "ChildrenAreaTopLeft": "1,67.0324",
-      "ChildrenAreaSize": "190.1805,138",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
+      "AbsoluteTopLeft": "-1354.0842,-578.9228",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "57.69,39.4",
+      "Tooltip": "class FuseBox.FuseBox\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
-        "SymbolName": "Fuse",
-        "FullName": "class FuseBox.Fuse",
+        "SymbolName": "FuseBox",
+        "FullName": "class FuseBox.FuseBox",
         "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+          "{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -672,169 +372,23 @@
       }
     },
     {
-      "Id": "51",
-      "ParentId": "11",
-      "Name": "int Id",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:52.7742639Z",
-      "AbsoluteTopLeft": "-771.3508,122.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "57.31,23",
-      "Tooltip": "public int Id { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Id",
-        "FullName": "public int Id { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Id\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "52",
-      "ParentId": "11",
-      "Name": "string? Name",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:53.6126878Z",
-      "AbsoluteTopLeft": "-771.3508,145.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "100.46,23",
-      "Tooltip": "public string? Name { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Name",
-        "FullName": "public string? Name { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Name\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "53",
-      "ParentId": "11",
-      "Name": "int Amper",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:55.0510029Z",
-      "AbsoluteTopLeft": "-771.3508,168.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "82.63,23",
-      "Tooltip": "public int Amper { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Amper",
-        "FullName": "public int Amper { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "54",
-      "ParentId": "11",
-      "Name": "int Price",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:56.1924002Z",
-      "AbsoluteTopLeft": "-771.3508,191.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "72.67,23",
-      "Tooltip": "public int Price { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Price",
-        "FullName": "public int Price { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Price\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "55",
-      "ParentId": "11",
-      "Name": "List<Consumer> Equipments",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:57.2116511Z",
-      "AbsoluteTopLeft": "-771.3508,214.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "183.7933,23",
-      "Tooltip": "public List<Consumer> Equipments { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Equipments",
-        "FullName": "public List<Consumer> Equipments { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Equipments\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "56",
-      "ParentId": "11",
-      "Name": "double Slots",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:39:58.1464338Z",
-      "AbsoluteTopLeft": "-771.3508,237.6077",
-      "HeaderContentSize": "190.1805,23",
-      "PreferredHeaderSize": "95.88,23",
-      "Tooltip": "public double Slots { get; set; }",
-      "NodeTotalSize": "190.1805,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Slots",
-        "FullName": "public double Slots { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Slots\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "12",
-      "ParentId": "1",
-      "Name": "Module",
+      "Id": "21",
+      "ParentId": "3",
+      "Name": "NonElectrical",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-1051.0229,56.8326",
-      "HeaderContentSize": "198.9353,88.9877",
-      "PreferredHeaderSize": "57,39.4",
-      "Tooltip": "class FuseBox.Module\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "198.9353,204.9877",
-      "ChildrenAreaTopLeft": "1,88.9877",
-      "ChildrenAreaSize": "196.9353,115",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
+      "AbsoluteTopLeft": "-1166.5197,-542.274",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "85.6567,39.4",
+      "Tooltip": "class FuseBox.App.Models.NonElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
-        "SymbolName": "Module",
-        "FullName": "class FuseBox.Module",
+        "SymbolName": "NonElectrical",
+        "FullName": "class FuseBox.App.Models.NonElectrical",
         "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+          "{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -842,138 +396,16 @@
       }
     },
     {
-      "Id": "63",
-      "ParentId": "12",
-      "Name": "int Id",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:40:11.6143410Z",
-      "AbsoluteTopLeft": "-1050.0229,145.8203",
-      "HeaderContentSize": "196.9353,23",
-      "PreferredHeaderSize": "57.31,23",
-      "Tooltip": "public int Id { get; set; }",
-      "NodeTotalSize": "196.9353,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Id",
-        "FullName": "public int Id { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Id\",\"C\":{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "64",
-      "ParentId": "12",
-      "Name": "string? Name",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:40:12.4430668Z",
-      "AbsoluteTopLeft": "-1050.0229,168.8203",
-      "HeaderContentSize": "196.9353,23",
-      "PreferredHeaderSize": "100.46,23",
-      "Tooltip": "public string? Name { get; set; }",
-      "NodeTotalSize": "196.9353,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Name",
-        "FullName": "public string? Name { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Name\",\"C\":{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "65",
-      "ParentId": "12",
-      "Name": "int Price",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:40:14.2855692Z",
-      "AbsoluteTopLeft": "-1050.0229,191.8203",
-      "HeaderContentSize": "196.9353,23",
-      "PreferredHeaderSize": "72.67,23",
-      "Tooltip": "public int Price { get; set; }",
-      "NodeTotalSize": "196.9353,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Price",
-        "FullName": "public int Price { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Price\",\"C\":{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "66",
-      "ParentId": "12",
-      "Name": "int Amper",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:40:15.1203342Z",
-      "AbsoluteTopLeft": "-1050.0229,214.8203",
-      "HeaderContentSize": "196.9353,23",
-      "PreferredHeaderSize": "82.63,23",
-      "Tooltip": "public int Amper { get; set; }",
-      "NodeTotalSize": "196.9353,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Amper",
-        "FullName": "public int Amper { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "67",
-      "ParentId": "12",
-      "Name": "double Slots",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:40:15.7428066Z",
-      "AbsoluteTopLeft": "-1050.0229,237.8203",
-      "HeaderContentSize": "196.9353,23",
-      "PreferredHeaderSize": "95.88,23",
-      "Tooltip": "public double Slots { get; set; }",
-      "NodeTotalSize": "196.9353,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Slots",
-        "FullName": "public double Slots { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Slots\",\"C\":{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "13",
-      "ParentId": "1",
+      "Id": "22",
+      "ParentId": "3",
       "Name": "Project",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-502.1679,-638.6255",
-      "HeaderContentSize": "215.5564,53.1936",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
+      "AbsoluteTopLeft": "-1553.5126,-508.4199",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
       "Tooltip": "class FuseBox.Project\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "215.5564,215.1936",
-      "ChildrenAreaTopLeft": "1,53.1936",
-      "ChildrenAreaSize": "213.5564,161",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -988,186 +420,16 @@
       }
     },
     {
-      "Id": "73",
-      "ParentId": "13",
-      "Name": "FloorGrouping FloorGrouping",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:54.3276636Z",
-      "AbsoluteTopLeft": "-501.1679,-585.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "187.3733,23",
-      "Tooltip": "public FloorGrouping FloorGrouping { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "FloorGrouping",
-        "FullName": "public FloorGrouping FloorGrouping { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "74",
-      "ParentId": "13",
-      "Name": "GlobalGrouping GlobalGrouping",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:55.1150933Z",
-      "AbsoluteTopLeft": "-501.1679,-562.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "201.8467,23",
-      "Tooltip": "public GlobalGrouping GlobalGrouping { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "GlobalGrouping",
-        "FullName": "public GlobalGrouping GlobalGrouping { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "75",
-      "ParentId": "13",
-      "Name": "InitialSettings InitialSettings",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:55.9953132Z",
-      "AbsoluteTopLeft": "-501.1679,-539.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "176.32,23",
-      "Tooltip": "public InitialSettings InitialSettings { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "InitialSettings",
-        "FullName": "public InitialSettings InitialSettings { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "76",
-      "ParentId": "13",
-      "Name": "Shield Shield",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:57.2706316Z",
-      "AbsoluteTopLeft": "-501.1679,-516.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "97.9267,23",
-      "Tooltip": "public Shield Shield { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Shield",
-        "FullName": "public Shield Shield { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Shield\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "77",
-      "ParentId": "13",
-      "Name": "int TotalPower",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:58.4692111Z",
-      "AbsoluteTopLeft": "-501.1679,-493.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "104.7067,23",
-      "Tooltip": "public int TotalPower { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "TotalPower",
-        "FullName": "public int TotalPower { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"TotalPower\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "78",
-      "ParentId": "13",
-      "Name": "List<Floor> Floors",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:43:59.2481592Z",
-      "AbsoluteTopLeft": "-501.1679,-470.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "126.5167,23",
-      "Tooltip": "public List<Floor> Floors { get; set; }",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Floors",
-        "FullName": "public List<Floor> Floors { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Floors\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "79",
-      "ParentId": "13",
-      "Name": "int CalculateTotalPower()",
-      "Stereotype": "Method",
-      "CreatedAtUtc": "2025-01-22T19:43:59.8546076Z",
-      "AbsoluteTopLeft": "-501.1679,-447.4319",
-      "HeaderContentSize": "213.5564,23",
-      "PreferredHeaderSize": "160.08,23",
-      "Tooltip": "public int CalculateTotalPower()",
-      "NodeTotalSize": "213.5564,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "CalculateTotalPower",
-        "FullName": "public int CalculateTotalPower()",
-        "Symbols": [
-          "{\"K\":\"Method\",\"S\":\"CalculateTotalPower()\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "14",
-      "ParentId": "1",
+      "Id": "23",
+      "ParentId": "3",
       "Name": "Room",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5346039Z",
-      "AbsoluteTopLeft": "-485.5566,53.3367",
-      "HeaderContentSize": "184.3628,68.5973",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5056314Z",
+      "AbsoluteTopLeft": "-1559.1141,-287.2142",
+      "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
       "Tooltip": "class FuseBox.Room\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "184.3628,207.5973",
-      "ChildrenAreaTopLeft": "1,68.5973",
-      "ChildrenAreaSize": "182.3628,138",
+      "NodeTotalSize": "100,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -1182,302 +444,12 @@
       }
     },
     {
-      "Id": "81",
-      "ParentId": "14",
-      "Name": "int Id",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:44:58.9357700Z",
-      "AbsoluteTopLeft": "-484.5566,121.9339",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "57.31,23",
-      "Tooltip": "public int Id { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Id",
-        "FullName": "public int Id { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Id\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "82",
-      "ParentId": "14",
-      "Name": "string? Name",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:44:59.6768098Z",
-      "AbsoluteTopLeft": "-484.5566,144.934",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "100.46,23",
-      "Tooltip": "public string? Name { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Name",
-        "FullName": "public string? Name { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Name\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "83",
-      "ParentId": "14",
-      "Name": "bool Area",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:45:00.3498988Z",
-      "AbsoluteTopLeft": "-484.5566,167.934",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "81.6033,23",
-      "Tooltip": "public bool Area { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Area",
-        "FullName": "public bool Area { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Area\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "84",
-      "ParentId": "14",
-      "Name": "int Rating",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:45:00.9477723Z",
-      "AbsoluteTopLeft": "-484.5566,190.934",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "81.1633,23",
-      "Tooltip": "public int Rating { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Rating",
-        "FullName": "public int Rating { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Rating\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "85",
-      "ParentId": "14",
-      "Name": "int TPower",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:45:01.5372086Z",
-      "AbsoluteTopLeft": "-484.5566,213.9339",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "85.7667,23",
-      "Tooltip": "public int TPower { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "TPower",
-        "FullName": "public int TPower { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"TPower\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "86",
-      "ParentId": "14",
-      "Name": "List<Consumer> Equipments",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:45:02.1332326Z",
-      "AbsoluteTopLeft": "-484.5566,236.934",
-      "HeaderContentSize": "182.3628,23",
-      "PreferredHeaderSize": "183.7933,23",
-      "Tooltip": "public List<Consumer> Equipments { get; set; }",
-      "NodeTotalSize": "182.3628,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Equipments",
-        "FullName": "public List<Consumer> Equipments { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Equipments\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "15",
-      "ParentId": "1",
-      "Name": "Shield",
-      "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5356057Z",
-      "AbsoluteTopLeft": "-927.4624,-472.4224",
-      "HeaderContentSize": "195.4767,50",
-      "PreferredHeaderSize": "57,39.4",
-      "Tooltip": "class FuseBox.Shield\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "195.4767,166",
-      "ChildrenAreaTopLeft": "1,50",
-      "ChildrenAreaSize": "193.4767,115",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "RoslynType",
-        "SymbolName": "Shield",
-        "FullName": "class FuseBox.Shield",
-        "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "31",
-      "ParentId": "15",
-      "Name": "List<List<Component>> Fuses",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:33:44.3016259Z",
-      "AbsoluteTopLeft": "-926.4624,-422.4224",
-      "HeaderContentSize": "193.4767,23",
-      "PreferredHeaderSize": "193.4767,23",
-      "Tooltip": "public List<List<Module>> Fuses { get; set; }",
-      "NodeTotalSize": "193.4767,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Fuses",
-        "FullName": "public List<List<Component>> Fuses { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Fuses\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "87",
-      "ParentId": "15",
-      "Name": "bool CrossModule",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:46:44.4873473Z",
-      "AbsoluteTopLeft": "-926.4624,-399.4224",
-      "HeaderContentSize": "193.4767,23",
-      "PreferredHeaderSize": "126.9733,23",
-      "Tooltip": "public bool CrossModule { get; set; }",
-      "NodeTotalSize": "193.4767,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "CrossModule",
-        "FullName": "public bool CrossModule { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"CrossModule\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "88",
-      "ParentId": "15",
-      "Name": "int DINLines",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:46:44.9430488Z",
-      "AbsoluteTopLeft": "-926.4624,-376.4224",
-      "HeaderContentSize": "193.4767,23",
-      "PreferredHeaderSize": "94.35,23",
-      "Tooltip": "public int DINLines { get; set; }",
-      "NodeTotalSize": "193.4767,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "DINLines",
-        "FullName": "public int DINLines { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"DINLines\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "89",
-      "ParentId": "15",
-      "Name": "bool LoadSwitch",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:46:47.2883447Z",
-      "AbsoluteTopLeft": "-926.4624,-353.4224",
-      "HeaderContentSize": "193.4767,23",
-      "PreferredHeaderSize": "117.34,23",
-      "Tooltip": "public bool LoadSwitch { get; set; }",
-      "NodeTotalSize": "193.4767,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "LoadSwitch",
-        "FullName": "public bool LoadSwitch { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"LoadSwitch\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "90",
-      "ParentId": "15",
-      "Name": "bool FireUZO",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-22T19:46:48.0566921Z",
-      "AbsoluteTopLeft": "-926.4624,-330.4224",
-      "HeaderContentSize": "193.4767,23",
-      "PreferredHeaderSize": "100.6567,23",
-      "Tooltip": "public bool FireUZO { get; set; }",
-      "NodeTotalSize": "193.4767,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "FireUZO",
-        "FullName": "public bool FireUZO { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"FireUZO\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "16",
-      "ParentId": "1",
+      "Id": "28",
+      "ParentId": "3",
       "Name": "Controllers",
       "Stereotype": "Namespace",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5356057Z",
-      "AbsoluteTopLeft": "-825.9271,-774.2201",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5066279Z",
+      "AbsoluteTopLeft": "-1804.2765,-873.7187",
       "HeaderContentSize": "188.6033,27",
       "PreferredHeaderSize": "153.8767,27",
       "Tooltip": "namespace FuseBox.Controllers\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -1500,12 +472,12 @@
       }
     },
     {
-      "Id": "17",
-      "ParentId": "16",
+      "Id": "29",
+      "ParentId": "28",
       "Name": "ConfigurationController",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5356057Z",
-      "AbsoluteTopLeft": "-804.9271,-727.2201",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5086266Z",
+      "AbsoluteTopLeft": "-1783.2765,-826.7187",
       "HeaderContentSize": "146.6033,50",
       "PreferredHeaderSize": "146.6033,39.4",
       "Tooltip": "class FuseBox.Controllers.ConfigurationController\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -1524,18 +496,16 @@
       }
     },
     {
-      "Id": "18",
-      "ParentId": "1",
+      "Id": "30",
+      "ParentId": "3",
       "Name": "ConfigurationService",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-22T19:26:07.5356057Z",
-      "AbsoluteTopLeft": "-537.3716,-825.9276",
-      "HeaderContentSize": "295.2033,50",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5086266Z",
+      "AbsoluteTopLeft": "-1789.6759,-695.7187",
+      "HeaderContentSize": "130.3367,50",
       "PreferredHeaderSize": "130.3367,39.4",
       "Tooltip": "class FuseBox.ConfigurationService\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "295.2033,143",
-      "ChildrenAreaTopLeft": "1,50",
-      "ChildrenAreaSize": "293.2033,92",
+      "NodeTotalSize": "130.3367,50",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
@@ -1550,147 +520,49 @@
       }
     },
     {
-      "Id": "68",
-      "ParentId": "18",
-      "Name": "Shield ConfigureShield(Project project)",
-      "Stereotype": "Method",
-      "CreatedAtUtc": "2025-01-22T19:40:37.1828315Z",
-      "AbsoluteTopLeft": "-536.3716,-775.9276",
-      "HeaderContentSize": "293.2033,23",
-      "PreferredHeaderSize": "234.44,23",
-      "Tooltip": "private Shield ConfigureShield(Project project)",
-      "NodeTotalSize": "293.2033,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "ConfigureShield",
-        "FullName": "private Shield ConfigureShield(Project project)",
-        "Symbols": [
-          "{\"K\":\"Method\",\"S\":\"ConfigureShield(FuseBox.Project)\",\"C\":{\"K\":\"NamedType\",\"N\":\"ConfigurationService\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Private",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "69",
-      "ParentId": "18",
-      "Name": "Shield ConfigureShield3(Project project)",
-      "Stereotype": "Method",
-      "CreatedAtUtc": "2025-01-22T19:40:37.9266448Z",
-      "AbsoluteTopLeft": "-536.3716,-752.9276",
-      "HeaderContentSize": "293.2033,23",
-      "PreferredHeaderSize": "240.91,23",
-      "Tooltip": "private Shield ConfigureShield3(Project project)",
-      "NodeTotalSize": "293.2033,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "ConfigureShield3",
-        "FullName": "private Shield ConfigureShield3(Project project)",
-        "Symbols": [
-          "{\"K\":\"Method\",\"S\":\"ConfigureShield3(FuseBox.Project)\",\"C\":{\"K\":\"NamedType\",\"N\":\"ConfigurationService\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "Description": "////////////////////////////////////////////////////////////////////////////////////////////////",
-        "IsDescriptionVisible": true,
-        "Accessibility": "Private",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "70",
-      "ParentId": "18",
-      "Name": "Project GenerateConfiguration(Project input)",
-      "Stereotype": "Method",
-      "CreatedAtUtc": "2025-01-22T19:40:38.5318669Z",
-      "AbsoluteTopLeft": "-536.3716,-729.9276",
-      "HeaderContentSize": "293.2033,23",
-      "PreferredHeaderSize": "265.8967,23",
-      "Tooltip": "public Project GenerateConfiguration(Project input)",
-      "NodeTotalSize": "293.2033,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "GenerateConfiguration",
-        "FullName": "public Project GenerateConfiguration(Project input)",
-        "Symbols": [
-          "{\"K\":\"Method\",\"S\":\"GenerateConfiguration(FuseBox.Project)\",\"C\":{\"K\":\"NamedType\",\"N\":\"ConfigurationService\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "71",
-      "ParentId": "18",
-      "Name": "List<Module> ShieldByLevel(Project project, List<Module> shieldModuleSet)",
-      "Stereotype": "Method",
-      "CreatedAtUtc": "2025-01-22T19:40:39.1341071Z",
-      "AbsoluteTopLeft": "-536.3716,-706.9276",
-      "HeaderContentSize": "293.2033,23",
-      "PreferredHeaderSize": "293.2033,23",
-      "Tooltip": "public List<Module> ShieldByLevel(Project project, List<Module> shieldModuleSet)",
-      "NodeTotalSize": "293.2033,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "ShieldByLevel",
-        "FullName": "public List<Module> ShieldByLevel(Project project, List<Module> shieldModuleSet)",
-        "Symbols": [
-          "{\"K\":\"Method\",\"S\":\"ShieldByLevel(FuseBox.Project, System.Collections.Generic.List<FuseBox.Module>)\",\"C\":{\"K\":\"NamedType\",\"N\":\"ConfigurationService\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "91",
-      "ParentId": "1",
-      "Name": "Component",
+      "Id": "33",
+      "ParentId": "3",
+      "Name": "Contactor",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-23T19:28:05.4899109Z",
-      "AbsoluteTopLeft": "-934.6953,-210.9338",
-      "HeaderContentSize": "206.7196,50",
-      "PreferredHeaderSize": "75.5633,39.4",
-      "Tooltip": "class FuseBox.Component\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "206.7196,189",
+      "CreatedAtUtc": "2025-01-28T14:03:04.6432972Z",
+      "AbsoluteTopLeft": "-877.6258,-345.4409",
+      "HeaderContentSize": "191.8733,50",
+      "PreferredHeaderSize": "66.7067,39.4",
+      "Tooltip": "class FuseBox.Contactor\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "191.8733,74",
       "ChildrenAreaTopLeft": "1,50",
-      "ChildrenAreaSize": "204.7196,138",
+      "ChildrenAreaSize": "189.8733,23",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
-        "SymbolName": "Component",
-        "FullName": "class FuseBox.Component",
+        "SymbolName": "Contactor",
+        "FullName": "class FuseBox.Contactor",
         "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+          "{\"K\":\"NamedType\",\"N\":\"Contactor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
         ],
         "IsDescriptionVisible": true,
-        "IsAbstract": true,
         "Accessibility": "Public",
         "Origin": "SourceCode"
       }
     },
     {
-      "Id": "93",
-      "ParentId": "91",
-      "Name": "int Id",
+      "Id": "34",
+      "ParentId": "33",
+      "Name": "List<BaseElectrical> Electricals",
       "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:18.6860706Z",
-      "AbsoluteTopLeft": "-933.6953,-160.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "57.31,23",
-      "Tooltip": "public int Id { get; set; }",
-      "NodeTotalSize": "204.7196,23",
+      "CreatedAtUtc": "2025-01-28T14:03:13.1208143Z",
+      "AbsoluteTopLeft": "-876.6258,-295.4409",
+      "HeaderContentSize": "189.8733,23",
+      "PreferredHeaderSize": "189.8733,23",
+      "Tooltip": "public List<BaseElectrical> Electricals { get; set; }",
+      "NodeTotalSize": "189.8733,23",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "Other",
-        "SymbolName": "Id",
-        "FullName": "public int Id { get; set; }",
+        "SymbolName": "Electricals",
+        "FullName": "public List<BaseElectrical> Electricals { get; set; }",
         "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Id\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          "{\"K\":\"Property\",\"N\":\"Electricals\",\"C\":{\"K\":\"NamedType\",\"N\":\"Contactor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -1698,282 +570,145 @@
       }
     },
     {
-      "Id": "94",
-      "ParentId": "91",
-      "Name": "string? Name",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:19.4663477Z",
-      "AbsoluteTopLeft": "-933.6953,-137.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "100.46,23",
-      "Tooltip": "public string? Name { get; set; }",
-      "NodeTotalSize": "204.7196,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Name",
-        "FullName": "public string? Name { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Name\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "95",
-      "ParentId": "91",
-      "Name": "int Amper",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:21.7123656Z",
-      "AbsoluteTopLeft": "-933.6953,-114.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "82.63,23",
-      "Tooltip": "public int Amper { get; set; }",
-      "NodeTotalSize": "204.7196,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Amper",
-        "FullName": "public int Amper { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "96",
-      "ParentId": "91",
-      "Name": "decimal Price",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:22.9188927Z",
-      "AbsoluteTopLeft": "-933.6953,-91.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "100.05,23",
-      "Tooltip": "public decimal Price { get; set; }",
-      "NodeTotalSize": "204.7196,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Price",
-        "FullName": "public decimal Price { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Price\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "97",
-      "ParentId": "91",
-      "Name": "int Slots",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:23.6525917Z",
-      "AbsoluteTopLeft": "-933.6953,-68.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "72.52,23",
-      "Tooltip": "public int Slots { get; set; }",
-      "NodeTotalSize": "204.7196,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Slots",
-        "FullName": "public int Slots { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Slots\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "98",
-      "ParentId": "91",
-      "Name": "int Poles",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-23T19:28:24.3085821Z",
-      "AbsoluteTopLeft": "-933.6953,-45.9338",
-      "HeaderContentSize": "204.7196,23",
-      "PreferredHeaderSize": "74.6333,23",
-      "Tooltip": "public int Poles { get; set; }",
-      "NodeTotalSize": "204.7196,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Poles",
-        "FullName": "public int Poles { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Poles\",\"C\":{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "99",
-      "Name": "List<Component>",
+      "Id": "36",
+      "ParentId": "3",
+      "Name": "Fuse",
       "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-23T19:44:18.2621908Z",
-      "AbsoluteTopLeft": "-1569.5318,-310.2862",
-      "HeaderContentSize": "301,76.4",
-      "PreferredHeaderSize": "301,76.4",
-      "Tooltip": "class System.Collections.Generic.List<FuseBox.Component>\r\nassembly: System.Collections, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
-      "NodeTotalSize": "301,76.4",
+      "CreatedAtUtc": "2025-01-28T14:03:58.9770054Z",
+      "AbsoluteTopLeft": "-1021.036,-329.0398",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "57,39.4",
+      "Tooltip": "class FuseBox.Fuse\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynType",
-        "SymbolName": "List",
-        "FullName": "class System.Collections.Generic.List<FuseBox.Component>",
+        "SymbolName": "Fuse",
+        "FullName": "class FuseBox.Fuse",
         "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"List\",\"A\":1,\"T\":[{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}],\"C\":{\"K\":\"Namespace\",\"N\":\"Generic\",\"C\":{\"K\":\"Namespace\",\"N\":\"Collections\",\"C\":{\"K\":\"Namespace\",\"N\":\"System\",\"C\":{\"K\":\"Assembly\",\"N\":\"System.Collections\",\"V\":\"8.0.0.0\"}}}}}"
+          "{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
         ],
-        "Description": "Represents a strongly typed list of objects that can be accessed by index. Provides methods to search, sort, and manipulate lists.",
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
-        "Origin": "Metadata"
+        "Origin": "SourceCode"
       }
     }
   ],
   "Connectors": [
     {
       "Id": "1",
-      "SourceNodeId": "13",
-      "TargetNodeId": "2",
-      "Stereotype": "Association",
+      "SourceNodeId": "8",
+      "TargetNodeId": "21",
+      "Stereotype": "Inheritance",
       "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text2": "FloorGrouping",
-              "Tooltip": "public FloorGrouping FloorGrouping { get; set; }",
-              "CanBeHidden": true
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
-      }
-    },
-    {
-      "Id": "2",
-      "SourceNodeId": "13",
-      "TargetNodeId": "3",
-      "Stereotype": "Association",
-      "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text2": "GlobalGrouping",
-              "Tooltip": "public GlobalGrouping GlobalGrouping { get; set; }",
-              "CanBeHidden": true
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Cabel\",\"C\":{\"K\":\"Namespace\",\"N\":\"Shild_Comp\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
       }
     },
     {
       "Id": "3",
-      "SourceNodeId": "13",
-      "TargetNodeId": "4",
-      "Stereotype": "Association",
+      "SourceNodeId": "9",
+      "TargetNodeId": "16",
+      "Stereotype": "Inheritance",
       "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text2": "InitialSettings",
-              "Tooltip": "public InitialSettings InitialSettings { get; set; }",
-              "CanBeHidden": true
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
       }
     },
     {
       "Id": "7",
-      "SourceNodeId": "11",
+      "SourceNodeId": "14",
       "TargetNodeId": "9",
-      "Stereotype": "Association",
+      "Stereotype": "Inheritance",
       "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text1": "*",
-              "Text2": "Consumers",
-              "Tooltip": "public List<Consumer> Consumers { get; set; }"
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Consumers\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          },
-          {
-            "Label": {
-              "Text1": "*",
-              "Text2": "Equipments",
-              "Tooltip": "public List<Consumer> Equipments { get; set; }"
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Equipments\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"RCDFire\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
       }
     },
     {
       "Id": "8",
-      "SourceNodeId": "14",
+      "SourceNodeId": "12",
       "TargetNodeId": "9",
-      "Stereotype": "Association",
+      "Stereotype": "Inheritance",
       "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text1": "*",
-              "Text2": "Equipments",
-              "Tooltip": "public List<Consumer> Equipments { get; set; }"
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Equipments\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
-      }
-    },
-    {
-      "Id": "9",
-      "SourceNodeId": "13",
-      "TargetNodeId": "10",
-      "Stereotype": "Association",
-      "Payload": {
-        "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
-        "TargetLabels": [
-          {
-            "Label": {
-              "Text1": "*",
-              "Text2": "Floors",
-              "Tooltip": "public List<Floor> Floors { get; set; }"
-            },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Floors\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
-          }
-        ]
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Introductory\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
       }
     },
     {
       "Id": "10",
-      "SourceNodeId": "10",
-      "TargetNodeId": "14",
+      "SourceNodeId": "13",
+      "TargetNodeId": "9",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"RCD\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+      }
+    },
+    {
+      "Id": "14",
+      "SourceNodeId": "13",
+      "TargetNodeId": "16",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"RCD\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "Electricals",
+              "Tooltip": "public List<BaseElectrical> Electricals { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Electricals\",\"C\":{\"K\":\"NamedType\",\"N\":\"RCD\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "16",
+      "SourceNodeId": "16",
+      "TargetNodeId": "17",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"BaseEntity\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+      }
+    },
+    {
+      "Id": "17",
+      "SourceNodeId": "18",
+      "TargetNodeId": "16",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+      }
+    },
+    {
+      "Id": "19",
+      "SourceNodeId": "22",
+      "TargetNodeId": "17",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"BaseEntity\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+      }
+    },
+    {
+      "Id": "20",
+      "SourceNodeId": "21",
+      "TargetNodeId": "17",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"BaseEntity\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+      }
+    },
+    {
+      "Id": "21",
+      "SourceNodeId": "19",
+      "TargetNodeId": "23",
       "Stereotype": "Association",
       "Payload": {
         "Discriminator": "Association",
@@ -1991,29 +726,215 @@
       }
     },
     {
-      "Id": "11",
-      "SourceNodeId": "13",
-      "TargetNodeId": "15",
+      "Id": "22",
+      "SourceNodeId": "19",
+      "TargetNodeId": "21",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+      }
+    },
+    {
+      "Id": "23",
+      "SourceNodeId": "20",
+      "TargetNodeId": "16",
       "Stereotype": "Association",
       "Payload": {
         "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}",
         "TargetLabels": [
           {
             "Label": {
-              "Text2": "Shield",
-              "Tooltip": "public Shield Shield { get; set; }",
-              "CanBeHidden": true
+              "Text1": "*",
+              "Text2": "Contactor",
+              "Tooltip": "public List<BaseElectrical> Contactor { get; set; }"
             },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Shield\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Contactor\",\"C\":{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          },
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "CriticalLine",
+              "Tooltip": "public List<BaseElectrical> CriticalLine { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"CriticalLine\",\"C\":{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          },
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "Electricals",
+              "Tooltip": "public List<BaseElectrical> Electricals { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Electricals\",\"C\":{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
           }
         ]
       }
     },
     {
-      "Id": "15",
-      "SourceNodeId": "11",
-      "TargetNodeId": "91",
+      "Id": "26",
+      "SourceNodeId": "23",
+      "TargetNodeId": "21",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+      }
+    },
+    {
+      "Id": "27",
+      "SourceNodeId": "22",
+      "TargetNodeId": "4",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text2": "FloorGrouping",
+              "Tooltip": "public FloorGrouping FloorGrouping { get; set; }",
+              "CanBeHidden": true
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"FloorGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "28",
+      "SourceNodeId": "22",
+      "TargetNodeId": "5",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text2": "GlobalGrouping",
+              "Tooltip": "public GlobalGrouping GlobalGrouping { get; set; }",
+              "CanBeHidden": true
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"GlobalGrouping\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "29",
+      "SourceNodeId": "22",
+      "TargetNodeId": "6",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text2": "InitialSettings",
+              "Tooltip": "public InitialSettings InitialSettings { get; set; }",
+              "CanBeHidden": true
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"InitialSettings\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "30",
+      "SourceNodeId": "22",
+      "TargetNodeId": "20",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text2": "FuseBox",
+              "Tooltip": "public FuseBox FuseBox { get; set; }",
+              "CanBeHidden": true
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"FuseBox\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "31",
+      "SourceNodeId": "22",
+      "TargetNodeId": "19",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Floor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "Floors",
+              "Tooltip": "public List<Floor> Floors { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Floors\",\"C\":{\"K\":\"NamedType\",\"N\":\"Project\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "32",
+      "SourceNodeId": "23",
+      "TargetNodeId": "18",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"Consumer\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "Consumer",
+              "Tooltip": "public List<Consumer> Consumer { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Consumer\",\"C\":{\"K\":\"NamedType\",\"N\":\"Room\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "35",
+      "SourceNodeId": "33",
+      "TargetNodeId": "16",
+      "Stereotype": "Association",
+      "Payload": {
+        "Discriminator": "Association",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Contactor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}",
+        "TargetLabels": [
+          {
+            "Label": {
+              "Text1": "*",
+              "Text2": "Electricals",
+              "Tooltip": "public List<BaseElectrical> Electricals { get; set; }"
+            },
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Electricals\",\"C\":{\"K\":\"NamedType\",\"N\":\"Contactor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+          }
+        ]
+      }
+    },
+    {
+      "Id": "36",
+      "SourceNodeId": "33",
+      "TargetNodeId": "9",
+      "Stereotype": "Inheritance",
+      "Payload": {
+        "Discriminator": "Other",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Contactor\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+      }
+    },
+    {
+      "Id": "41",
+      "SourceNodeId": "36",
+      "TargetNodeId": "9",
       "Stereotype": "Inheritance",
       "Payload": {
         "Discriminator": "Other",
@@ -2021,43 +942,23 @@
       }
     },
     {
-      "Id": "16",
-      "SourceNodeId": "12",
-      "TargetNodeId": "91",
-      "Stereotype": "Inheritance",
-      "Payload": {
-        "Discriminator": "Other",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Module\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Inheritance|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
-      }
-    },
-    {
-      "Id": "17",
-      "SourceNodeId": "15",
-      "TargetNodeId": "99",
+      "Id": "42",
+      "SourceNodeId": "36",
+      "TargetNodeId": "16",
       "Stereotype": "Association",
       "Payload": {
         "Discriminator": "Association",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"List\",\"A\":1,\"T\":[{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}],\"C\":{\"K\":\"Namespace\",\"N\":\"Generic\",\"C\":{\"K\":\"Namespace\",\"N\":\"Collections\",\"C\":{\"K\":\"Namespace\",\"N\":\"System\",\"C\":{\"K\":\"Assembly\",\"N\":\"System.Collections\",\"V\":\"8.0.0.0\"}}}}}",
+        "Relationship": "{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}|Association|{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}",
         "TargetLabels": [
           {
             "Label": {
               "Text1": "*",
-              "Text2": "Fuses",
-              "Tooltip": "public List<List<Component>> Fuses { get; set; }"
+              "Text2": "Electricals",
+              "Tooltip": "public List<BaseElectrical> Electricals { get; set; }"
             },
-            "Symbol": "{\"K\":\"Property\",\"N\":\"Fuses\",\"C\":{\"K\":\"NamedType\",\"N\":\"Shield\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
+            "Symbol": "{\"K\":\"Property\",\"N\":\"Electricals\",\"C\":{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}"
           }
         ]
-      }
-    },
-    {
-      "Id": "18",
-      "SourceNodeId": "99",
-      "TargetNodeId": "91",
-      "Stereotype": "GenericTypeArgument",
-      "Payload": {
-        "Discriminator": "Other",
-        "Relationship": "{\"K\":\"NamedType\",\"N\":\"List\",\"A\":1,\"T\":[{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}],\"C\":{\"K\":\"Namespace\",\"N\":\"Generic\",\"C\":{\"K\":\"Namespace\",\"N\":\"Collections\",\"C\":{\"K\":\"Namespace\",\"N\":\"System\",\"C\":{\"K\":\"Assembly\",\"N\":\"System.Collections\",\"V\":\"8.0.0.0\"}}}}}|GenericTypeArgument|{\"K\":\"NamedType\",\"N\":\"Component\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
       }
     }
   ]

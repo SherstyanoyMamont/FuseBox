@@ -6,5 +6,4 @@
         public bool IndividualFloorGrouping { get; set; }
         public bool SeparateUZOPerFloor { get; set; }
     }
-
 }
