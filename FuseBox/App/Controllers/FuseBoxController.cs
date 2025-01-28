@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace FuseBox.Controllers
 {
@@ -13,14 +15,20 @@ namespace FuseBox.Controllers
         {
             try
             {
-                ConfigurationService configurationService = new ConfigurationService();   // Создаю объект сервиса
-                configurationService.GenerateConfiguration(input);                        // Модифицирую конфигурацию входного объекта
+                ConfigurationService configurationService = new();            // Создаю объект сервиса
+                var pc = configurationService.GenerateConfiguration(input);   // Модифицирую конфигурацию входного объекта
 
-                return Ok(input.FuseBox.Components);                                            // Вывожу только список предохранителей
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto                  // Для поддержки полиморфизма
+                };
+
+                var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
+
+                return Ok(data);                 
             }
             catch (Exception ex)
             {
-
                 return BadRequest(ex.Message);
             }
         }
@@ -34,7 +42,6 @@ namespace FuseBox.Controllers
             return Ok($"Hello, {name};)");
         }
     }
-
 }
 
 

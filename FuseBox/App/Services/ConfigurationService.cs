@@ -553,7 +553,7 @@ namespace FuseBox
               "Amper": 2
             }
           ],
-          "totalPower": 40
+          "tPower": 40
         }
       ]
     }
