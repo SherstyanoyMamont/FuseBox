@@ -12,10 +12,10 @@ namespace FuseBox
         [JsonProperty(Order = 8)]
         public int Capacity { get; set; }
 
-        public RCD(string name, int amper, int slots, int poles, decimal price, int capacity/*, List<BaseElectrical> electricals*/) : base(name, amper, slots, poles, price) // List<Electricals> electricals,
+        public RCD(string name, int amper, int slots, int poles, decimal price, int capacity, List<BaseElectrical> electricals) : base(name, amper, slots, poles, price) // List<Electricals> electricals,
         {
             Capacity = capacity;
-            /*Electricals = electricals;*/
+            Electricals = electricals;
         }
     }
 }

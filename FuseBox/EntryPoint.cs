@@ -196,6 +196,26 @@ namespace FuseBox
                               ""id"": 13,
                               ""name"": ""Lighting"",
                               ""Amper"": 2,
+                            },
+                            {
+                              ""id"": 14,
+                              ""name"": ""Air Conditioner"",
+                              ""Amper"": 5,
+                            },
+                            {
+                              ""id"": 15,
+                              ""name"": ""Air Conditioner"",
+                              ""Amper"": 3,
+                            },
+                            {
+                              ""id"": 16,
+                              ""name"": ""Lighting"",
+                              ""Amper"": 1,
+                            },
+                            {
+                              ""id"": 17,
+                              ""name"": ""Lighting"",
+                              ""Amper"": 1,
                             }
                           ],
                           ""tPower"": 40
