@@ -289,15 +289,10 @@ namespace FuseBox
         public void ShieldByLevel(Project project, List<Component> shieldModuleSet)
         {
             double countOfSlots = shieldModuleSet.Sum(e => e.Slots); // Вычисляем общее количество слотов для Щитовой панели
-
-            //for (int i = 0; i < shieldModuleSet.Count; i++)
-            //    countOfSlots += shieldModuleSet[i].Slots;
-
             var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
 
             // Инициализируем списки каждого уровня щита по ПЕРВИЧНЫМ ДАННЫМ (без учёта потенциальных пустых мест)
-            for (int i = 0; i < countOfDINLevels; i++)
-                project.FuseBox.Components.Add(new List<BaseElectrical>());
+            for (int i = 0; i < countOfDINLevels; i++) project.FuseBox.Components.Add(new List<BaseElectrical>());
 
             project.FuseBox.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
             int occupiedSlots = 0;
@@ -321,13 +316,9 @@ namespace FuseBox
         }
         public static void IsRCDBlockFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
         {
-            double rcdBlockSlots = shieldModuleSet[i].Slots;
-            int j = i + 1;
-            while (j < shieldModuleSet.Count && shieldModuleSet[j].Name?.StartsWith("AV") == true)
-            {
-                rcdBlockSlots += shieldModuleSet[j].Slots;
-                j++;
-            }
+            var rcd = shieldModuleSet[i] as RCD;
+            int rcdBlockSlots = rcd.RCDBlockSlots();
+
 
             if (occupiedSlots + rcdBlockSlots > shieldWidth)
             {
@@ -339,18 +330,18 @@ namespace FuseBox
                 if (currentLevel >= project.FuseBox.Components.Count)
                     project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если его ещё нет                
 
-                for (int k = i; k < j; k++)
-                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[k]);
+                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]); // Добавляем УЗО и все его автоматы в нем
+                //for (int k = i; k < j; k++)
+                //    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[k]);
 
                 occupiedSlots += (int)rcdBlockSlots;
             }
             else
             {
                 occupiedSlots += (int)rcdBlockSlots;
-                for (int k = i; k < j; k++)
-                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[k]);
+                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
             }
-            i = j - 1; // Пропускаем обработанные AV
+
         }
         public static void IsModuleFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
         {
@@ -411,153 +402,152 @@ namespace FuseBox
 }
 
 
-/*
 
-{
-    "floorGrouping": {
-        "FloorGroupingP": true,
-        "separateUZO": true
-    },
-  "globalGrouping": {
-    "Sockets": 1,
-    "Lighting": 1,
-    "Conditioners": 1
-  },
-  "initialSettings": {
-    "PhasesCount": 1,
-    "MainAmperage": 25,
-    "ShieldWidth": 16,
-    "VoltageStandard": 220,
-    "PowerCoefficient": 1
-  },
-  "FuseBox": {
-    "MainBreaker": true,
-    "Main3PN": false,
-    "SurgeProtection": true,
-    "LoadSwitch2P": true,
-    "ModularContactor": true,
-    "RailMeter": true,
-    "FireUZO": true,
-    "VoltageRelay": true,
-    "RailSocket": true,
-    "NDisconnectableLine": true,
-    "LoadSwitch": true,
-    "CrossModule": true,
-    "DINLines": 1,
-    "Price": 1000
-  },
-    "floors": [
-      {
-      "Name": "Ground Floor",
-      "rooms": [
-        {
-          "Name": "Living Room",
-          "Consumer": [
-            {
-              "Id": 1,
-              "name": "TV",
-              "Amper": 1
-            },
-            {
-              "Id": 2,
-              "name": "Air Conditioner",
-              "Amper": 8
-            },
-            {
-              "Id": 3,
-              "name": "Lighting",
-              "Amper": 1
-            }
-          ],
-          "tPower": 10
-        },
-        {
-          "name": "Kitchen",
-          "Consumer": [
-            {
-              "Id": 4,
-              "name": "Refrigerator",
-              "Amper": 3
-            },
-            {
-              "Id": 5,
-              "name": "Microwave",
-              "Amper": 5
-            },
-            {
-              "Id": 6,
-              "name": "Oven",
-              "Amper": 7
-            }
-          ],
-          "tPower": 15
-        }
-      ]
-    },
-    {
-      "Name": "First Floor",
-      "rooms": [
-        {
-          "name": "Bedroom 1",
-          "Consumer": [
-            {
-              "id": 7,
-              "name": "Heater",
-              "Amper": 4
-            },
-            {
-              "id": 8,
-              "name": "Fan",
-              "Amper": 1
-            }
-          ],
-          "tPower": 5
-        },
-        {
-          "name": "Bathroom",
-          "Consumer": [
-            {
-              "id": 9,
-              "name": "Water Heater",
-              "Amper": 13
-            },
-            {
-              "id": 10,
-              "name": "Hair Dryer",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        }
-      ]
-    },
-    {
-      "Name": "Second Floor",
-      "rooms": [
-        {
-          "name": "Office",
-          "Consumer": [
-            {
-              "id": 11,
-              "name": "Computer",
-              "Amper": 2
-            },
-            {
-              "id": 12,
-              "name": "Printer",
-              "Amper": 1
-            },
-            {
-              "id": 13,
-              "name": "Lighting",
-              "Amper": 2
-            }
-          ],
-          "tPower": 40
-        }
-      ]
-    }
-  ]
-}
 
-*/
+//{
+//    "floorGrouping": {
+//        "FloorGroupingP": true,
+//        "separateUZO": true
+//    },
+//  "globalGrouping": {
+//        "Sockets": 1,
+//    "Lighting": 1,
+//    "Conditioners": 1
+//  },
+//  "initialSettings": {
+//        "PhasesCount": 1,
+//    "MainAmperage": 25,
+//    "ShieldWidth": 16,
+//    "VoltageStandard": 220,
+//    "PowerCoefficient": 1
+//  },
+//  "FuseBox": {
+//        "MainBreaker": true,
+//    "Main3PN": false,
+//    "SurgeProtection": true,
+//    "LoadSwitch2P": true,
+//    "ModularContactor": true,
+//    "RailMeter": true,
+//    "FireUZO": true,
+//    "VoltageRelay": true,
+//    "RailSocket": true,
+//    "NDisconnectableLine": true,
+//    "LoadSwitch": true,
+//    "CrossModule": true,
+//    "DINLines": 1,
+//    "Price": 1000
+//  },
+//    "floors": [
+//      {
+//        "Name": "Ground Floor",
+//      "rooms": [
+//        {
+//            "Name": "Living Room",
+//          "Consumer": [
+//            {
+//                "Id": 1,
+//              "name": "TV",
+//              "Amper": 1
+//            },
+//            {
+//                "Id": 2,
+//              "name": "Air Conditioner",
+//              "Amper": 8
+//            },
+//            {
+//                "Id": 3,
+//              "name": "Lighting",
+//              "Amper": 1
+//            }
+//          ],
+//          "tPower": 10
+//        },
+//        {
+//            "name": "Kitchen",
+//          "Consumer": [
+//            {
+//                "Id": 4,
+//              "name": "Refrigerator",
+//              "Amper": 3
+//            },
+//            {
+//                "Id": 5,
+//              "name": "Microwave",
+//              "Amper": 5
+//            },
+//            {
+//                "Id": 6,
+//              "name": "Oven",
+//              "Amper": 7
+//            }
+//          ],
+//          "tPower": 15
+//        }
+//      ]
+//    },
+//    {
+//        "Name": "First Floor",
+//      "rooms": [
+//        {
+//            "name": "Bedroom 1",
+//          "Consumer": [
+//            {
+//                "id": 7,
+//              "name": "Heater",
+//              "Amper": 4
+//            },
+//            {
+//                "id": 8,
+//              "name": "Fan",
+//              "Amper": 1
+//            }
+//          ],
+//          "tPower": 5
+//        },
+//        {
+//            "name": "Bathroom",
+//          "Consumer": [
+//            {
+//                "id": 9,
+//              "name": "Water Heater",
+//              "Amper": 13
+//            },
+//            {
+//                "id": 10,
+//              "name": "Hair Dryer",
+//              "Amper": 7
+//            }
+//          ],
+//          "tPower": 20
+//        }
+//      ]
+//    },
+//    {
+//        "Name": "Second Floor",
+//      "rooms": [
+//        {
+//            "name": "Office",
+//          "Consumer": [
+//            {
+//                "id": 11,
+//              "name": "Computer",
+//              "Amper": 2
+//            },
+//            {
+//                "id": 12,
+//              "name": "Printer",
+//              "Amper": 1
+//            },
+//            {
+//                "id": 13,
+//              "name": "Lighting",
+//              "Amper": 2
+//            }
+//          ],
+//          "tPower": 40
+//        }
+//      ]
+//    }
+//  ]
+//}
+
