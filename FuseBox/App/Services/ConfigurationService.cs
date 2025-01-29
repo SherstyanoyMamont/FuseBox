@@ -236,7 +236,7 @@ namespace FuseBox
             {
                 uzos.Add(new RCD("RCD", 63, 2, 2, 43, 2, new List<BaseElectrical>(AVFuses)));
             }
-            else
+            else 
             {
                 double countOfRCD = Math.Ceiling(project.CalculateTotalPower() / 32.00);
 
@@ -244,8 +244,13 @@ namespace FuseBox
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 2, 43, 2, new List<BaseElectrical>()));
                 }
+                while (uzos.Count != Math.Ceiling(AVFuses.Count / RCD.LimitOfConnectedFuses))
+                {
+                    uzos.Add(new RCD("RCD", 63, 2, 2, 43, 2, new List<BaseElectrical>()));
+                }
                 DistributeBreakersToRCDs(AVFuses, uzos);
             }
+
         }
         public void DistributeBreakersToRCDs(List<Fuse> breakers, List<RCD> uzos)
         {
@@ -259,6 +264,13 @@ namespace FuseBox
 
                 // Находим УЗО с минимальной текущей нагрузкой
                 var targetUzo = uzoLoads.OrderBy(uz => uz.Value).First().Key;
+
+                // Удаляем УЗО из списка, если у него уже 5 выключателей
+                if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)
+                {
+                    uzoLoads.Remove(targetUzo);
+                    continue;
+                }
 
                 // Добавляем автомат к выбранному УЗО
                 targetUzo.Electricals.Add(breaker);
