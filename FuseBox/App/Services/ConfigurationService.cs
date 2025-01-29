@@ -314,7 +314,7 @@ namespace FuseBox
             for (int i = 0; i < shieldModuleSet.Count; i++)
             {
                 if (currentLevel >= project.FuseBox.Components.Count)
-                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если его ещё нет
+                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если имеющихся недостаточно
 
                 if (shieldModuleSet[i].Name == "RCD") // i-й элемент - УЗО, значит дальше автоматы, с ними связанные                
                     IsRCDBlockFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);
@@ -331,7 +331,6 @@ namespace FuseBox
             var rcd = shieldModuleSet[i] as RCD;
             int rcdBlockSlots = rcd.RCDBlockSlots();
 
-
             if (occupiedSlots + rcdBlockSlots > shieldWidth)
             {
                 if (occupiedSlots < shieldWidth)
@@ -343,9 +342,6 @@ namespace FuseBox
                     project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если его ещё нет                
 
                 project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]); // Добавляем УЗО и все его автоматы в нем
-                //for (int k = i; k < j; k++)
-                //    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[k]);
-
                 occupiedSlots += (int)rcdBlockSlots;
             }
             else
@@ -392,11 +388,6 @@ namespace FuseBox
             }
             return AllConsumers;
         }
-
-        
-
-
-
 
     }
 
