@@ -132,10 +132,7 @@ namespace FuseBox
             if (project.FuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 2, 22)); }
             if (project.FuseBox.LoadSwitch) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 2, 35)); }
             if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 2, 25, project.FuseBox.Contactor)); }
-            if (project.FuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 2, 25)); }
-
-
-
+            if (project.FuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 2, 25)); }       // CrossModule? 4 slots?
 
             // Логика распределения потребителей
             DistributeOfConsumers(project, AllConsumers, AVFuses);
@@ -144,9 +141,6 @@ namespace FuseBox
             DistributeRCDFromLoad(project, uzos, AVFuses);
 
             shieldModuleSet.AddRange(uzos);
-
-            // Новая компоновка Щита по уровням
-            //ShieldNewLVL(project, shieldModuleSet, AVFuses);
 
             // Компоновка Щита по уровням...
             ShieldByLevel(project, shieldModuleSet);
@@ -379,6 +373,54 @@ namespace FuseBox
                 }
                 if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])  
                     project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - occupiedSlots, 0, 0));
+            }
+            ShieldWithInterSlots(project);
+        }
+
+        // "Inter cable slot" - В этом пространстве можно прокладывать кабель
+        // "Inter AV slot" - В этом пространстве нельзя прокладывать кабель
+
+        public void ShieldWithInterSlots(Project project)
+        {
+            for (int i = 0; i <  project.FuseBox.Components.Count; i++)
+            {
+                for (int j = 0; j < project.FuseBox.Components[i].Count; j++)
+                {
+                    if (project.FuseBox.Components[i][j] != project.FuseBox.Components[i][^1])
+                    {
+                        if (project.FuseBox.Components[i][j].Name == "RCD")
+                        {
+                            var rcd = project.FuseBox.Components[i][j] as RCD;
+                            for (int ii = 0; ii < rcd.Electricals.Count; ii++)
+                            {
+                                if (ii == 0)
+                                {
+                                    rcd.Electricals.Insert(ii, new Component("Inter cable slot", 0, 0.5, 1, 0));      // Между УЗО и АВ могут проходить провода, 0.5 интерслота
+                                    rcd.Slots += 0.5;
+                                }
+                                else if (rcd.Electricals[ii] == rcd.Electricals[^1])
+                                {
+                                    rcd.Electricals.Insert(ii + 1, new Component("Inter AV slot", 0, 1, 1, 0));        // Между АВ и Пустым слотом 1 интерслот
+                                    rcd.Slots += 1;
+                                    ii++;
+                                }
+                                else
+                                {
+                                    rcd.Electricals.Insert(ii + 1, new Component("Inter AV slot", 0, 0.5, 1, 0));     // Между АВ и АВ 0.5 интерслота
+                                    rcd.Slots += 0.5;
+                                    ii++;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            project.FuseBox.Components[i].Insert(j + 1, new Component("Inter cable slot", 0, 1, 1, 0));    // Между модулями 1 интерслот
+                            j++;
+                        }
+                        
+                    }
+                }
+
             }
         }
         public List<BaseElectrical> CalculateAllConsumers(Project project)
