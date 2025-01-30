@@ -9,13 +9,13 @@
       "Name": "FuseBox",
       "Stereotype": "Namespace",
       "CreatedAtUtc": "2025-01-28T13:31:00.4936279Z",
-      "AbsoluteTopLeft": "-1835.2799,-920.7196",
-      "HeaderContentSize": "1709.4644,27",
+      "AbsoluteTopLeft": "-1825.2765,-920.7187",
+      "HeaderContentSize": "1838.5019,27",
       "PreferredHeaderSize": "139.4367,27",
       "Tooltip": "namespace FuseBox\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "1709.4644,1042.8967",
+      "NodeTotalSize": "1838.5019,1007.3141",
       "ChildrenAreaTopLeft": "1,27",
-      "ChildrenAreaSize": "1707.4644,1014.8967",
+      "ChildrenAreaSize": "1836.5019,979.3141",
       "IsPinned": true,
       "Payload": {
         "Discriminator": "RoslynNamespace",
@@ -104,36 +104,12 @@
       }
     },
     {
-      "Id": "8",
-      "ParentId": "3",
-      "Name": "Cabel",
-      "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-28T13:31:00.5006272Z",
-      "AbsoluteTopLeft": "-1173.2944,-398.7194",
-      "HeaderContentSize": "100,50",
-      "PreferredHeaderSize": "57,39.4",
-      "Tooltip": "class FuseBox.App.Models.Shild_Comp.Cabel\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "100,50",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "RoslynType",
-        "SymbolName": "Cabel",
-        "FullName": "class FuseBox.App.Models.Shild_Comp.Cabel",
-        "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"Cabel\",\"C\":{\"K\":\"Namespace\",\"N\":\"Shild_Comp\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
       "Id": "9",
       "ParentId": "3",
       "Name": "Component",
       "Stereotype": "Class",
       "CreatedAtUtc": "2025-01-28T13:31:00.5016295Z",
-      "AbsoluteTopLeft": "-676.3092,-544.121",
+      "AbsoluteTopLeft": "-676.3092,-570.9076",
       "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "77.2767,39.4",
       "Tooltip": "class FuseBox.Component\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -157,7 +133,7 @@
       "Name": "Introductory",
       "Stereotype": "Class",
       "CreatedAtUtc": "2025-01-28T13:31:00.5016295Z",
-      "AbsoluteTopLeft": "-633.2009,-334.1209",
+      "AbsoluteTopLeft": "-633.2009,-490.9076",
       "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "82.9233,39.4",
       "Tooltip": "class FuseBox.Introductory\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -181,7 +157,7 @@
       "Name": "RCD",
       "Stereotype": "Class",
       "CreatedAtUtc": "2025-01-28T13:31:00.5026270Z",
-      "AbsoluteTopLeft": "-496.0253,-334.143",
+      "AbsoluteTopLeft": "-496.0253,-490.9076",
       "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
       "Tooltip": "class FuseBox.RCD\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -217,57 +193,6 @@
         "FullName": "class FuseBox.RCDFire",
         "Symbols": [
           "{\"K\":\"NamedType\",\"N\":\"RCDFire\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "16",
-      "ParentId": "3",
-      "Name": "BaseElectrical",
-      "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-28T13:31:00.5036272Z",
-      "AbsoluteTopLeft": "-682.4996,-652.4016",
-      "HeaderContentSize": "100,50",
-      "PreferredHeaderSize": "88.9233,39.4",
-      "Tooltip": "class FuseBox.App.Models.BaseElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "100,74",
-      "ChildrenAreaTopLeft": "1,50",
-      "ChildrenAreaSize": "98,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "RoslynType",
-        "SymbolName": "BaseElectrical",
-        "FullName": "class FuseBox.App.Models.BaseElectrical",
-        "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "IsAbstract": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "31",
-      "ParentId": "16",
-      "Name": "int Amper",
-      "Stereotype": "Property",
-      "CreatedAtUtc": "2025-01-28T13:59:41.5619824Z",
-      "AbsoluteTopLeft": "-681.4996,-602.4016",
-      "HeaderContentSize": "98,23",
-      "PreferredHeaderSize": "82.63,23",
-      "Tooltip": "public int Amper { get; set; }",
-      "NodeTotalSize": "98,23",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "Other",
-        "SymbolName": "Amper",
-        "FullName": "public int Amper { get; set; }",
-        "Symbols": [
-          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -365,30 +290,6 @@
         "FullName": "class FuseBox.FuseBox",
         "Symbols": [
           "{\"K\":\"NamedType\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
-        ],
-        "IsDescriptionVisible": true,
-        "Accessibility": "Public",
-        "Origin": "SourceCode"
-      }
-    },
-    {
-      "Id": "21",
-      "ParentId": "3",
-      "Name": "NonElectrical",
-      "Stereotype": "Class",
-      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
-      "AbsoluteTopLeft": "-1166.5197,-542.274",
-      "HeaderContentSize": "100,50",
-      "PreferredHeaderSize": "85.6567,39.4",
-      "Tooltip": "class FuseBox.App.Models.NonElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
-      "NodeTotalSize": "100,50",
-      "IsPinned": true,
-      "Payload": {
-        "Discriminator": "RoslynType",
-        "SymbolName": "NonElectrical",
-        "FullName": "class FuseBox.App.Models.NonElectrical",
-        "Symbols": [
-          "{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",
@@ -525,7 +426,7 @@
       "Name": "Contactor",
       "Stereotype": "Class",
       "CreatedAtUtc": "2025-01-28T14:03:04.6432972Z",
-      "AbsoluteTopLeft": "-877.6258,-345.4409",
+      "AbsoluteTopLeft": "-877.6258,-514.9076",
       "HeaderContentSize": "191.8733,50",
       "PreferredHeaderSize": "66.7067,39.4",
       "Tooltip": "class FuseBox.Contactor\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -551,7 +452,7 @@
       "Name": "List<BaseElectrical> Electricals",
       "Stereotype": "Property",
       "CreatedAtUtc": "2025-01-28T14:03:13.1208143Z",
-      "AbsoluteTopLeft": "-876.6258,-295.4409",
+      "AbsoluteTopLeft": "-876.6258,-464.9076",
       "HeaderContentSize": "189.8733,23",
       "PreferredHeaderSize": "189.8733,23",
       "Tooltip": "public List<BaseElectrical> Electricals { get; set; }",
@@ -575,7 +476,7 @@
       "Name": "Fuse",
       "Stereotype": "Class",
       "CreatedAtUtc": "2025-01-28T14:03:58.9770054Z",
-      "AbsoluteTopLeft": "-1021.036,-329.0398",
+      "AbsoluteTopLeft": "-1021.036,-490.9076",
       "HeaderContentSize": "100,50",
       "PreferredHeaderSize": "57,39.4",
       "Tooltip": "class FuseBox.Fuse\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
@@ -587,6 +488,180 @@
         "FullName": "class FuseBox.Fuse",
         "Symbols": [
           "{\"K\":\"NamedType\",\"N\":\"Fuse\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "37",
+      "ParentId": "3",
+      "Name": "EntryPoint",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-30T12:34:08.9453032Z",
+      "AbsoluteTopLeft": "-219.6214,-152.628",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "70.72,43.4",
+      "Tooltip": "class FuseBox.EntryPoint\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "EntryPoint",
+        "FullName": "class FuseBox.EntryPoint",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"EntryPoint\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Internal",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "38",
+      "ParentId": "3",
+      "Name": "Соединение",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-30T12:34:12.2198109Z",
+      "AbsoluteTopLeft": "-157.7772,-30.4061",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "82.4867,43.4",
+      "Tooltip": "class FuseBox.Соединение\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "Соединение",
+        "FullName": "class FuseBox.Соединение",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"Соединение\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Internal",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "39",
+      "ParentId": "3",
+      "Name": "App",
+      "Stereotype": "Namespace",
+      "CreatedAtUtc": "2025-01-30T12:34:17.3384531Z",
+      "AbsoluteTopLeft": "-1194.2941,-380.9076",
+      "HeaderContentSize": "662.3171,27",
+      "PreferredHeaderSize": "117.8467,27",
+      "Tooltip": "namespace FuseBox.App\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "662.3171,363.8009",
+      "ChildrenAreaTopLeft": "1,27",
+      "ChildrenAreaSize": "660.3171,335.8009",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynNamespace",
+        "SymbolName": "App",
+        "FullyQualifiedName": "FuseBox.App",
+        "FullName": "namespace FuseBox.App",
+        "Symbols": [
+          "{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode",
+        "NamespaceLevel": 2
+      }
+    },
+    {
+      "Id": "8",
+      "ParentId": "39",
+      "Name": "Cabel",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5006272Z",
+      "AbsoluteTopLeft": "-1173.2941,-253.9076",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "57,39.4",
+      "Tooltip": "class FuseBox.App.Models.Shild_Comp.Cabel\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "Cabel",
+        "FullName": "class FuseBox.App.Models.Shild_Comp.Cabel",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"Cabel\",\"C\":{\"K\":\"Namespace\",\"N\":\"Shild_Comp\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "16",
+      "ParentId": "39",
+      "Name": "BaseElectrical",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5036272Z",
+      "AbsoluteTopLeft": "-682.4996,-333.9076",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "88.9233,39.4",
+      "Tooltip": "class FuseBox.App.Models.BaseElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,74",
+      "ChildrenAreaTopLeft": "1,50",
+      "ChildrenAreaSize": "98,23",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "BaseElectrical",
+        "FullName": "class FuseBox.App.Models.BaseElectrical",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "IsAbstract": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "31",
+      "ParentId": "16",
+      "Name": "int Amper",
+      "Stereotype": "Property",
+      "CreatedAtUtc": "2025-01-28T13:59:41.5619824Z",
+      "AbsoluteTopLeft": "-681.4996,-283.9076",
+      "HeaderContentSize": "98,23",
+      "PreferredHeaderSize": "82.63,23",
+      "Tooltip": "public int Amper { get; set; }",
+      "NodeTotalSize": "98,23",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "Other",
+        "SymbolName": "Amper",
+        "FullName": "public int Amper { get; set; }",
+        "Symbols": [
+          "{\"K\":\"Property\",\"N\":\"Amper\",\"C\":{\"K\":\"NamedType\",\"N\":\"BaseElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}}"
+        ],
+        "IsDescriptionVisible": true,
+        "Accessibility": "Public",
+        "Origin": "SourceCode"
+      }
+    },
+    {
+      "Id": "21",
+      "ParentId": "39",
+      "Name": "NonElectrical",
+      "Stereotype": "Class",
+      "CreatedAtUtc": "2025-01-28T13:31:00.5046320Z",
+      "AbsoluteTopLeft": "-1166.5197,-333.9076",
+      "HeaderContentSize": "100,50",
+      "PreferredHeaderSize": "85.6567,39.4",
+      "Tooltip": "class FuseBox.App.Models.NonElectrical\r\nassembly: FuseBox, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "NodeTotalSize": "100,50",
+      "IsPinned": true,
+      "Payload": {
+        "Discriminator": "RoslynType",
+        "SymbolName": "NonElectrical",
+        "FullName": "class FuseBox.App.Models.NonElectrical",
+        "Symbols": [
+          "{\"K\":\"NamedType\",\"N\":\"NonElectrical\",\"C\":{\"K\":\"Namespace\",\"N\":\"Models\",\"C\":{\"K\":\"Namespace\",\"N\":\"App\",\"C\":{\"K\":\"Namespace\",\"N\":\"FuseBox\",\"C\":{\"K\":\"Assembly\",\"N\":\"FuseBox\",\"V\":\"1.0.0.0\"}}}}}"
         ],
         "IsDescriptionVisible": true,
         "Accessibility": "Public",

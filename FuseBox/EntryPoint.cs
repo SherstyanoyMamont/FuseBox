@@ -11,7 +11,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -85,7 +85,7 @@ namespace FuseBox
                     ""NDisconnectableLine"": true,
                     ""LoadSwitch"": true,
                     ""CrossModule"": true,
-                    ""DINLines"": 3,
+                    ""DINLines"": 1,
                     ""Price"": 1000,
                   },
                     ""floors"": [
@@ -147,15 +147,15 @@ namespace FuseBox
                             {
                               ""id"": 7,
                               ""name"": ""Heater"",
-                              ""Amper"": 4,
+                              ""Amper"": 13,
                             },
                             {
                               ""id"": 8,
                               ""name"": ""Fan"",
-                              ""Amper"": 1,
+                              ""Amper"": 7,
                             }
                           ],
-                          ""tPower"": 5
+                          ""tPower"": 20
                         },
                         {
                           ""name"": ""Bathroom"",
@@ -200,25 +200,25 @@ namespace FuseBox
                             {
                               ""id"": 14,
                               ""name"": ""Air Conditioner"",
-                              ""Amper"": 5,
+                              ""Amper"": 2,
                             },
                             {
                               ""id"": 15,
                               ""name"": ""Air Conditioner"",
-                              ""Amper"": 3,
+                              ""Amper"": 1,
                             },
                             {
                               ""id"": 16,
                               ""name"": ""Lighting"",
-                              ""Amper"": 1,
+                              ""Amper"": 2,
                             },
                             {
                               ""id"": 17,
                               ""name"": ""Lighting"",
-                              ""Amper"": 1,
+                              ""Amper"": 2,
                             }
                           ],
-                          ""tPower"": 40
+                          ""tPower"": 12
                         }
                       ]
                     }
