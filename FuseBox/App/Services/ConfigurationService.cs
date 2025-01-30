@@ -49,17 +49,17 @@ namespace FuseBox
             List<Component> shieldModuleSet = new List<Component>();
             List<RCD> uzos = new List<RCD>();
 
-            if (project.FuseBox.MainBreaker)     { shieldModuleSet.Add(new Introductory("Introductory", project.InitialSettings.MainAmperage, 2, 2, 35, "P1")); }
+            if (project.FuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory", project.InitialSettings.MainAmperage, 2, 2, 35, "P1")); }
             if (project.FuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 2, 65)); }
-            if (project.FuseBox.LoadSwitch2P)    { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 2, 35)); }
-            if (project.FuseBox.RailMeter)       { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 2, 145)); }
-            if (project.FuseBox.FireUZO)         { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 2, 75, 300)); }
-            if (project.FuseBox.VoltageRelay)    { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 2, 40)); }
-            if (project.FuseBox.RailSocket)      { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 2, 22)); }
+            if (project.FuseBox.LoadSwitch2P) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 2, 35)); }
+            if (project.FuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 2, 145)); }
+            if (project.FuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 2, 75, 300)); }
+            if (project.FuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 2, 40)); }
+            if (project.FuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 2, 22)); }
             if (project.FuseBox.NDisconnectableLine) { shieldModuleSet.Add(new RCD("NonDisconnectableLine", 25, 2, 2, 43, 30, new List<BaseElectrical>())); }
-            if (project.FuseBox.LoadSwitch)      { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 2, 35)); }
-            if (project.FuseBox.ModularContactor){ shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 2, 25, project.FuseBox.Contactor)); }
-            if (project.FuseBox.CrossModule)     { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 2, 25)); }
+            if (project.FuseBox.LoadSwitch) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 2, 35)); }
+            if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 2, 25, project.FuseBox.Contactor)); }
+            if (project.FuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 2, 25)); }
 
             // Настройки автоматов для техники \\
             // Примерная мощность автомата С16 - 3.6 кВт.
@@ -241,7 +241,7 @@ namespace FuseBox
             {
                 uzos.Add(new RCD("RCD", 63, 2, 2, 43, 2, new List<BaseElectrical>(AVFuses)));
             }
-            else 
+            else
             {
                 double countOfRCD = Math.Ceiling(project.CalculateTotalPower() / 32.00);
 
@@ -258,7 +258,7 @@ namespace FuseBox
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 2, 43, 2, new List<BaseElectrical>()));
                 }
-                DistributeBreakersToRCDs(AVFuses, uzos);
+                DistributeFusesToRCDs(AVFuses, uzos);
             }
 
         }
@@ -348,56 +348,39 @@ namespace FuseBox
         // Логика распределения модулей по уровням...
         public void ShieldByLevel(Project project, List<Component> shieldModuleSet)
         {
-            double countOfSlots = shieldModuleSet.Sum(e => e.Slots); // Вычисляем общее количество слотов для Щитовой панели
-            var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
-
-            // Инициализируем списки каждого уровня щита по ПЕРВИЧНЫМ ДАННЫМ (без учёта потенциальных пустых мест)
-            for (int i = 0; i < countOfDINLevels; i++) project.FuseBox.Components.Add(new List<BaseElectrical>());
-
-            project.FuseBox.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
             int occupiedSlots = 0;
             int currentLevel = 0;
             int shieldWidth = project.InitialSettings.ShieldWidth;
 
             for (int i = 0; i < shieldModuleSet.Count; i++)
-            {                                                                     
-                IsComponentFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);                
-                if (occupiedSlots < shieldWidth && i == shieldModuleSet.Count - 1)
+            {
+                occupiedSlots += (int)shieldModuleSet[i].Slots;
+
+                if (occupiedSlots < shieldWidth) project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);    // модуль помещается на уровне
+
+                else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
+                {
+                    project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots), 0, 0));
+                    currentLevel++;
+                    project.FuseBox.Components.Add(new List<BaseElectrical>());
+
+                    occupiedSlots = (int)shieldModuleSet[i].Slots;
+                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
+                }
+                else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
+                {
+                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);                  
+                    if (shieldModuleSet[i] != shieldModuleSet[^1])
+                    {
+                        project.FuseBox.Components.Add(new List<BaseElectrical>());
+                        currentLevel++;
+                        occupiedSlots = 0;
+                    }                   
+                }
+                if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])  
                     project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - occupiedSlots, 0, 0));
             }
         }
-        public static void IsComponentFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
-        {
-            if (shieldModuleSet[i].Name == "RCD")
-            {
-                var rcd = shieldModuleSet[i] as RCD;
-                int rcdBlockSlots = rcd.RCDBlockSlots();
-                shieldModuleSet[i].Slots = rcdBlockSlots;               
-            }
-            occupiedSlots += (int)shieldModuleSet[i].Slots;
-
-            if (occupiedSlots < shieldWidth)    // модуль помещается на уровне
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);   
-                                                                                                                    
-            else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
-            {
-                project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots), 0, 0));
-                currentLevel++;
-
-                if (currentLevel >= project.FuseBox.Components.Count)
-                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если имеющихся недостаточно
-
-                occupiedSlots = (int)shieldModuleSet[i].Slots;
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
-            }
-            else // Слотов на уровне аккурат равно длине шины
-            {
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
-                currentLevel++;
-                occupiedSlots = 0;
-            }
-        }
-          
         public List<BaseElectrical> CalculateAllConsumers(Project project)
         {
             List<BaseElectrical> AllConsumers = new List<BaseElectrical>();
@@ -415,22 +398,9 @@ namespace FuseBox
         }
 
     }
-
-    //Проверка первичных данных***
-    //private void ValidateInitialSettings(InitialSettings settings)
-    //{
-    //    if (settings.Phases != 1 && settings.Phases != 3)
-    //        throw new ArgumentException("Invalid phase count");
-    //    // Дополнительные проверки...
-    //}
-
-    //PlantUML: @startuml
-
-    //PlantUML: @enduml
 }
 
-
-/*
+    /*
 public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<Fuse> AVFuses) // Участь слоты автоматов у УЗО
 {
     int shieldWidth = project.InitialSettings.ShieldWidth;       // количество слотов на каждом уровне
@@ -470,6 +440,22 @@ public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<
         }
     }
 }
+
+
+    //Проверка первичных данных***
+    //private void ValidateInitialSettings(InitialSettings settings)
+    //{
+    //    if (settings.Phases != 1 && settings.Phases != 3)
+    //        throw new ArgumentException("Invalid phase count");
+    //    // Дополнительные проверки...
+    //}
+
+    //PlantUML: @startuml
+
+    //PlantUML: @enduml
+}
+
+
 
 
 {

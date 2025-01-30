@@ -28,7 +28,10 @@ namespace FuseBox
         // Список подключенных к контактору устройств
         public List<BaseElectrical> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
         
-        public List<List<BaseElectrical>> Components { get; set; } = new(); // Итоговый список устройств
+        public List<List<BaseElectrical>> Components { get; set; } = new List<List<BaseElectrical>> // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        {
+            new List<BaseElectrical>(),
+        }; 
         public List<BaseElectrical> Electricals { get; set; } = new(); // Базовый список 
     }
 }
