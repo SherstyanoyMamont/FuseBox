@@ -312,56 +312,33 @@ namespace FuseBox
             int shieldWidth = project.InitialSettings.ShieldWidth;
 
             for (int i = 0; i < shieldModuleSet.Count; i++)
-            {
-                if (currentLevel >= project.FuseBox.Components.Count)
-                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если имеющихся недостаточно
-
-                if (shieldModuleSet[i].Name == "RCD") // i-й элемент - УЗО, значит дальше автоматы, с ними связанные                
-                    IsRCDBlockFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);
-
-                else // i-й элемент - другой модуль, значит применяется обычная логика                
-                    IsModuleFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);
-
+            {                                                                     
+                IsComponentFitAtLevel(project, shieldModuleSet, ref i, ref occupiedSlots, ref currentLevel, shieldWidth);                
                 if (occupiedSlots < shieldWidth && i == shieldModuleSet.Count - 1)
                     project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - occupiedSlots, 0, 0));
             }
         }
-        public static void IsRCDBlockFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
+        public static void IsComponentFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
         {
-            var rcd = shieldModuleSet[i] as RCD;
-            int rcdBlockSlots = rcd.RCDBlockSlots();
-
-            if (occupiedSlots + rcdBlockSlots > shieldWidth)
+            if (shieldModuleSet[i].Name == "RCD")
             {
-                if (occupiedSlots < shieldWidth)
-                    project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - occupiedSlots, 0, 0)); // Добавлена проверка на добавление доп. уровня ниже
-
-                occupiedSlots = 0;
-                currentLevel++;
-                if (currentLevel >= project.FuseBox.Components.Count)
-                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если его ещё нет                
-
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]); // Добавляем УЗО и все его автоматы в нем
-                occupiedSlots += (int)rcdBlockSlots;
+                var rcd = shieldModuleSet[i] as RCD;
+                int rcdBlockSlots = rcd.RCDBlockSlots();
+                shieldModuleSet[i].Slots = rcdBlockSlots;               
             }
-            else
-            {
-                occupiedSlots += (int)rcdBlockSlots;
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
-            }
-
-        }
-        public static void IsModuleFitAtLevel(Project project, List<Component> shieldModuleSet, ref int i, ref int occupiedSlots, ref int currentLevel, int shieldWidth)
-        {
             occupiedSlots += (int)shieldModuleSet[i].Slots;
-            if (occupiedSlots < shieldWidth)                // место есть как для модуля, так и после него на уровне
-            {
-                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
-            }
-            else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. Проверку и добавление уровней делать не надо!
+
+            if (occupiedSlots < shieldWidth)    // модуль помещается на уровне
+                project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);   
+                                                                                                                    
+            else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
             {
                 project.FuseBox.Components[currentLevel].Add(new Component("{empty space}", 0, shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots), 0, 0));
                 currentLevel++;
+
+                if (currentLevel >= project.FuseBox.Components.Count)
+                    project.FuseBox.Components.Add(new List<BaseElectrical>()); // Добавляем новый уровень, если имеющихся недостаточно
+
                 occupiedSlots = (int)shieldModuleSet[i].Slots;
                 project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
             }
@@ -371,8 +348,9 @@ namespace FuseBox
                 currentLevel++;
                 occupiedSlots = 0;
             }
+
         }
-        
+          
         public List<BaseElectrical> CalculateAllConsumers(Project project)
         {
             List<BaseElectrical> AllConsumers = new List<BaseElectrical>();
