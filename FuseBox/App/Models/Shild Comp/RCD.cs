@@ -21,15 +21,5 @@ namespace FuseBox
             Electricals = electricals;
             
         }
-
-        public int RCDBlockSlots()
-        {
-            int Slots = this.Slots;
-            foreach (Fuse fuse in Electricals)
-            {
-                Slots += fuse.Slots;
-            }
-            return Slots;
-        }
     }
 }
