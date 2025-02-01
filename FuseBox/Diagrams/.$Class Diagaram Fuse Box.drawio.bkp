@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2025-02-01T22:04:12.659Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.21 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="EEtGhBC199UNJB7f2Gah" version="22.1.21" type="device">
+<mxfile host="Electron" modified="2025-02-01T21:59:33.630Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.21 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="KoVvNVTQEIEgO-q-3ds-" version="22.1.21" type="device">
   <diagram name="Page-1" id="FKHlyDpzjuHAsDGd_DU5">
-    <mxGraphModel dx="2840" dy="1653" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
+    <mxGraphModel dx="2403" dy="1398" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -340,9 +340,6 @@
         </mxCell>
         <mxCell id="OVRV0IOkjEJxTj61ujSo-87" value="Interfaces" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="350" y="1030" width="200" height="390" as="geometry" />
-        </mxCell>
-        <mxCell id="OVRV0IOkjEJxTj61ujSo-89" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
-          <mxGeometry x="50" y="170" width="1880" height="1290" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
