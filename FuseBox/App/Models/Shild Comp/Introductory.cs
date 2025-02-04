@@ -3,19 +3,20 @@ using Newtonsoft.Json;
 
 namespace FuseBox
 {
+    public enum Type3PN
+    {
+        P1,
+        P3,
+        P3_N
+    }
     public class Introductory : Component
     {
-        public enum Type3PN 
-        {
-            P1,
-            P3,
-            P3_N
-        }
+        public Type3PN Type { get; set; }
 
-        public Introductory(string name, int amper, int slots, int poles, decimal price, string type3PN) : base(name, amper, slots, poles, price)
+        public Introductory(string name, Type3PN type, List<Connector> connectors, int slots, int amper,  decimal price, string type3PN) : base(name, amper, connectors, slots, price)
         {
-            Type3PN type3PN1 = new Type3PN();
-
+            Connectors = connectors;
+            Type = type;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
+using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json;
 
 namespace FuseBox
@@ -7,31 +8,34 @@ namespace FuseBox
     public class Component : BaseElectrical, IPricedComponent // Abstract?
     {
         public static int _idCounter = 0; // Static counter for all objects of this class
-
-        [JsonProperty(Order = 4)]
-        public double Slots { get; set; }
-
-        [JsonProperty(Order = 6)]
-        public int Poles { get; set; }
         public decimal Price { get; set; }
 
-        public Component(string name, int amper, double slots, int poles, decimal price)
+        [JsonProperty(Order = 4)]
+        public List<Connector> Connectors { get; set; }
+
+        [JsonProperty(Order = 5)]
+        public double Slots { get; set; }
+
+        public Component(string name, int amper, List<Connector> connectors,  int slots, decimal price)
         {
-            Id = ++_idCounter; // Increment the counter and assign the ID
+            Connectors = connectors;
             Name = name;
             Amper = amper;
             Slots = slots;
-            Poles = poles;
+            Price = price;
+        }
+        public Component(string name, int amper,int slots, decimal price)
+        {
+            Name = name;
+            Amper = amper;
+            Slots = slots;
             Price = price;
         }
     }
 
 
-   
-
-    class Соединение
+    class Соединение : BaseEntity
     {
-        // ID
         // тип кабеля
         // индекс компонент1
         // выход/вход компонент1

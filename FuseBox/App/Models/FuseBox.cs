@@ -16,7 +16,7 @@ namespace FuseBox
         public bool VoltageRelay { get; set; }
         public bool ThreePRelay { get; set; }
         public bool RailSocket { get; set; }
-        public bool NDisconnectableLine { get; set; }
+        public bool NDiscLine { get; set; }
         public bool LoadSwitch { get; set; }
         public bool CrossModule { get; set; }
         public int DINLines { get; set; }
@@ -33,5 +33,7 @@ namespace FuseBox
             new List<BaseElectrical>(),
         }; 
         public List<BaseElectrical> Electricals { get; set; } = new(); // Базовый список 
+
+        public List<Connection> CableConnections { get; set; } = new();
     }
 }

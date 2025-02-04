@@ -7,7 +7,8 @@
         public InitialSettings InitialSettings { get; set; }
         public FuseBox FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
-        public int TotalPower { get; set; }
+        public double TotalPower { get; set; } // A
+        public List<Connection> Connections { get; set; }
 
         public Project()
         {
@@ -16,10 +17,10 @@
             FloorGrouping = new FloorGrouping();
             GlobalGrouping = new GlobalGrouping();
             Floors = new List<Floor>();
-            TotalPower = CalculateTotalPower();
+            Connections = new List<Connection>();
         }
 
-        public int CalculateTotalPower() // Calculates the total power of the entire object
+        public double CalculateTotalPower() // Calculates the total power of the entire object
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
