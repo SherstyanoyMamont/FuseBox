@@ -18,6 +18,7 @@ namespace FuseBox
 
         public RCD(string name, int amper, int slots, decimal price, int capacity, List<BaseElectrical> electricals) : base(name, amper, slots, price) // List<Electricals> electricals,
         {
+
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
             Connectors = new List<Connector> 
             {
@@ -31,10 +32,19 @@ namespace FuseBox
 
         public RCD(string name, int amper, List<Connector> connectors, int slots, decimal price, int capacity, List<BaseElectrical> electricals) : base(name, amper, connectors, slots, price) // List<Electricals> electricals,
         {
+
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
             Connectors = connectors;
             Capacity = capacity;
             Electricals = electricals;
+        }
+
+        public void OrderBreakersId()
+        {
+            for (int i = 0; i < Electricals.Count; i++)
+            {
+                Electricals[i].Id = i + 1;
+            }
         }
     }
 }

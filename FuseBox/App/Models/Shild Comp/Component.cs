@@ -18,6 +18,7 @@ namespace FuseBox
 
         public Component(string name, int amper, List<Connector> connectors,  int slots, decimal price)
         {
+            Id = ++_idCounter;
             Connectors = connectors;
             Name = name;
             Amper = amper;
@@ -26,24 +27,12 @@ namespace FuseBox
         }
         public Component(string name, int amper,int slots, decimal price)
         {
+            Id = ++_idCounter;
             Name = name;
             Amper = amper;
             Slots = slots;
             Price = price;
         }
-    }
-
-
-    class Соединение : BaseEntity
-    {
-        // тип кабеля
-        // индекс компонент1
-        // выход/вход компонент1
-
-        // индекс на компонент2
-        // выход/вход компонент2
-
-        // тип соединения ???
     }
 
 }

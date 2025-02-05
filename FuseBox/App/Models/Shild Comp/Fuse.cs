@@ -12,6 +12,7 @@ namespace FuseBox
 
         public Fuse(string name,  int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price)
         {
+
             //Connectors = new List<Connector> { connector };
 
             // В список разьемов добавляем разьем с входом для АВ и кабелем красного цвета
