@@ -106,7 +106,7 @@ namespace FuseBox
 
             // 118 A
 
-            LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
+            //LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
 
             // Логика распределения потребителей
             DistributeOfConsumers(project, AllConsumers, AVFuses);
@@ -200,7 +200,7 @@ namespace FuseBox
             if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100,            4, 25, project.FuseBox.Contactor)); } // !!!
             if (project.FuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, Set4x4,    4, 25)); }       // CrossModule? 4 slots?
 
-            LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
+            //LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
 
             // Логика распределения потребителей
             DistributeOfConsumers(project, AllConsumers, AVFuses);
@@ -293,7 +293,7 @@ namespace FuseBox
         }
         public void DistributeRCDFromLoad(Project project, List<RCD> uzos, List<Fuse> AVFuses)
         {
-            Component._idCounter = LastMainModuleId;
+            //Component._idCounter = LastMainModuleId;
 
             // Делаем запас в два раза
             double RCD16A = 8.00;
@@ -409,7 +409,7 @@ namespace FuseBox
                 // Добавляем автомат к выбранному УЗО
                 targetUzo.Electricals.Add(breaker);
                 targetUzo.Slots++;                                     // Увеличиваем количество слотов
-                targetUzo.OrderBreakersId();                           // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
+                //targetUzo.OrderBreakersId();                           // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
                 // Увеличиваем нагрузку для этого УЗО
                 uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
             }
