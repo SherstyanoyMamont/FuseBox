@@ -34,6 +34,6 @@ namespace FuseBox
         }; 
         public List<BaseElectrical> Electricals { get; set; } = new(); // Базовый список 
 
-        public List<Connection> CableConnections { get; set; } = new();
+        public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
     }
 }

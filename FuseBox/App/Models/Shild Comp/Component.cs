@@ -18,6 +18,7 @@ namespace FuseBox
 
         public Component(string name, int amper, List<Connector> connectors,  int slots, decimal price)
         {
+            Id = ++_idCounter;
             Connectors = connectors;
             Name = name;
             Amper = amper;
@@ -26,6 +27,7 @@ namespace FuseBox
         }
         public Component(string name, int amper,int slots, decimal price)
         {
+            Id = ++_idCounter;
             Name = name;
             Amper = amper;
             Slots = slots;

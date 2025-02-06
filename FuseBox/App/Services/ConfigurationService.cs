@@ -3,6 +3,7 @@ using FuseBox.App.Models;
 using FuseBox.App.Models.Shild_Comp;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -14,6 +15,7 @@ namespace FuseBox
     // Сервисный класс, который содержит логику для работы с объектами конфигурации
     public class ConfigurationService
     {
+        private int LastMainModuleId;
         // Создаем/Модифицируем объект проекта
         public Project GenerateConfiguration(Project input) // Метод возвращает объект ProjectConfiguration
         {
@@ -103,6 +105,8 @@ namespace FuseBox
             // <30 мА – для защиты человека, 100> мА – для защиты зданий от пожаров
 
             // 118 A
+
+            LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
 
             // Логика распределения потребителей
             DistributeOfConsumers(project, AllConsumers, AVFuses);
@@ -196,6 +200,8 @@ namespace FuseBox
             if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100,            4, 25, project.FuseBox.Contactor)); } // !!!
             if (project.FuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, Set4x4,    4, 25)); }       // CrossModule? 4 slots?
 
+            LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
+
             // Логика распределения потребителей
             DistributeOfConsumers(project, AllConsumers, AVFuses);
 
@@ -219,7 +225,7 @@ namespace FuseBox
 
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers(Project project, List<BaseElectrical> AllConsumers, List<Fuse> AVFuses)
-        {
+        {            
             // Логика распределения потребителей
 
             List<BaseElectrical> Lighting = new();
@@ -234,6 +240,8 @@ namespace FuseBox
                 { "Air Conditioner", AirConditioner },
                 { "Heated Floor", HeatedFloor }
             };
+
+            
 
             foreach (var consumer in AllConsumers)
             {
@@ -285,6 +293,8 @@ namespace FuseBox
         }
         public void DistributeRCDFromLoad(Project project, List<RCD> uzos, List<Fuse> AVFuses)
         {
+            Component._idCounter = LastMainModuleId;
+
             // Делаем запас в два раза
             double RCD16A = 8.00;
             double RCD32B = 16.00;
@@ -324,11 +334,14 @@ namespace FuseBox
                 while (uzos.Count != Math.Ceiling(AVFuses.Count / RCD.LimitOfConnectedFuses))
                 {
                     uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>()));
+                    countOfRCD++;
                 }
                 DistributeFusesToRCDs(AVFuses, uzos);
             }
 
         }
+        
+
         public void DistributeRCDFromLoad3P(Project project, List<RCD> uzos, List<Fuse> AVFuses)
         {
             // Делаем запас в два раза
@@ -373,6 +386,7 @@ namespace FuseBox
         }
         public void DistributeFusesToRCDs(List<Fuse> breakers, List<RCD> uzos)
         {
+            List<RCD> filledRCDs = new List<RCD>();
             // Сортируем УЗО по их текущей нагрузке, чтобы равномерно распределять
             var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)
 
@@ -387,19 +401,21 @@ namespace FuseBox
                 // Удаляем УЗО из списка, если у него уже 5 выключателей
                 if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)
                 {
-                    uzoLoads.Remove(targetUzo);
+                    filledRCDs.Add(targetUzo);
+                    uzoLoads.Remove(targetUzo);                   
                     continue;
                 }
 
                 // Добавляем автомат к выбранному УЗО
                 targetUzo.Electricals.Add(breaker);
-
                 targetUzo.Slots++;                                     // Увеличиваем количество слотов
-
+                targetUzo.OrderBreakersId();                           // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
                 // Увеличиваем нагрузку для этого УЗО
                 uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
             }
+            
         }
+
         public List<List<T>> DistributeEvenly<T>(List<T> items, int numberOfBuckets)
         {
             // Создаём пустые списки
@@ -420,7 +436,7 @@ namespace FuseBox
 
         // Логика распределения модулей по уровням...
         public void ShieldByLevel(Project project, List<Component> shieldModuleSet)
-        {
+        {            
             int occupiedSlots = 0;
             int currentLevel = 0;
             int shieldWidth = project.InitialSettings.ShieldWidth;
@@ -568,8 +584,8 @@ namespace FuseBox
 
         public void CreateConnections(List<Component> components, Project project)
         {
-            double TotoalPower = project.TotalPower;
-            double WireSection = CalculateWireCrossSection(TotoalPower);
+            double TotalPower = project.TotalPower;
+            double WireSection = CalculateWireCrossSection(TotalPower);
 
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
