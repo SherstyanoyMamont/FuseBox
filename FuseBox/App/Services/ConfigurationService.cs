@@ -1,6 +1,7 @@
 ﻿using FuseBox;
 using FuseBox.App.Models;
 using FuseBox.App.Models.Shild_Comp;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.ComponentModel;
 using System.Reflection;
@@ -66,9 +67,9 @@ namespace FuseBox
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
             Connector PhaseInput = new Connector(ConnectorIn.Phase1,  new Cable (ConnectorColour.Red, WireSection));
-            Connector ZeroInput  = new Connector(ConnectorIn.Zero,   new Cable (ConnectorColour.Blue, WireSection ));
+            Connector ZeroInput  = new Connector(ConnectorIn.Zero,    new Cable (ConnectorColour.Blue, WireSection ));
             Connector PhaseOut   = new Connector(ConnectorOut.Phase1, new Cable (ConnectorColour.Red, WireSection ));
-            Connector ZeroOut    = new Connector(ConnectorOut.Zero,  new Cable (ConnectorColour.Blue, WireSection));
+            Connector ZeroOut    = new Connector(ConnectorOut.Zero,   new Cable (ConnectorColour.Blue, WireSection));
 
             List<Connector> standartSet2x2 = new List<Connector>() { PhaseInput, ZeroInput, PhaseOut, ZeroOut };
             List<Connector> justInput2     = new List<Connector>() { PhaseInput, ZeroInput};
@@ -111,14 +112,15 @@ namespace FuseBox
 
             shieldModuleSet.AddRange(uzos);
 
+            for (int i = 0; i < shieldModuleSet.Count; i++)
+            {
+                shieldModuleSet[i].Id = i + 1;
+            }
+
             CreateConnections(shieldModuleSet, project);
 
             // Компоновка Щита по уровням...
             ShieldByLevel(project, shieldModuleSet);
-
-
-
-
 
             return project.FuseBox;
         }
@@ -201,6 +203,13 @@ namespace FuseBox
             DistributeRCDFromLoad(project, uzos, AVFuses);
 
             shieldModuleSet.AddRange(uzos);
+
+            for (int i = 0; i < shieldModuleSet.Count; i++)
+            {
+                shieldModuleSet[i].Id = i + 1; // ID начинается с 1
+            }
+
+            CreateConnections(shieldModuleSet, project);
 
             // Компоновка Щита по уровням...
             ShieldByLevel(project, shieldModuleSet);
@@ -565,42 +574,45 @@ namespace FuseBox
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
-            foreach (var component in components) // Берем каждый компонент по очереди
-            { 
-                foreach (var connector in component.Connectors) // Каждый разьем компонента
+            int next = 1;
+
+            for (int comp = 0; comp < components.Count; comp++)
+            {
+                for (int con = 0; con < components[comp].Connectors.Count; con++)          // Берем каждый разьем компонента
                 {
-                    // Для каждого разьема мы создаем соединение с ID текущего элементом и подходящим проводом
-
-                    //connector.vacant = false;
-
-                    // Подключаем подходящие элементы по очереди, пока не найдем другой выход
-                    for (var i = component.Id + 1; i < components.Count(); i++)
+                    if (components[comp].Connectors[con].connectorOut != 0)                // Но только выходы
                     {
-                        if (components[i].Connectors.Any(e => e.connectorOut == connector.connectorOut))
+                        for (var i = components[comp].Id + 1; i < components.Count(); i++) // Перебираем элементы по очереди
                         {
-                            Position connectionIds = new Position(component.Id, i);
-                            project.FuseBox.CableConnections.Add(new Connection(connector.cableType, connectionIds));
+                            // Если у компонента есть конкретный тип выхода, то есть и такой же вход
 
-                            connector.connectionsCount += 1;
-
-                            i = components.Count();
-                            break;
-                        }
-                        else 
-                        {
-                            // Есть ли у него подходящий вход?
-                            if (components[i].Connectors.Any(e => e.connectorIn.ToString() == connector.connectorOut.ToString()))
+                            if (components[i - 1].Connectors.Any(e => e.connectorOut.ToString() == components[comp].Connectors[con].connectorOut.ToString()))                                            // Если среди коннекторов следующего компонента
                             {
-                                Position connectionIds = new Position(component.Id, i);
-                                project.FuseBox.CableConnections.Add(new Connection(connector.cableType, connectionIds));
-                            }
+                                // Создаем соединение
+                                Position connectionIds = new Position(components[comp].Id, i);
+                                project.FuseBox.CableConnections.Add(new Connection(components[comp].Connectors[con].cableType, connectionIds));
 
+                                // Добавляем информацию про колличетво соединений в разьем
+                                components[comp].Connectors[con].connectionsCount += 1;
+                                break;
+                            }
+                            else
+                            {
+                                // Есть ли у него подходящий вход?
+                                if (components[i].Connectors.Any(e => e.connectorIn.ToString() == components[comp].Connectors[con].connectorOut.ToString()))
+                                {
+                                    // Создаем соединение
+                                    Position connectionIds = new Position(components[comp].Id, i);
+                                    project.FuseBox.CableConnections.Add(new Connection(components[comp].Connectors[con].cableType, connectionIds));
+
+                                }
+                                next++;
+                            }
                         }
                     }
                 }
             }
         }
-
         //public bool IsConnectorIn(int id, List<Component> components)
         //{
         //    if (components[id].Connectors.Any(e => e.cableType == ))

@@ -1,4 +1,6 @@
-﻿namespace FuseBox
+﻿using System.Text.Json.Serialization;
+
+namespace FuseBox
 {
     public class Project : BaseEntity
     {
@@ -8,6 +10,8 @@
         public FuseBox FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public List<Connection> Connections { get; set; }
 
         public Project()

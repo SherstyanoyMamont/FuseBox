@@ -4,19 +4,21 @@ namespace FuseBox
 {
     public enum ConnectorIn
     {
+        Unknown = 0,   // Значение по умолчанию (если не заполнено)
         Phase1,
         Phase2,
         Phase3,
         Zero,
-        AV
+        AV,
     }
     public enum ConnectorOut
     {
+        Unknown = 0,   // Значение по умолчанию (если не заполнено)
         Phase1,
         Phase2,
         Phase3,
         Zero,
-        AV
+        AV,
     }
 
     public class Connector : BaseEntity

@@ -2,6 +2,8 @@
 using FuseBox.Controllers;
 using Newtonsoft.Json;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace FuseBox
 {
@@ -52,6 +54,12 @@ namespace FuseBox
             {
                 Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
                 ConfigurationService configurationService = new ConfigurationService();       // создание экземпляра сервиса конфигурации
+
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Converters = { new JsonStringEnumConverter() }
+                };
 
                 // JSON-строка с данными о проекте
                 string jsonData = @"

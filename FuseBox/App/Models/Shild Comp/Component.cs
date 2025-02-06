@@ -7,7 +7,7 @@ namespace FuseBox
 {
     public class Component : BaseElectrical, IPricedComponent // Abstract?
     {
-        public static int _idCounter = 0; // Static counter for all objects of this class
+        // public static int _idCounter = 0; // Static counter for all objects of this class
         public decimal Price { get; set; }
 
         [JsonProperty(Order = 4)]
@@ -32,18 +32,4 @@ namespace FuseBox
             Price = price;
         }
     }
-
-
-    class Соединение : BaseEntity
-    {
-        // тип кабеля
-        // индекс компонент1
-        // выход/вход компонент1
-
-        // индекс на компонент2
-        // выход/вход компонент2
-
-        // тип соединения ???
-    }
-
 }
