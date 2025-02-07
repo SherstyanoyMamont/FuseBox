@@ -1,5 +1,5 @@
 ﻿using FuseBox.App.Interfaces;
-using FuseBox.App.Models;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json;
 
@@ -16,7 +16,7 @@ namespace FuseBox
             //Connectors = new List<Connector> { connector };
 
             // В список разьемов добавляем разьем с входом для АВ и кабелем красного цвета
-            Connectors = new List<Connector> { new Connector(ConnectorIn.AV, new Cable(ConnectorColour.Red, (decimal)1.5)) }; 
+            Ports = new List<Port> { new Port(PortIn.AV, new Cable(ConnectorColour.Red, (decimal)1.5)) }; 
             Electricals = electricals;
         }
     }

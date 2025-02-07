@@ -1,9 +1,9 @@
 ﻿using FuseBox.App.Interfaces;
-using FuseBox.App.Models;
 using Newtonsoft.Json;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Xml.Linq;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.App.Models.BaseAbstract;
 
 namespace FuseBox
 {
@@ -13,7 +13,7 @@ namespace FuseBox
 
         public Contactor(string name, int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price)
         {
-            Connectors = new List<Connector>();
+            Ports = new List<Port>();
             Electricals = electricals;
 
         }

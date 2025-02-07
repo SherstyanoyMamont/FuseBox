@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using FuseBox.App.Models.BaseAbstract;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {

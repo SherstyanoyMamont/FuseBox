@@ -1,5 +1,5 @@
 ﻿using FuseBox.App.Interfaces;
-using FuseBox.App.Models;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json;
 
@@ -11,14 +11,14 @@ namespace FuseBox
         public decimal Price { get; set; }
 
         [JsonProperty(Order = 4)]
-        public List<Connector> Connectors { get; set; }
+        public List<Port> Ports { get; set; }
 
         [JsonProperty(Order = 5)]
         public double Slots { get; set; }
 
-        public Component(string name, int amper, List<Connector> connectors,  int slots, decimal price)
+        public Component(string name, int amper, List<Port> ports,  int slots, decimal price)
         {
-            Connectors = connectors;
+            Ports = ports;
             Name = name;
             Amper = amper;
             Slots = slots;

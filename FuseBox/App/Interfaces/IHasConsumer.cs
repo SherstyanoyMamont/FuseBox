@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Models;
+﻿using FuseBox.App.Models.BaseAbstract;
 using Newtonsoft.Json;
 
 namespace FuseBox.App.Interfaces

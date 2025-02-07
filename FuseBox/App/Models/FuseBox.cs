@@ -1,5 +1,5 @@
 ﻿using FuseBox.App.Interfaces;
-using FuseBox.App.Models;
+using FuseBox.App.Models.BaseAbstract;
 using System.Collections.Generic;
 
 namespace FuseBox

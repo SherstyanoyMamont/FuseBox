@@ -1,5 +1,6 @@
 ﻿using FuseBox;
 using FuseBox.App.Models;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,32 +23,30 @@ namespace FuseBox
             //ValidateInitialSettings(input.InitialSettings); // Проверка первичных данных***
 
             // Создаем список всех потребителей и записываем их
-            List<BaseElectrical> AllConsumers = CalculateAllConsumers(input);
+            List<BaseElectrical> AllConsumers = CalculateAllConsumers(input.Floors);
             double TotoalPoverA = input.CalculateTotalPower();
 
             // Расчет параметров устройства электрощита
-            FuseBox shield;
+            FuseBox fuseBox;
 
             // Расчет сечения проводов для щитка
             
 
             if (input.InitialSettings.PhasesCount == 1) // Колличество фаз
             {
-                shield = ConfigureShield(input, AllConsumers);
+                fuseBox = ConfigureShield(input, input.FuseBox, AllConsumers);
             }
             else
             {
-                shield = ConfigureShield3(input, AllConsumers);
+                fuseBox = ConfigureShield3(input, input.FuseBox, AllConsumers);
             }
-
-
 
             // Возвращаем новый модифицированный объект
             return new Project
             {
                 InitialSettings = input.InitialSettings,
                 GlobalGrouping = input.GlobalGrouping,
-                FuseBox = shield, // Возвращаем настроенный щит, а все остальное так же
+                FuseBox = fuseBox, // Возвращаем настроенный щит, а все остальное так же
                 FloorGrouping = input.FloorGrouping,
                 Floors = input.Floors,
                 TotalPower = TotoalPoverA
@@ -55,7 +54,7 @@ namespace FuseBox
         }
 
         // Логика конфигурации устройств...
-        private FuseBox ConfigureShield(Project project, List<BaseElectrical> AllConsumers)             
+        private FuseBox ConfigureShield(Project project, FuseBox fuseBox, List<BaseElectrical> AllConsumers)             
         {
 
             List<Fuse> AVFuses = new List<Fuse>();
@@ -68,28 +67,28 @@ namespace FuseBox
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
-            Connector PhaseInput = new Connector(ConnectorIn.Phase1,  new Cable (ConnectorColour.Red, WireSection));
-            Connector ZeroInput  = new Connector(ConnectorIn.Zero,    new Cable (ConnectorColour.Blue, WireSection ));
-            Connector PhaseOut   = new Connector(ConnectorOut.Phase1, new Cable (ConnectorColour.Red, WireSection ));
-            Connector ZeroOut    = new Connector(ConnectorOut.Zero,   new Cable (ConnectorColour.Blue, WireSection));
+            Port PhaseInRed = new Port(PortIn.Phase1,  new Cable (ConnectorColour.Red, WireSection));
+            Port ZeroInput  = new Port(PortIn.Zero,    new Cable (ConnectorColour.Blue, WireSection ));
+            Port PhaseOutRed   = new Port(PortOut.Phase1, new Cable (ConnectorColour.Red, WireSection ));
+            Port ZeroOut    = new Port(PortOut.Zero,   new Cable (ConnectorColour.Blue, WireSection));
 
-            List<Connector> standartSet2x2 = new List<Connector>() { PhaseInput, ZeroInput, PhaseOut, ZeroOut };
-            List<Connector> justInput2     = new List<Connector>() { PhaseInput, ZeroInput};
-            List<Connector> empty          = new List<Connector>();
+            List<Port> standartSet2x2 = new List<Port>() { PhaseInRed, ZeroInput, PhaseOutRed, ZeroOut };
+            List<Port> justInput2     = new List<Port>() { PhaseInRed, ZeroInput};
+            List<Port> empty          = new List<Port>();
 
             int standardSize = 2;
 
-            if (project.FuseBox.MainBreaker)      { shieldModuleSet.Add(new Introductory("Introductory",Type3PN.P1,standartSet2x2,    standardSize, project.InitialSettings.MainAmperage, 35, "P1")); }
-            if (project.FuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component   ("SPD",              100,  justInput2,        standardSize, 65     )); }
-            if (project.FuseBox.LoadSwitch2P)     { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,   standartSet2x2,    standardSize, 35     )); }
-            if (project.FuseBox.RailMeter)        { shieldModuleSet.Add(new Component   ("DinRailMeter",     63,   standartSet2x2,    6,            145    )); }
-            if (project.FuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire     ("RCDFire",          63,   standartSet2x2,    standardSize, 75, 300)); }
-            if (project.FuseBox.VoltageRelay)     { shieldModuleSet.Add(new Component   ("VoltageRelay",     16,   standartSet2x2,    standardSize, 40     )); }
-            if (project.FuseBox.RailSocket)       { shieldModuleSet.Add(new Component   ("DinRailSocket",    16,   empty,             standardSize, 22     )); }
-            if (project.FuseBox.NDiscLine)        { shieldModuleSet.Add(new RCD         ("NDiscLine",        25,   justInput2,        standardSize, 43, 30, new List<BaseElectrical>())); }
-            if (project.FuseBox.LoadSwitch)       { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,   standartSet2x2,    standardSize, 35     )); }
-            if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor   ("ModularContactor", 100,                     4,            25, project.FuseBox.Contactor)); } // !!!
-            if (project.FuseBox.CrossModule)      { shieldModuleSet.Add(new Component   ("CrossBlock",       100,  standartSet2x2,    4,            25     )); }
+            if (fuseBox.MainBreaker)      { shieldModuleSet.Add(new Introductory("Introductory",Type3PN.P1,standartSet2x2,    standardSize, project.InitialSettings.MainAmperage, 35, "P1")); }
+            if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component   ("SPD",              100,  justInput2,        standardSize, 65     )); }
+            if (fuseBox.LoadSwitch2P)     { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,   standartSet2x2,    standardSize, 35     )); }
+            if (fuseBox.RailMeter)        { shieldModuleSet.Add(new Component   ("DinRailMeter",     63,   standartSet2x2,    6,            145    )); }
+            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire     ("RCDFire",          63,   standartSet2x2,    standardSize, 75, 300)); }
+            if (fuseBox.VoltageRelay)     { shieldModuleSet.Add(new Component   ("VoltageRelay",     16,   standartSet2x2,    standardSize, 40     )); }
+            if (fuseBox.RailSocket)       { shieldModuleSet.Add(new Component   ("DinRailSocket",    16,   empty,             standardSize, 22     )); }
+            if (fuseBox.NDiscLine)        { shieldModuleSet.Add(new RCD         ("NDiscLine",        25,   justInput2,        standardSize, 43, 30, new List<BaseElectrical>())); }
+            if (fuseBox.LoadSwitch)       { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,   standartSet2x2,    standardSize, 35     )); }
+            if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor   ("ModularContactor", 100,                     4,            25, project.FuseBox.Contactor)); } // !!!
+            if (fuseBox.CrossModule)      { shieldModuleSet.Add(new Component   ("CrossBlock",       100,  standartSet2x2,    4,            25     )); }
 
             //Cable cable = new Cable();
             //new Connector(ConnectorType.Input, cable);
@@ -109,10 +108,10 @@ namespace FuseBox
             //LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
 
             // Логика распределения потребителей
-            DistributeOfConsumers(project, AllConsumers, AVFuses);
+            DistributeOfConsumers(project.GlobalGrouping, AllConsumers, AVFuses);
 
             // Логика распределения УЗО от нагрузки
-            DistributeRCDFromLoad(project, uzos, AVFuses);
+            DistributeRCDFromLoad(project.CalculateTotalPower(), uzos, AVFuses);
 
             shieldModuleSet.AddRange(uzos);
 
@@ -121,19 +120,19 @@ namespace FuseBox
                 shieldModuleSet[i].Id = i + 1;
             }
 
-            CreateConnections(shieldModuleSet, project);
+            CreateConnections(shieldModuleSet, fuseBox.CableConnections);
 
             // Компоновка Щита по уровням...
-            ShieldByLevel(project, shieldModuleSet);
+            ShieldByLevel(project, project.FuseBox, shieldModuleSet);
 
-            return project.FuseBox;
+            return fuseBox;
         }
 
         /// <summary>
         /// ////////////////////////////////////////////////////////////////////////////////////////////////
         /// </summary>
 
-        private FuseBox ConfigureShield3(Project project, List<BaseElectrical> AllConsumers)
+        private FuseBox ConfigureShield3(Project project, FuseBox fuseBox, List<BaseElectrical> AllConsumers)
         {
             List<Fuse> AVFuses = new List<Fuse>();
             List<Component> shieldModuleSet = new List<Component>();
@@ -145,29 +144,29 @@ namespace FuseBox
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
-            Connector PhaseInRed     = new Connector(ConnectorIn. Phase1,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector PhaseInOrange  = new Connector(ConnectorIn. Phase2,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector PhaseInGrey    = new Connector(ConnectorIn. Phase3,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector ZeroInput      = new Connector(ConnectorIn. Zero,        new Cable (ConnectorColour.Blue, WireSection ));
-            Connector PhaseOutRed    = new Connector(ConnectorOut.Phase1,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector PhaseOutOrange = new Connector(ConnectorOut.Phase2,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector PhaseOutGrey   = new Connector(ConnectorOut.Phase3,      new Cable (ConnectorColour.Red , WireSection ));
-            Connector ZeroOut        = new Connector(ConnectorOut.Zero,        new Cable (ConnectorColour.Blue, WireSection ));
+            Port PhaseInRed     = new Port(PortIn. Phase1,      new Cable (ConnectorColour.Red , WireSection ));
+            Port PhaseInOrange  = new Port(PortIn. Phase2,      new Cable (ConnectorColour.Red , WireSection ));
+            Port PhaseInGrey    = new Port(PortIn. Phase3,      new Cable (ConnectorColour.Red , WireSection ));
+            Port ZeroInput      = new Port(PortIn. Zero,        new Cable (ConnectorColour.Blue, WireSection ));
+            Port PhaseOutRed    = new Port(PortOut.Phase1,      new Cable (ConnectorColour.Red , WireSection ));
+            Port PhaseOutOrange = new Port(PortOut.Phase2,      new Cable (ConnectorColour.Red , WireSection ));
+            Port PhaseOutGrey   = new Port(PortOut.Phase3,      new Cable (ConnectorColour.Red , WireSection ));
+            Port ZeroOut        = new Port(PortOut.Zero,        new Cable (ConnectorColour.Blue, WireSection ));
 
-            List<Connector> Set4x4  = new List<Connector>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey, ZeroOut };
-            List<Connector> Set4In  = new List<Connector>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput };
-            List<Connector> Set3x3  = new List<Connector>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey, ZeroOut };
-            List<Connector> VRelay1 = new List<Connector>() { PhaseInRed, ZeroInput, PhaseOutRed };
-            List<Connector> VRelay2 = new List<Connector>() { PhaseInOrange, ZeroInput, PhaseOutOrange };
-            List<Connector> VRelay3 = new List<Connector>() { PhaseInGrey, ZeroInput, PhaseOutGrey };
-            List<Connector> VRelay4 = new List<Connector>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey };
-            List<Connector> Empty   = new List<Connector>();
+            List<Port> Set4x4  = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey, ZeroOut };
+            List<Port> Set4In  = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput };
+            List<Port> Set3x3  = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey, ZeroOut };
+            List<Port> VRelay1 = new List<Port>() { PhaseInRed, ZeroInput, PhaseOutRed };
+            List<Port> VRelay2 = new List<Port>() { PhaseInOrange, ZeroInput, PhaseOutOrange };
+            List<Port> VRelay3 = new List<Port>() { PhaseInGrey, ZeroInput, PhaseOutGrey };
+            List<Port> VRelay4 = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey };
+            List<Port> Empty   = new List<Port>();
 
             int standardSize = 4;
 
             // Настройки опцыонных автоматов \\
 
-            if (project.FuseBox.MainBreaker)
+            if (fuseBox.MainBreaker)
             {
                 // Если да, то добавляем 3 фазы + ноль
                 if (project.FuseBox.Main3PN)
@@ -179,10 +178,10 @@ namespace FuseBox
                     shieldModuleSet.Add(new Introductory("Introductory 3P",   Type3PN.P3,   Set3x3, project.InitialSettings.MainAmperage, 2, 35, "P1"));
                 }
             }
-            if (project.FuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component("SPD",              100, Set4In,    2, 65)); }
-            if (project.FuseBox.RailMeter)        { shieldModuleSet.Add(new Component("DinRailMeter",     63,  Set4x4,    6, 145)); }
-            if (project.FuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire  ("RCDFire",          63,  Set4x4,    2, 75, 300)); }
-            if (project.FuseBox.VoltageRelay)
+            if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component("SPD",              100, Set4In,    2, 65)); }
+            if (fuseBox.RailMeter)        { shieldModuleSet.Add(new Component("DinRailMeter",     63,  Set4x4,    6, 145)); }
+            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire  ("RCDFire",          63,  Set4x4,    2, 75, 300)); }
+            if (fuseBox.VoltageRelay)
             {
                 if (project.FuseBox.ThreePRelay)
                 {
@@ -196,17 +195,17 @@ namespace FuseBox
                     shieldModuleSet.Add(new Component("VoltageRelay", 16, VRelay3, 2, 40));
                 }
             }
-            if (project.FuseBox.RailSocket)       { shieldModuleSet.Add(new Component("DinRailSocket",    16,  Empty,     3, 22)); }
-            if (project.FuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100,            4, 25, project.FuseBox.Contactor)); } // !!!
-            if (project.FuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, Set4x4,    4, 25)); }       // CrossModule? 4 slots?
+            if (fuseBox.RailSocket)       { shieldModuleSet.Add(new Component("DinRailSocket",    16,  Empty,     3, 22)); }
+            if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100,            4, 25, project.FuseBox.Contactor)); } // !!!
+            if (fuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, Set4x4,    4, 25)); }       // CrossModule? 4 slots?
 
             //LastMainModuleId = Component._idCounter;   // Зафиксировали последний id главных модулей, дальше идут УЗО и автоматы
 
             // Логика распределения потребителей
-            DistributeOfConsumers(project, AllConsumers, AVFuses);
+            DistributeOfConsumers(project.GlobalGrouping, AllConsumers, AVFuses);
 
             // Логика распределения УЗО от нагрузки
-            DistributeRCDFromLoad(project, uzos, AVFuses);
+            DistributeRCDFromLoad(project.CalculateTotalPower(), uzos, AVFuses);
 
             shieldModuleSet.AddRange(uzos);
 
@@ -215,19 +214,18 @@ namespace FuseBox
                 shieldModuleSet[i].Id = i + 1; // ID начинается с 1
             }
 
-            CreateConnections(shieldModuleSet, project);
+            CreateConnections(shieldModuleSet, fuseBox.CableConnections);
 
             // Компоновка Щита по уровням...
-            ShieldByLevel(project, shieldModuleSet);
+            ShieldByLevel(project, project.FuseBox, shieldModuleSet);
 
-            return project.FuseBox;
+            return fuseBox;
         }
 
         // Логика распределения модулей по порядку
-        public void DistributeOfConsumers(Project project, List<BaseElectrical> AllConsumers, List<Fuse> AVFuses)
+        public void DistributeOfConsumers(GlobalGrouping globalGrouping, List<BaseElectrical> AllConsumers, List<Fuse> AVFuses)
         {            
             // Логика распределения потребителей
-
             List<BaseElectrical> Lighting = new();
             List<BaseElectrical> Socket = new();
             List<BaseElectrical> AirConditioner = new();
@@ -241,8 +239,6 @@ namespace FuseBox
                 { "Heated Floor", HeatedFloor }
             };
 
-            
-
             foreach (var consumer in AllConsumers)
             {
                 if (consumerGroups.ContainsKey(consumer.Name))
@@ -254,25 +250,25 @@ namespace FuseBox
             // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
             if (AllConsumers.Any(e => e.Name.Equals("Lighting", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < project.GlobalGrouping.Lighting; i++)
+                for (int i = 0; i < globalGrouping.Lighting; i++)
                 {
-                    var L = DistributeEvenly(Lighting, project.GlobalGrouping.Lighting); // Выбирает только весь свет
+                    var L = DistributeEvenly(Lighting, globalGrouping.Lighting); // Выбирает только весь свет
                     AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));                        // И пихает его в автомат
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("Socket", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < project.GlobalGrouping.Sockets; i++)
+                for (int i = 0; i < globalGrouping.Sockets; i++)
                 {
-                    var L = DistributeEvenly(Socket, project.GlobalGrouping.Sockets);
+                    var L = DistributeEvenly(Socket, globalGrouping.Sockets);
                     AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));
                 }
             }
             if (AllConsumers.Any(e => e.Name.Equals("Air Conditioner", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < project.GlobalGrouping.Conditioners; i++)
+                for (int i = 0; i < globalGrouping.Conditioners; i++)
                 {
-                    var L = DistributeEvenly(AirConditioner, project.GlobalGrouping.Conditioners);
+                    var L = DistributeEvenly(AirConditioner, globalGrouping.Conditioners);
                     AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));
                 }
             }
@@ -291,20 +287,17 @@ namespace FuseBox
                 }
             }
         }
-        public void DistributeRCDFromLoad(Project project, List<RCD> uzos, List<Fuse> AVFuses)
+        public void DistributeRCDFromLoad(double TAmper, List<RCD> uzos, List<Fuse> AVFuses)
         {
-            //Component._idCounter = LastMainModuleId;
-
             // Делаем запас в два раза
             double RCD16A = 8.00;
             double RCD32B = 16.00;
             double RCD64A = 32.00;
             double AVPerRCD = 6.00;
 
+            int AVCount = AVFuses.Count;
+
             // Логика распределения УЗО от нагрузки
-
-            double TAmper = project.CalculateTotalPower();
-
             if (TAmper <= RCD16A)
             {
                 // Создаем УЗО
@@ -320,29 +313,27 @@ namespace FuseBox
             }
             else
             {
-                double countOfRCD = Math.Ceiling(project.CalculateTotalPower() / RCD64A);
+                double countOfRCD = Math.Ceiling(TAmper / RCD64A);
 
-                if (countOfRCD < Math.Ceiling(AVFuses.Count / AVPerRCD))
+                if (countOfRCD < Math.Ceiling(AVCount / AVPerRCD))
                 {
-                    countOfRCD = Math.Ceiling(AVFuses.Count / AVPerRCD);
+                    countOfRCD = Math.Ceiling(AVCount / AVPerRCD);
                 }
-
                 for (int i = 0; i < countOfRCD; i++)
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, 2, new List<BaseElectrical>()));
                 }
-                while (uzos.Count != Math.Ceiling(AVFuses.Count / RCD.LimitOfConnectedFuses))
+                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))
                 {
                     uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>()));
                     countOfRCD++;
                 }
                 DistributeFusesToRCDs(AVFuses, uzos);
             }
-
         }
         
 
-        public void DistributeRCDFromLoad3P(Project project, List<RCD> uzos, List<Fuse> AVFuses)
+        public void DistributeRCDFromLoad3P(double TAmper, List<RCD> uzos, List<Fuse> AVFuses)
         {
             // Делаем запас в два раза
             double RCD16A = 8.00;
@@ -351,9 +342,6 @@ namespace FuseBox
             double RCDPerPhases = 3.00;
 
             // Логика распределения УЗО от нагрузки
-
-            double TAmper = project.CalculateTotalPower();
-
             if (TAmper <= RCD16A)
             {
                 // Создаем УЗО
@@ -369,14 +357,13 @@ namespace FuseBox
             }
             else
             {
-                double countOfRCD = Math.Ceiling(project.CalculateTotalPower() / RCD64A);
+                double countOfRCD = Math.Ceiling(TAmper / RCD64A);
 
                 // Если больше 3, округляем вверх до ближайшего кратного 3 
                 if (countOfRCD > RCDPerPhases) // !!!
                 {
                     countOfRCD = Math.Ceiling(countOfRCD / RCDPerPhases) * RCDPerPhases;
                 }
-
                 for (int i = 0; i < countOfRCD; i++)
                 {
                     uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>()));
@@ -435,7 +422,7 @@ namespace FuseBox
         }
 
         // Логика распределения модулей по уровням...
-        public void ShieldByLevel(Project project, List<Component> shieldModuleSet)
+        public void ShieldByLevel(Project project, FuseBox fuseBox, List<Component> shieldModuleSet)
         {            
             int occupiedSlots = 0;
             int currentLevel = 0;
@@ -445,29 +432,29 @@ namespace FuseBox
             {
                 occupiedSlots += (int)shieldModuleSet[i].Slots;
 
-                if (occupiedSlots < shieldWidth) project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);    // модуль помещается на уровне
+                if (occupiedSlots < shieldWidth) fuseBox.Components[currentLevel].Add(shieldModuleSet[i]);    // модуль помещается на уровне
 
                 else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
                 {
-                    project.FuseBox.Components[currentLevel].Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
+                    fuseBox.Components[currentLevel].Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
                     currentLevel++;
-                    project.FuseBox.Components.Add(new List<BaseElectrical>());
+                    fuseBox.Components.Add(new List<BaseElectrical>());
 
                     occupiedSlots = (int)shieldModuleSet[i].Slots;
-                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
+                    fuseBox.Components[currentLevel].Add(shieldModuleSet[i]);
                 }
                 else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
                 {
-                    project.FuseBox.Components[currentLevel].Add(shieldModuleSet[i]);                  
+                    fuseBox.Components[currentLevel].Add(shieldModuleSet[i]);                  
                     if (shieldModuleSet[i] != shieldModuleSet[^1])
                     {
-                        project.FuseBox.Components.Add(new List<BaseElectrical>());
+                        fuseBox.Components.Add(new List<BaseElectrical>());
                         currentLevel++;
                         occupiedSlots = 0;
                     }                   
                 }
-                if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])  
-                    project.FuseBox.Components[currentLevel].Add(new EmptySlot(shieldWidth - occupiedSlots));
+                if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])
+                    fuseBox.Components[currentLevel].Add(new EmptySlot(shieldWidth - occupiedSlots));
             }
             //ShieldWithInterSlots(project);
         }
@@ -524,10 +511,10 @@ namespace FuseBox
 
         //}
 
-        public List<BaseElectrical> CalculateAllConsumers(Project project)
+        public List<BaseElectrical> CalculateAllConsumers(List<Floor> floors)
         {
             List<BaseElectrical> AllConsumers = new List<BaseElectrical>();
-            foreach (var floor in project.Floors)
+            foreach (var floor in floors)
             {
                 foreach (var room in floor.Rooms)
                 {
@@ -582,53 +569,51 @@ namespace FuseBox
             throw new ArgumentException("Требуется автомат с номиналом выше 125А, уточните расчёт.");
         }
 
-        public void CreateConnections(List<Component> components, Project project)
+        // Создаем соединение проводами
+        public void CreateConnections(List<Component> components, List<Connection> сableConnections)
         {
-            double TotalPower = project.TotalPower;
-            double WireSection = CalculateWireCrossSection(TotalPower);
-
-            Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
-            Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
-
-            int next = 1;
-
-            for (int comp = 0; comp < components.Count; comp++)
+            for (int i = 0; i < components.Count; i++)                                     // Берем каждый компонент
             {
-                for (int con = 0; con < components[comp].Connectors.Count; con++)          // Берем каждый разьем компонента
+                for (int port = 0; port < components[i].Ports.Count; port++)               // Берем каждый разьем компонента
                 {
-                    if (components[comp].Connectors[con].connectorOut != 0)                // Но только выходы
+                    if (components[i].Ports[port].portOut != 0)                            // Но скипаем входы
                     {
-                        for (var i = components[comp].Id + 1; i < components.Count(); i++) // Перебираем элементы по очереди
+                        for (var n = components[i].Id + 1; n < components.Count(); n++)    // Перебираем следующие компоненты по очереди
                         {
-                            // Если у компонента есть конкретный тип выхода, то есть и такой же вход
-
-                            if (components[i - 1].Connectors.Any(e => e.connectorOut.ToString() == components[comp].Connectors[con].connectorOut.ToString()))                                            // Если среди коннекторов следующего компонента
+                            // Если у компонента есть такой же тип выхода, то есть и подходящий вход
+                            if (components[n - 1].Ports.Any(e => e.portOut.ToString() == components[i].Ports[port].portOut.ToString()))
                             {
                                 // Создаем соединение
-                                Position connectionIds = new Position(components[comp].Id, i);
-                                project.FuseBox.CableConnections.Add(new Connection(components[comp].Connectors[con].cableType, connectionIds));
+                                AddConnection(сableConnections, components[i].Id, components[i].Ports[port], n);
 
-                                // Добавляем информацию про колличетво соединений в разьем
-                                components[comp].Connectors[con].connectionsCount += 1;
+                                // Берем следующий выходной разьем
                                 break;
                             }
                             else
                             {
                                 // Есть ли у него подходящий вход?
-                                if (components[i].Connectors.Any(e => e.connectorIn.ToString() == components[comp].Connectors[con].connectorOut.ToString()))
+                                if (components[n].Ports.Any(e => e.PortIn.ToString() == components[i].Ports[port].portOut.ToString()))
                                 {
-                                    // Создаем соединение
-                                    Position connectionIds = new Position(components[comp].Id, i);
-                                    project.FuseBox.CableConnections.Add(new Connection(components[comp].Connectors[con].cableType, connectionIds));
+                                    AddConnection(сableConnections, components[i].Id, components[i].Ports[port], n);
 
+                                    // Продолжаем подключение из того-же разьема
                                 }
-                                next++;
                             }
                         }
                     }
                 }
             }
         }
+
+        public void AddConnection(List<Connection> CableConnections, int componentId, Port port, int indexFinish)
+        {
+            Position connectionIds = new Position(componentId, indexFinish);
+            CableConnections.Add(new Connection(port.cableType, connectionIds));
+
+            // Добавляем информацию про колличетво соединений в разьем
+            port.connectionsCount += 1;
+        }
+
         //public bool IsConnectorIn(int id, List<Component> components)
         //{
         //    if (components[id].Connectors.Any(e => e.cableType == ))
