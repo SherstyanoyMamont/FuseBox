@@ -16,7 +16,7 @@ namespace FuseBox.App.Models.Shild_Comp
         public decimal Length { get; set; } // m
         public decimal Section { get; set; } // mm^2
         public string Type { get; set; } // Тип кабеля
-        public string colour1 { get; set; }
+        public string? colour1 { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ConnectorColour Colour { get; set; }

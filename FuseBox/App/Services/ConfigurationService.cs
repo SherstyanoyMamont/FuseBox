@@ -67,10 +67,10 @@ namespace FuseBox
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
-            Port PhaseInRed = new Port(PortIn.Phase1,  new Cable (ConnectorColour.Red, WireSection));
-            Port ZeroInput  = new Port(PortIn.Zero,    new Cable (ConnectorColour.Blue, WireSection ));
-            Port PhaseOutRed   = new Port(PortOut.Phase1, new Cable (ConnectorColour.Red, WireSection ));
-            Port ZeroOut    = new Port(PortOut.Zero,   new Cable (ConnectorColour.Blue, WireSection));
+            Port PhaseInRed  = new Port(PortIn.Phase1,  new Cable (ConnectorColour.Red,  WireSection));
+            Port ZeroInput   = new Port(PortIn.Zero,    new Cable (ConnectorColour.Blue, WireSection ));
+            Port PhaseOutRed = new Port(PortOut.Phase1, new Cable (ConnectorColour.Red,  WireSection ));
+            Port ZeroOut     = new Port(PortOut.Zero,   new Cable (ConnectorColour.Blue, WireSection));
 
             List<Port> standartSet2x2 = new List<Port>() { PhaseInRed, ZeroInput, PhaseOutRed, ZeroOut };
             List<Port> justInput2     = new List<Port>() { PhaseInRed, ZeroInput};
@@ -144,14 +144,14 @@ namespace FuseBox
             Cable cablePhase = new Cable(ConnectorColour.Red, Convert.ToDecimal(WireSection));
             Cable cableZero = new Cable(ConnectorColour.Blue, Convert.ToDecimal(WireSection));
 
-            Port PhaseInRed     = new Port(PortIn. Phase1,      new Cable (ConnectorColour.Red , WireSection ));
-            Port PhaseInOrange  = new Port(PortIn. Phase2,      new Cable (ConnectorColour.Red , WireSection ));
-            Port PhaseInGrey    = new Port(PortIn. Phase3,      new Cable (ConnectorColour.Red , WireSection ));
-            Port ZeroInput      = new Port(PortIn. Zero,        new Cable (ConnectorColour.Blue, WireSection ));
-            Port PhaseOutRed    = new Port(PortOut.Phase1,      new Cable (ConnectorColour.Red , WireSection ));
-            Port PhaseOutOrange = new Port(PortOut.Phase2,      new Cable (ConnectorColour.Red , WireSection ));
-            Port PhaseOutGrey   = new Port(PortOut.Phase3,      new Cable (ConnectorColour.Red , WireSection ));
-            Port ZeroOut        = new Port(PortOut.Zero,        new Cable (ConnectorColour.Blue, WireSection ));
+            Port PhaseInRed     = new Port(PortIn. Phase1, new Cable (ConnectorColour.Red   , WireSection ));
+            Port PhaseInOrange  = new Port(PortIn. Phase2, new Cable (ConnectorColour.Orange, WireSection ));
+            Port PhaseInGrey    = new Port(PortIn. Phase3, new Cable (ConnectorColour.Grey  , WireSection ));
+            Port ZeroInput      = new Port(PortIn. Zero,   new Cable (ConnectorColour.Blue  , WireSection ));
+            Port PhaseOutRed    = new Port(PortOut.Phase1, new Cable (ConnectorColour.Red   , WireSection ));
+            Port PhaseOutOrange = new Port(PortOut.Phase2, new Cable (ConnectorColour.Orange, WireSection ));
+            Port PhaseOutGrey   = new Port(PortOut.Phase3, new Cable (ConnectorColour.Grey  , WireSection ));
+            Port ZeroOut        = new Port(PortOut.Zero,   new Cable (ConnectorColour.Blue  , WireSection ));
 
             List<Port> Set4x4  = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput, PhaseOutRed, PhaseOutOrange, PhaseOutGrey, ZeroOut };
             List<Port> Set4In  = new List<Port>() { PhaseInRed, PhaseInOrange, PhaseInGrey, ZeroInput };
@@ -252,7 +252,7 @@ namespace FuseBox
             {
                 for (int i = 0; i < globalGrouping.Lighting; i++)
                 {
-                    var L = DistributeEvenly(Lighting, globalGrouping.Lighting); // Выбирает только весь свет
+                    var L = DistributeEvenly(Lighting, globalGrouping.Lighting);         // Выбирает только весь свет
                     AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));                        // И пихает его в автомат
                 }
             }
@@ -331,8 +331,6 @@ namespace FuseBox
                 DistributeFusesToRCDs(AVFuses, uzos);
             }
         }
-        
-
         public void DistributeRCDFromLoad3P(double TAmper, List<RCD> uzos, List<Fuse> AVFuses)
         {
             // Делаем запас в два раза
@@ -402,7 +400,6 @@ namespace FuseBox
             }
             
         }
-
         public List<List<T>> DistributeEvenly<T>(List<T> items, int numberOfBuckets)
         {
             // Создаём пустые списки
@@ -458,59 +455,6 @@ namespace FuseBox
             }
             //ShieldWithInterSlots(project);
         }
-
-        // "Inter cable slot" - В этом пространстве можно прокладывать кабель
-        // "Inter AV slot" - В этом пространстве нельзя прокладывать кабель
-
-        //public void ShieldWithInterSlots(Project project)
-        //{
-        //    for (int i = 0; i <  project.FuseBox.Components.Count; i++)
-        //    {
-        //        for (int j = 0; j < project.FuseBox.Components[i].Count; j++)
-        //        {
-        //            if (project.FuseBox.Components[i][j] != project.FuseBox.Components[i][^1])
-        //            {
-        //                if (project.FuseBox.Components[i][j].Name == "RCD")
-        //                {
-        //                    var rcd = project.FuseBox.Components[i][j] as RCD;
-        //                    for (int ii = 0; ii < rcd.Electricals.Count; ii++)
-        //                    {
-        //                        if (ii == 0)
-        //                        {
-        //                            rcd.Electricals.Insert(ii, new Space(0.5));
-        //                            rcd.Slots += 0.5;
-        //                        }
-        //                        else if (rcd.Electricals[ii] == rcd.Electricals[^1])
-        //                        {
-        //                            rcd.Electricals.Insert(ii + 1, new Space(1)); // Между АВ и Пустым слотом 1 интерслот
-        //                            rcd.Slots += 1;
-        //                            ii++;
-        //                        }
-        //                        else
-        //                        {
-        //                            rcd.Electricals.Insert(ii + 1, new Space(0.5)); // Между АВ и АВ 0.5 интерслота
-        //                            rcd.Slots += 0.5;
-        //                            ii++;
-        //                        }
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    project.FuseBox.Components[i].Insert(j + 1, new Space(1));    // Между модулями 1 интерслот
-        //                    j++;
-        //                }
-                        
-        //            }
-        //        }
-
-        //    }
-        //}
-
-        //public void CableConnections(List<List<BaseElectrical>> components)
-        //{
-
-        //}
-
         public List<BaseElectrical> CalculateAllConsumers(List<Floor> floors)
         {
             List<BaseElectrical> AllConsumers = new List<BaseElectrical>();
@@ -604,7 +548,6 @@ namespace FuseBox
                 }
             }
         }
-
         public void AddConnection(List<Connection> CableConnections, int componentId, Port port, int indexFinish)
         {
             Position connectionIds = new Position(componentId, indexFinish);

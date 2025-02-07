@@ -23,28 +23,20 @@ namespace FuseBox
             Ports = new List<Port> 
             {
                 new Port(PortIn.Phase1, new Cable (ConnectorColour.Red, (decimal)10.00)), 
-                new Port(PortIn.Zero,  new Cable (ConnectorColour.Blue,(decimal)10.00)), 
-                new Port(PortOut.AV,  new Cable (ConnectorColour.Red, (decimal)1.5  )) 
+                new Port(PortIn.Zero,   new Cable (ConnectorColour.Blue,(decimal)10.00)), 
+                new Port(PortOut.AV,    new Cable (ConnectorColour.Red, (decimal)1.5  )) 
             };
             Capacity = capacity;
             Electricals = electricals;
         }
 
-        public RCD(string name, int amper, List<Port> connectors, int slots, decimal price, int capacity, List<BaseElectrical> electricals) : base(name, amper, connectors, slots, price) // List<Electricals> electricals,
+        public RCD(string name, int amper, List<Port> ports, int slots, decimal price, int capacity, List<BaseElectrical> electricals) : base(name, amper, ports, slots, price) // List<Electricals> electricals,
         {
 
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
-            Ports = connectors;
+            Ports = ports;
             Capacity = capacity;
             Electricals = electricals;
-        }
-
-        public void OrderBreakersId()
-        {
-            for (int i = 0; i < Electricals.Count; i++)
-            {
-                Electricals[i].Id = i + 1;
-            }
         }
     }
 }
