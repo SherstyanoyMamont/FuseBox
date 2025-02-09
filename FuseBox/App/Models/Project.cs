@@ -12,9 +12,6 @@ namespace FuseBox
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public List<Connection> Connections { get; set; }
-
         public Project()
         {
             InitialSettings = new InitialSettings();
@@ -22,7 +19,6 @@ namespace FuseBox
             FloorGrouping = new FloorGrouping();
             GlobalGrouping = new GlobalGrouping();
             Floors = new List<Floor>();
-            Connections = new List<Connection>();
         }
 
         public double CalculateTotalPower() // Calculates the total power of the entire object

@@ -11,7 +11,7 @@ namespace FuseBox
         public decimal Price { get; set; }
 
         [JsonProperty(Order = 4)]
-        public List<Port> Ports { get; set; }
+        public List<Port> Ports = new List<Port>();
 
         [JsonProperty(Order = 5)]
         public double Slots { get; set; }

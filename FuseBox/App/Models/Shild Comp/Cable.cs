@@ -10,12 +10,10 @@ namespace FuseBox.App.Models.Shild_Comp
         Grey,
         Blue
     }
-    public class Cable : NonElectrical, IPricedComponent
+    public class Cable : NonElectrical
     {
-        public decimal Price { get; set; } // $
         public decimal Length { get; set; } // m
         public decimal Section { get; set; } // mm^2
-        public string Type { get; set; } // Тип кабеля
         public string? colour1 { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]

@@ -13,9 +13,8 @@ namespace FuseBox
     {
         public Type3PN Type { get; set; }
 
-        public Introductory(string name, Type3PN type, List<Port> ports, int slots, int amper,  decimal price, string type3PN) : base(name, amper, ports, slots, price)
+        public Introductory(string name, Type3PN type, int slots, int amper,  decimal price, string type3PN) : base(name, amper, slots, price)
         {
-            Ports = ports;
             Type = type;
         }
     }

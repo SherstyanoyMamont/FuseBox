@@ -6,7 +6,7 @@ using FuseBox.App.Models.Shild_Comp;
 
 namespace FuseBox
 {
-    public class Connection : BaseEntity
+    public class Connection
     {
         public Cable Cable { get; set; }
         public Position CabelWay { get; set; }
