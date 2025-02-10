@@ -30,13 +30,6 @@ namespace FuseBox
 
         public Cable cableType;
 
-        public Port(PortOut portOut, PortIn portIn, Cable cableType)
-        {
-            this.portOut = portOut;
-            this.PortIn = portIn;
-            this.cableType = cableType;
-        }
-
         public Port(PortOut connectorType, Cable cableType)
         {
             this.portOut = connectorType;

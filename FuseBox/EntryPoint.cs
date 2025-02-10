@@ -1,9 +1,11 @@
 ﻿
+using System;
 using FuseBox.Controllers;
 using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace FuseBox
 {
@@ -13,7 +15,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -74,7 +76,7 @@ namespace FuseBox
                     ""Conditioners"": 1
                   },
                   ""initialSettings"": {
-                    ""PhaseCount"": 1,
+                    ""PhaseCount"": 3,
                     ""MainAmperage"": 25,
                     ""ShieldWidth"": 16,
                     ""VoltageStandard"": 220,
@@ -85,10 +87,11 @@ namespace FuseBox
                     ""Main3PN"": false,
                     ""SurgeProtection"": true,
                     ""LoadSwitch2P"": true,
-                    ""ModularContactor"": true,
+                    ""ModularContactor"": false,
                     ""RailMeter"": true,
                     ""FireUZO"": true,
                     ""VoltageRelay"": true,
+                    ""ThreePRelay"": false,
                     ""RailSocket"": true,
                     ""NDisconnectableLine"": true,
                     ""LoadSwitch"": true,
@@ -232,9 +235,7 @@ namespace FuseBox
                     }
                   ]
                 }";
-
                 Project project = JsonConvert.DeserializeObject<Project>(jsonData);        // десериализация данных
-
                 var pc = configurationService.GenerateConfiguration(project);
                 var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
 

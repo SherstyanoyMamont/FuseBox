@@ -12,7 +12,7 @@ namespace FuseBox
 
         public InitialSettings()
         {
-            PhasesCount = 1;
+            PhasesCount = 3;
             MainAmperage = 25;
             ShieldWidth = 12;
             VoltageStandard = 220;

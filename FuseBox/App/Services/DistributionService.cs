@@ -1,21 +1,22 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
+using System.Collections.Generic;
 
 namespace FuseBox
 {
     public class DistributionService()
     {
+        public List<BaseElectrical> Lightings = new();
+        public List<BaseElectrical> Socket = new();
+        public List<BaseElectrical> AirConditioner = new();
+        public List<BaseElectrical> HeatedFloor = new();
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers(GlobalGrouping globalGrouping, List<BaseElectrical> AllConsumers, List<Fuse> AVFuses)
         {
             // Логика распределения потребителей
-            List<BaseElectrical> Lighting = new();
-            List<BaseElectrical> Socket = new();
-            List<BaseElectrical> AirConditioner = new();
-            List<BaseElectrical> HeatedFloor = new();
-
+            int heatingPerAV = 1;
             var consumerGroups = new Dictionary<string, List<BaseElectrical>>
             {
-                { "Lighting", Lighting },
+                { "Lighting", Lightings },
                 { "Socket", Socket },
                 { "Air Conditioner", AirConditioner },
                 { "Heated Floor", HeatedFloor }
@@ -32,34 +33,19 @@ namespace FuseBox
             // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
             if (AllConsumers.Any(e => e.Name.Equals("Lighting", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < globalGrouping.Lighting; i++)
-                {
-                    var L = DistributeEvenly(Lighting, globalGrouping.Lighting);         // Выбирает только весь свет
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));                        // И пихает его в автомат
-                }
+                AutomatPerCons(globalGrouping.Lighting, AVFuses, Lightings);
             }
             if (AllConsumers.Any(e => e.Name.Equals("Socket", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < globalGrouping.Sockets; i++)
-                {
-                    var L = DistributeEvenly(Socket, globalGrouping.Sockets);
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));
-                }
+                AutomatPerCons(globalGrouping.Sockets, AVFuses, Socket);
             }
             if (AllConsumers.Any(e => e.Name.Equals("Air Conditioner", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < globalGrouping.Conditioners; i++)
-                {
-                    var L = DistributeEvenly(AirConditioner, globalGrouping.Conditioners);
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, L[i]));
-                }
+                AutomatPerCons(globalGrouping.Conditioners, AVFuses, AirConditioner);
             }
             if (AllConsumers.Any(e => e.Name.Equals("Heated Floor", StringComparison.OrdinalIgnoreCase)))
             {
-                for (int i = 0; i < 1; i++)
-                {
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, HeatedFloor));
-                }
+                AutomatPerCons(heatingPerAV, AVFuses, HeatedFloor);
             }
             foreach (var consumer in AllConsumers) // Добавляем автоматы без сортировки
             {
@@ -69,93 +55,92 @@ namespace FuseBox
                 }
             }
         }
+        public void AutomatPerCons(int groupingParam, List<Fuse> AVFuses, List<BaseElectrical> List)
+        {
+            for (int i = 0; i < groupingParam; i++)
+            {
+                var consumers = DistributeEvenly(List, groupingParam);         // Выбирает все потребители нужно типа
+                AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers[i]));          // И пихает его в автомат
 
-        public void DistributeRCDFromLoad(double TAmper, List<RCD> uzos, List<Fuse> AVFuses)
+            }
+        }
+
+        public void DistributeRCDFromLoad(double TAmper, List<RCD> uzos, List<Fuse> AVFuses, int PhasesCount)
         {
             // Делаем запас в два раза
             double RCD16A = 8.00;
             double RCD32B = 16.00;
             double RCD64A = 32.00;
             double AVPerRCD = 6.00;
+            double RCDPerPhases = 3.00;
 
             int AVCount = AVFuses.Count;
+            double countOfRCD = Math.Ceiling(TAmper / RCD64A);
 
             // Логика распределения УЗО от нагрузки
             if (TAmper <= RCD16A)
             {
                 // Создаем УЗО
-                uzos.Add(new RCD("RCD", 16, 2, 43, 2, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 16, 2, 43, new List<BaseElectrical>(AVFuses)));
             }
             else if (TAmper > RCD16A && TAmper <= RCD32B)
             {
-                uzos.Add(new RCD("RCD", 32, 2, 43, 2, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 32, 2, 43, new List<BaseElectrical>(AVFuses)));
             }
             else if (TAmper > 16 && TAmper <= 32)
             {
-                uzos.Add(new RCD("RCD", 63, 2, 43, 2, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>(AVFuses)));
             }
             else
             {
-                double countOfRCD = Math.Ceiling(TAmper / RCD64A);
-
-                if (countOfRCD < Math.Ceiling(AVCount / AVPerRCD))
+                if (PhasesCount == 1)
                 {
-                    countOfRCD = Math.Ceiling(AVCount / AVPerRCD);
+                    Distribute1P(countOfRCD, RCDPerPhases, uzos, AVCount, AVPerRCD);
                 }
-                for (int i = 0; i < countOfRCD; i++)
+                else 
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, 2, new List<BaseElectrical>()));
-                }
-                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))
-                {
-                    uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>()));
-                    countOfRCD++;
+                    Distribute3P(countOfRCD, RCDPerPhases, uzos);
                 }
                 DistributeFusesToRCDs(AVFuses, uzos);
             }
         }
-        public void DistributeRCDFromLoad3P(double TAmper, List<RCD> uzos, List<Fuse> AVFuses)
+
+        public void Distribute1P(double countOfRCD, double RCDPerPhases, List<RCD> uzos, int AVCount, double AVPerRCD)
         {
-            // Делаем запас в два раза
-            double RCD16A = 8.00;
-            double RCD32B = 16.00;
-            double RCD64A = 32.00;
-            double RCDPerPhases = 3.00;
+            if (countOfRCD < Math.Ceiling(AVCount / AVPerRCD))
+            {
+                countOfRCD = Math.Ceiling(AVCount / AVPerRCD);
+            }
+            for (int i = 0; i < countOfRCD; i++)
+            {
+                uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+            }
+            while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))
+            {
+                uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+                countOfRCD++;
+            }
+        }
 
-            // Логика распределения УЗО от нагрузки
-            if (TAmper <= RCD16A)
+        public void Distribute3P(double countOfRCD, double RCDPerPhases, List<RCD> uzos)
+        {
+            // Если больше 3, округляем вверх до ближайшего кратного 3 
+            if (countOfRCD > RCDPerPhases) // !!!
             {
-                // Создаем УЗО
-                uzos.Add(new RCD("RCD", 16, 1, 43, 2, new List<BaseElectrical>(AVFuses)));
+                countOfRCD = Math.Ceiling(countOfRCD / RCDPerPhases) * RCDPerPhases;
             }
-            else if (TAmper > RCD16A && TAmper <= RCD32B)
-            {
-                uzos.Add(new RCD("RCD", 32, 1, 43, 2, new List<BaseElectrical>(AVFuses)));
-            }
-            else if (TAmper > RCD32B && TAmper <= RCD64A)
-            {
-                uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>(AVFuses)));
-            }
-            else
-            {
-                double countOfRCD = Math.Ceiling(TAmper / RCD64A);
 
-                // Если больше 3, округляем вверх до ближайшего кратного 3 
-                if (countOfRCD > RCDPerPhases) // !!!
-                {
-                    countOfRCD = Math.Ceiling(countOfRCD / RCDPerPhases) * RCDPerPhases;
-                }
-                for (int i = 0; i < countOfRCD; i++)
-                {
-                    uzos.Add(new RCD("RCD", 63, 1, 43, 2, new List<BaseElectrical>()));
-                }
-                DistributeFusesToRCDs(AVFuses, uzos);
+            // Добавляем УЗО
+            for (int i = 0; i < countOfRCD; i++)
+            {
+                uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
             }
         }
 
         public void DistributeFusesToRCDs(List<Fuse> breakers, List<RCD> uzos)
         {
             List<RCD> filledRCDs = new List<RCD>();
+
             // Сортируем УЗО по их текущей нагрузке, чтобы равномерно распределять
             var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)
 
@@ -177,12 +162,12 @@ namespace FuseBox
 
                 // Добавляем автомат к выбранному УЗО
                 targetUzo.Electricals.Add(breaker);
+                targetUzo.TotalLoad = targetUzo.TotalLoad + breaker.GetTotalLoad();
                 targetUzo.Slots++;                                     // Увеличиваем количество слотов
-                //targetUzo.OrderBreakersId();                           // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
+                //targetUzo.OrderBreakersId();                         // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
                 // Увеличиваем нагрузку для этого УЗО
                 uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
             }
-
         }
         public List<List<T>> DistributeEvenly<T>(List<T> items, int numberOfBuckets)
         {

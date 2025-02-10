@@ -39,7 +39,7 @@ namespace FuseBox
             };
 
             // Расчет сечения проводов для щитка
-            double TotoalPower = project.TotalPower;
+            double TotoalPower = project.CalculateTotalPower();
             decimal WireSection = Convert.ToDecimal(CalculateWireCrossSection(TotoalPower));
 
             DistributionService distributionService = new DistributionService();
@@ -71,14 +71,8 @@ namespace FuseBox
             distributionService.DistributeOfConsumers(project.GlobalGrouping, CalculateAllConsumers(project.Floors), AVFuses);
 
             // Логика распределения УЗО от нагрузки
-            if (project.InitialSettings.PhasesCount == 1)
-            {
-                distributionService.DistributeRCDFromLoad(project.CalculateTotalPower(), uzos, AVFuses);
-            }
-            else
-            {
-                distributionService.DistributeRCDFromLoad3P(project.CalculateTotalPower(), uzos, AVFuses);
-            }
+            distributionService.DistributeRCDFromLoad(project.CalculateTotalPower(), uzos, AVFuses, project.InitialSettings.PhasesCount);
+
 
             // Соеденяем список входных модулей и УЗО
             shieldModuleSet.AddRange(uzos);
@@ -109,10 +103,10 @@ namespace FuseBox
             if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component   ("SPD",              100,   standardSize, 65     )); }
             if (fuseBox.LoadSwitch2P)     { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,    standardSize, 35     )); }
             if (fuseBox.RailMeter)        { shieldModuleSet.Add(new Component   ("DinRailMeter",     63,    6,            145    )); }
-            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire     ("RCDFire",          63,    standardSize, 75, 300)); }
+            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire     ("RCDFire",          63,    standardSize, 75     )); }
             if (fuseBox.VoltageRelay)     { shieldModuleSet.Add(new Component   ("VoltageRelay",     16,    standardSize, 40     )); }
             if (fuseBox.RailSocket)       { shieldModuleSet.Add(new Component   ("DinRailSocket",    16,    standardSize, 22     )); }
-            if (fuseBox.NDiscLine)        { shieldModuleSet.Add(new RCD         ("NDiscLine",        25,    standardSize, 43, 30, new List<BaseElectrical>())); }
+            if (fuseBox.NDiscLine)        { shieldModuleSet.Add(new RCD         ("NDiscLine",        25,    standardSize, 43, new List<BaseElectrical>())); }
             if (fuseBox.LoadSwitch)       { shieldModuleSet.Add(new Component   ("LoadSwitch",       63,    standardSize, 35     )); }
             if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor   ("ModularContactor", 100,   4,            25, fuseBox.Contactor)); } // !!!
             if (fuseBox.CrossModule)      { shieldModuleSet.Add(new Component   ("CrossBlock",       100,   4,            25     )); }
@@ -136,7 +130,7 @@ namespace FuseBox
             }
             if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component("SPD",              100, 2, 65)); }
             if (fuseBox.RailMeter)        { shieldModuleSet.Add(new Component("DinRailMeter",     63,  6, 145)); }
-            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire  ("RCDFire",          63,  2, 75, 300)); }
+            if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire  ("RCDFire",          63,  2, 75)); }
             if (fuseBox.VoltageRelay)
             {
                 if (fuseBox.ThreePRelay)
@@ -156,6 +150,88 @@ namespace FuseBox
             if (fuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, 4, 25)); }       // CrossModule? 4 slots?
 
             return fuseBox;
+        }
+
+        // Добавляем порты
+        public void AddPorts(Project project)
+        {
+            if (project.InitialSettings.PhasesCount == 1)
+            {
+                foreach (Component component in shieldModuleSet)
+                {
+                    if (component.Name == "SPD" || component.Name == "NDiscLine")
+                    {
+                        component.Ports.Add(ports[1]);
+                        component.Ports.Add(ports[7]);
+                    }
+                    else if (component.Name == "DinRailSocket") { }
+                    else if (component.Name == "ModularContactor")
+                    {
+                        component.Ports.Add(ports[1]);
+                        component.Ports.Add(ports[7]);
+                    }
+                    else
+                    {
+                        component.Ports.Add(ports[0]);
+                        component.Ports.Add(ports[1]);
+                        component.Ports.Add(ports[6]);
+                        component.Ports.Add(ports[7]);
+                    }
+                }
+            }
+            else
+            {
+                foreach (Component component in shieldModuleSet)
+                {
+                    if (component.Name == "SPD")
+                    {
+                        component.Ports.Add(ports[1]);
+                        component.Ports.Add(ports[3]);
+                        component.Ports.Add(ports[5]);
+                        component.Ports.Add(ports[7]);
+                    }
+                    else if (component.Name == "Introductory 3P")
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            component.Ports.Add(ports[i]);
+                        }
+                    }
+                    else if (component.Name == "VoltageRelay")
+                    {
+                        for (int i = 0; i < 7; i++)
+                        {
+                            component.Ports.Add(ports[i]);
+                        }
+                    }
+                    else if (component.Name == "VoltageRelay1")
+                    {
+                        component.Ports.Add(ports[0]);
+                        component.Ports.Add(ports[1]);
+                        component.Ports.Add(ports[6]);
+                    }
+                    else if (component.Name == "VoltageRelay2")
+                    {
+                        component.Ports.Add(ports[2]);
+                        component.Ports.Add(ports[3]);
+                        component.Ports.Add(ports[6]);
+                    }
+                    else if (component.Name == "VoltageRelay3")
+                    {
+                        component.Ports.Add(ports[4]);
+                        component.Ports.Add(ports[5]);
+                        component.Ports.Add(ports[6]);
+                    }
+                    else if (component.Name == "DinRailSocket" || component.Name == "ModularContactor") { }
+                    else
+                    {
+                        for (int i = 0; i < 8; i++)
+                        {
+                            component.Ports.Add(ports[i]);
+                        }
+                    }
+                }
+            }
         }
 
         // Логика распределения модулей по уровням...
@@ -218,7 +294,7 @@ namespace FuseBox
             var copperWireTable = new Dictionary<double, double>
             {
                 { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 },
-                { 16, 80 }, { 25, 100 }, { 35, 125 }, { 50, 160 }
+                { 16, 80 }
             };
 
             // Поиск минимального сечения, подходящего под заданный ток
@@ -232,6 +308,13 @@ namespace FuseBox
 
             // Если ток выше максимального в таблице — требуется индивидуальный расчёт
             throw new ArgumentException("Требуется кабель большего сечения, рассчитайте вручную.");
+
+
+            // Сечения медного кабеля для прокладки проводки по дому/ квартире:
+            // автомат C10, сечение кабеля 1,5 мм2 для освещения
+            // автомат C16, сечение кабеля 2,5 мм2 для розеток
+            // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
+            // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
         }
 
         // Расчет входного автомата по мощности
@@ -256,16 +339,19 @@ namespace FuseBox
         // Создаем соединение проводами
         public void CreateConnections(List<Connection> сableConnections)
         {
+            int nextModule = 1;
+            int previousModule = -1;
+
             for (int i = 0; i < shieldModuleSet.Count; i++)                                     // Берем каждый компонент
             {
                 for (int port = 0; port < shieldModuleSet[i].Ports.Count; port++)               // Берем каждый разьем компонента
                 {
                     if (shieldModuleSet[i].Ports[port].portOut != 0)                            // Но скипаем входы
                     {
-                        for (var n = shieldModuleSet[i].Id + 1; n < shieldModuleSet.Count(); n++)    // Перебираем следующие компоненты по очереди
+                        for (int n = shieldModuleSet[i].Id + nextModule; n < shieldModuleSet.Count(); n++)    // Перебираем следующие компоненты по очереди
                         {
                             // Если у компонента есть такой же тип выхода, то есть и подходящий вход
-                            if (shieldModuleSet[n - 1].Ports.Any(e => e.portOut.ToString() == shieldModuleSet[i].Ports[port].portOut.ToString()))
+                            if (shieldModuleSet[n + previousModule].Ports.Any(e => e.portOut.ToString() == shieldModuleSet[i].Ports[port].portOut.ToString()))
                             {
                                 // Создаем соединение
                                 AddConnection(сableConnections, shieldModuleSet[i].Id, shieldModuleSet[i].Ports[port], n);
@@ -276,7 +362,7 @@ namespace FuseBox
                             else
                             {
                                 // Есть ли у него подходящий вход?
-                                if (shieldModuleSet[n].Ports.Any(e => e.PortIn.ToString() == shieldModuleSet[i].Ports[port].portOut.ToString()))
+                                if (shieldModuleSet[n + previousModule].Ports.Any(e => e.PortIn.ToString() == shieldModuleSet[i].Ports[port].portOut.ToString()))
                                 {
                                     AddConnection(сableConnections, shieldModuleSet[i].Id, shieldModuleSet[i].Ports[port], n);
 
@@ -295,78 +381,6 @@ namespace FuseBox
 
             // Добавляем информацию про колличетво соединений в разьем
             port.connectionsCount += 1;
-        }
-        public void AddPorts(Project project)
-        {
-            if (project.InitialSettings.PhasesCount == 1)
-            {
-                foreach (Component component in shieldModuleSet)
-                {
-                    if (component.Name == "SPD" || component.Name == "NDiscLine")
-                    {
-                        component.Ports.Add(ports[0]);
-                        component.Ports.Add(ports[6]);
-                    }
-                    else if (component.Name == "DinRailSocket" || component.Name == "ModularContactor") { }
-                    else
-                    {
-                        component.Ports.Add(ports[0]);
-                        component.Ports.Add(ports[1]);
-                        component.Ports.Add(ports[6]);
-                        component.Ports.Add(ports[7]);
-                    }
-                }
-            }
-            else
-            {
-                foreach (Component component in shieldModuleSet)
-                {
-                    if (component.Name == "SPD" || component.Name == "NDiscLine")
-                    {
-                        component.Ports.Add(ports[0]);
-                        component.Ports.Add(ports[2]);
-                        component.Ports.Add(ports[4]);
-                        component.Ports.Add(ports[6]);
-                    }
-                    else if (component.Name == "Introductory 3P")
-                    {
-                        for (int i = 0; i < 6; i++)
-                        {
-                            component.Ports.Add(ports[i]);
-                        }
-                    }
-                    else if (component.Name == "VoltageRelay")
-                    {
-                        for (int i = 0; i < 7; i++)
-                        {
-                            component.Ports.Add(ports[i]);
-                        }
-                    }
-                    else if (component.Name == "VoltageRelay1")
-                    {
-                        component.Ports.Add(ports[0]);
-                        component.Ports.Add(ports[1]);
-                        component.Ports.Add(ports[6]);
-                    }
-                    else if (component.Name == "VoltageRelay2")
-                    {
-                        component.Ports.Add(ports[2]);
-                        component.Ports.Add(ports[3]);
-                        component.Ports.Add(ports[6]);
-                    }
-                    else if (component.Name == "VoltageRelay3")
-                    {
-                        component.Ports.Add(ports[4]);
-                        component.Ports.Add(ports[5]);
-                        component.Ports.Add(ports[6]);
-                    }
-                    else if (component.Name == "DinRailSocket" || component.Name == "ModularContactor") { }
-                    else
-                    {
-                        component.Ports.AddRange(ports);
-                    }
-                }
-            }
         }
     }
 }

@@ -8,16 +8,16 @@ namespace FuseBox
         [JsonProperty(Order = 8)]
         public int Capacity { get; set; }
 
-        public RCDFire(string name, int amper, List<Port> ports, int slots, decimal price, int capacity) : base(name, amper, ports, slots, price)
+        public RCDFire(string name, int amper, List<Port> ports, int slots, decimal price) : base(name, amper, ports, slots, price)
         {
             Ports = ports;
-            Capacity = capacity;
+            Capacity = 300;
             base.Price = price;
         }
 
-        public RCDFire(string name, int amper, int slots, decimal price, int capacity) : base(name, amper, slots, price)
+        public RCDFire(string name, int amper, int slots, decimal price) : base(name, amper, slots, price)
         {
-            Capacity = capacity;
+            Capacity = 300;
             base.Price = price;
         }
     }

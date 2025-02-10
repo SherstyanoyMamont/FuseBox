@@ -1,6 +1,4 @@
-﻿
-
-using FuseBox.App.Models;
+﻿using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 

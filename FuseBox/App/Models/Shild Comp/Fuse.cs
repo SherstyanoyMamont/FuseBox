@@ -15,6 +15,18 @@ namespace FuseBox
             // В список разьемов добавляем разьем с входом для АВ и кабелем красного цвета
             Ports = new List<Port> { new Port(PortIn.AV, new Cable(ConnectorColour.Red, (decimal)1.5)) }; 
             Electricals = electricals;
+            //TotalLoad = totalLoad;
+        }
+
+        public double GetTotalLoad()
+        {
+            double totalLoad = 0;
+
+            foreach (var item in Electricals)
+            {
+                totalLoad += item.Amper;
+            }
+            return totalLoad;
         }
     }
 }
