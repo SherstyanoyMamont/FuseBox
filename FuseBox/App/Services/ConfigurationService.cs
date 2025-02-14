@@ -418,13 +418,94 @@ public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<
             project.FuseBox.Components[levelIndex].Add(shieldModuleSet[i]); // добавляем текущий элемент не поместившийся на новый уровень
             remainingSlots = shieldWidth - shieldModuleSet[i].Slots;        // новый уровень, снова все слоты доступны но минус слоты текущего элемента
         }
-        // если это был последний элемент и остались слоты, добавляем пустое место
-        if (remainingSlots > 0 && shieldModuleSet.Count == i + 1)
+
+        //public List<Component> ShieldByLevel(Project project, List<Component> shieldModuleSet) // Логика распределения модулей по уровням
+        //{
+
+        //    // Логика распределения модулей по уровням
+
+        //    double countOfSlots = 0;
+
+        //    // Вычисляем общее количество слотов для Щитовой панели
+        //    for (int i = 0; i < shieldModuleSet.Count; i++)
+        //    {
+        //        countOfSlots += shieldModuleSet[i].Slots;
+        //    }
+
+        //    var countOfDINLevels = Math.Ceiling(countOfSlots / project.InitialSettings.ShieldWidth); //Количество уровней ДИН рейки в Щите
+
+        //    // Инициализируем списки каждого уровня щита
+        //    for (int i = 0; i < countOfDINLevels; i++)
+        //    {
+        //        project.Shield.Fuses.Add(new List<Component>());
+        //    }
+
+        //    project.Shield.DINLines = (int)countOfDINLevels; // Запись в поле объекта количество уровней в щите (Как по мне лишнее)
+
+        //    int startPos = 0;
+        //    int endPos = 0;
+        //    int occupiedSlots = 0;
+        //    int currentLevel = 0;
+        //    int emptySlotsOnDINLevel = 0;
+        //    int shieldWidth = project.InitialSettings.ShieldWidth;
+
+        //    for (int i = 0; i < shieldModuleSet.Count; i++)
+        //    {
+        //        occupiedSlots += (int)shieldModuleSet[i].Slots;
+
+        //        if (occupiedSlots >= shieldWidth)
+        //        {
+        //            if ((occupiedSlots > shieldWidth) && (occupiedSlots != shieldWidth))
+        //            {
+        //                emptySlotsOnDINLevel = shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots);
+        //                shieldModuleSet.Insert(i, new Module("{empty space}", 0, emptySlotsOnDINLevel, false, 0, false, "")); // i-ый элемент становится i+1, а пустой - i-ым
+        //                endPos = i + 1;
+        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //                startPos = endPos;
+        //                occupiedSlots = 0;
+        //                currentLevel++;
+        //                continue;
+        //            }
+        //            if (occupiedSlots == shieldWidth)
+        //            {
+        //                endPos = i + 1;
+        //                project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //                startPos = endPos;
+        //                occupiedSlots = 0;
+        //                currentLevel++;
+        //            }
+
+        //        }
+        //        if (i == shieldModuleSet.Count - 1 && occupiedSlots != shieldWidth)
+        //        {
+        //            endPos = i + 1;
+        //            project.Shield.Fuses[currentLevel].AddRange(shieldModuleSet.GetRange(startPos, endPos - startPos));
+        //            project.Shield.Fuses[currentLevel].Add(new Module("{empty space}", 0, shieldWidth - occupiedSlots, false, 0, false, ""));
+        //            currentLevel++;
+
+        //        }
+        //        if (currentLevel > countOfDINLevels) break;
+
+        //    }
+        //    return shieldModuleSet;
+        //}
+
+        public List<Consumer> CalculateAllConsumers(Project project)
         {
-            project.FuseBox.Components[levelIndex].Add(new Component("{empty space}", 0, remainingSlots, 0, 0));
+            List<Consumer> AllConsumers = new List<Consumer>();
+            foreach (var floor in project.Floors)
+            {
+                foreach (var room in floor.Rooms)
+                {
+                    foreach (var equipment in room.Consumer)
+                    {
+                        AllConsumers.Add(equipment);
+                    }
+                }
+            }
+            return AllConsumers;
         }
     }
-}
 
 
     //Проверка первичных данных***
@@ -441,7 +522,7 @@ public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<
 }
 
 
-
+/*
 
 {
     "floorGrouping": {
@@ -610,4 +691,3 @@ public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<
   ]
 }
 
-*/
