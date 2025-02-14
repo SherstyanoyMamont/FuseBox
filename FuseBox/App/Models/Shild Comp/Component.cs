@@ -10,7 +10,8 @@ namespace FuseBox
         // public static int _idCounter = 0; // Static counter for all objects of this class
         public decimal Price { get; set; }
 
-        [JsonProperty(Order = 4)]
+        // !!! Скрытые списки разьемов
+        //[JsonIgnore]
         public List<Port> Ports = new List<Port>();
 
         [JsonProperty(Order = 5)]

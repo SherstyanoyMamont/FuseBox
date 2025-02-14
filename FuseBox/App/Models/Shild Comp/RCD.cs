@@ -17,7 +17,7 @@ namespace FuseBox
         public const decimal LimitOfConnectedFuses = 5;
 
         [JsonProperty(Order = 4)]
-        public double TotalLoad { get; set; }
+        public double TotalLoad { get; set; } // Added in DistributeFusesToRCDs
 
         public RCD(string name, int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price) // List<Electricals> electricals,
         {
@@ -27,7 +27,7 @@ namespace FuseBox
             {
                 new Port(PortOut.Phase1, new Cable (ConnectorColour.Red, (decimal)10.00)), 
                 new Port(PortOut.Zero,   new Cable (ConnectorColour.Blue,(decimal)10.00)), 
-                new Port(PortOut.AV,    new Cable (ConnectorColour.Red, (decimal)1.5  )) 
+                //new Port(PortOut.AV,     new Cable (ConnectorColour.Red, (decimal)1.5  )) 
             };
             Capacity = 30;
             Electricals = electricals;
@@ -41,5 +41,7 @@ namespace FuseBox
             Capacity = 30;
             Electricals = electricals;
         }
+
+
     }
 }

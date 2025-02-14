@@ -1,4 +1,5 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models.Shild_Comp;
 using System.Collections.Generic;
 
 namespace FuseBox
@@ -9,6 +10,7 @@ namespace FuseBox
         public List<BaseElectrical> Socket = new();
         public List<BaseElectrical> AirConditioner = new();
         public List<BaseElectrical> HeatedFloor = new();
+
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers(GlobalGrouping globalGrouping, List<BaseElectrical> AllConsumers, List<Fuse> AVFuses)
         {
@@ -102,6 +104,8 @@ namespace FuseBox
                     Distribute3P(countOfRCD, RCDPerPhases, uzos);
                 }
                 DistributeFusesToRCDs(AVFuses, uzos);
+
+                DistributePerPhases(countOfRCD, uzos);
             }
         }
 
@@ -124,16 +128,53 @@ namespace FuseBox
 
         public void Distribute3P(double countOfRCD, double RCDPerPhases, List<RCD> uzos)
         {
+
             // Если больше 3, округляем вверх до ближайшего кратного 3 
             if (countOfRCD > RCDPerPhases) // !!!
             {
                 countOfRCD = Math.Ceiling(countOfRCD / RCDPerPhases) * RCDPerPhases;
             }
-
             // Добавляем УЗО
             for (int i = 0; i < countOfRCD; i++)
             {
                 uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+            }
+        }
+
+        public void DistributePerPhases(double countOfRCD, List<RCD> uzos)
+        {
+            // Массив с нагрузкой на 3 фазы
+            var phases = new int[3];
+
+            for (int i = 0; i < countOfRCD; i++)
+            {
+                // Найдем фазу с наименьшей текущей нагрузкой
+                int min = phases.Min();
+
+                int phaseIndex = Array.IndexOf(phases, min);
+
+
+                // Распределяем по фазам
+                if (phaseIndex == 0)
+                {
+                    // Оставляем первую фазу
+                }
+                else if (phaseIndex == 1)
+                {
+                    uzos[i].Ports[0].portOut = PortOut.Phase2;
+                    uzos[i].Ports[0].cableType.Colour = ConnectorColour.Orange;
+                    uzos[i].Ports[0].cableType.colour1 = "Orange";
+                }
+                else
+                {
+                    uzos[i].Ports[0].portOut = PortOut.Phase3;
+                    uzos[i].Ports[0].cableType.Colour = ConnectorColour.Grey;
+                    uzos[i].Ports[0].cableType.colour1 = "Grey";
+                }
+
+                // Добавим нагрузку к фазе с минимальной нагрузкой
+                phases[phaseIndex] = phases[phaseIndex] + Convert.ToInt32(uzos[i].TotalLoad);
+
             }
         }
 

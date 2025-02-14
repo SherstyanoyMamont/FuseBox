@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace FuseBox
 {
@@ -240,6 +241,7 @@ namespace FuseBox
                 var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
 
                 Console.Write(data);
+                Console.WriteLine("\nРазъемы были скрыты в классе Component!\n");
 
             }
         }

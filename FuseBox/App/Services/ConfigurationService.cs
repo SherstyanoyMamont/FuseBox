@@ -72,7 +72,7 @@ namespace FuseBox
 
             // Логика распределения УЗО от нагрузки
             distributionService.DistributeRCDFromLoad(project.CalculateTotalPower(), uzos, AVFuses, project.InitialSettings.PhasesCount);
-
+            // ----
 
             // Соеденяем список входных модулей и УЗО
             shieldModuleSet.AddRange(uzos);
@@ -121,11 +121,11 @@ namespace FuseBox
                 // Если да, то добавляем 3 фазы + ноль
                 if (fuseBox.Main3PN)
                 {
-                    shieldModuleSet.Add(new Introductory("Introductory 3P+N", Type3PN.P3_N, MainAmperage, 2, 35, "P1"));
-                }
-                else
-                {
-                    shieldModuleSet.Add(new Introductory("Introductory 3P",   Type3PN.P3,   MainAmperage, 2, 35, "P1"));
+                    shieldModuleSet.Add(new Introductory("Introductory 3P+N", Type3PN.P3_N, 2, MainAmperage, 35, "P1"));
+                }                                                                                            
+                else                                                                                         
+                {                                                                                            
+                    shieldModuleSet.Add(new Introductory("Introductory 3P",   Type3PN.P3,   2, MainAmperage, 35, "P1"));
                 }
             }
             if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component("SPD",              100, 2, 65)); }
@@ -348,7 +348,7 @@ namespace FuseBox
                 {
                     if (shieldModuleSet[i].Ports[port].portOut != 0)                            // Но скипаем входы
                     {
-                        for (int n = shieldModuleSet[i].Id + nextModule; n < shieldModuleSet.Count(); n++)    // Перебираем следующие компоненты по очереди
+                        for (int n = shieldModuleSet[i].Id + nextModule; n < shieldModuleSet.Count() + nextModule; n++)    // Перебираем следующие компоненты по очереди
                         {
                             // Если у компонента есть такой же тип выхода, то есть и подходящий вход
                             if (shieldModuleSet[n + previousModule].Ports.Any(e => e.portOut.ToString() == shieldModuleSet[i].Ports[port].portOut.ToString()))
