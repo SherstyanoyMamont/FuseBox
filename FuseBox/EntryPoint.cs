@@ -16,7 +16,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
