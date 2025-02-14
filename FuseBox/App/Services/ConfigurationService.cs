@@ -385,7 +385,7 @@ namespace FuseBox
     }
 }
 
-    /*
+/*
 public void ShieldNewLVL(Project project, List<Component> shieldModuleSet, List<Fuse> AVFuses) // Участь слоты автоматов у УЗО
 {
     int shieldWidth = project.InitialSettings.ShieldWidth;       // количество слотов на каждом уровне
