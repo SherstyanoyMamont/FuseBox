@@ -11,11 +11,12 @@ namespace FuseBox
     }
     public class Introductory : Component
     {
-        public Type3PN Type { get; set; }
+        public string? Type { get; set; }
 
-        public Introductory(string name, Type3PN type, int slots, int amper,  decimal price, string type3PN) : base(name, amper, slots, price)
+        public Introductory(string name, int amper, int slots, decimal price, List<Port> ports, string type3PN, Type3PN type) : base(name, amper, slots, price, ports)
         {
-            Type = type;
+            Ports = ports;
+            Type = Convert.ToString(type);
         }
     }
 }

@@ -161,15 +161,15 @@ namespace FuseBox
                 }
                 else if (phaseIndex == 1)
                 {
-                    uzos[i].Ports[0].portOut = PortOut.Phase2;
-                    uzos[i].Ports[0].cableType.Colour = ConnectorColour.Orange;
-                    uzos[i].Ports[0].cableType.colour1 = "Orange";
+                    uzos[i].Ports[0].portOut = "Phase2";
+                    //uzos[i].Ports[0].cableType.Colour = ConnectorColour.Orange;
+                    uzos[i].Ports[0].cableType.Сolour = "Orange";
                 }
                 else
                 {
-                    uzos[i].Ports[0].portOut = PortOut.Phase3;
-                    uzos[i].Ports[0].cableType.Colour = ConnectorColour.Grey;
-                    uzos[i].Ports[0].cableType.colour1 = "Grey";
+                    uzos[i].Ports[0].portOut = "Phase3";
+                    //uzos[i].Ports[0].cableType.Colour = ConnectorColour.Grey;
+                    uzos[i].Ports[0].cableType.Сolour = "Grey";
                 }
 
                 // Добавим нагрузку к фазе с минимальной нагрузкой

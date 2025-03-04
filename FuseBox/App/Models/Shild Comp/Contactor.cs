@@ -11,11 +11,15 @@ namespace FuseBox
     {
         public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
 
+        public Contactor(string name, int amper, int slots, decimal price, List<Port> ports, List<BaseElectrical> electricals) : base(name, amper, slots, price)
+        {
+            Ports = ports;
+            Electricals = electricals;
+        }
+
         public Contactor(string name, int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price)
         {
-            Ports = new List<Port>();
             Electricals = electricals;
-
         }
     }
 }

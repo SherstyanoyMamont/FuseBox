@@ -8,7 +8,7 @@ namespace FuseBox
         [JsonProperty(Order = 8)]
         public int Capacity { get; set; }
 
-        public RCDFire(string name, int amper, List<Port> ports, int slots, decimal price) : base(name, amper, ports, slots, price)
+        public RCDFire(string name, int amper, int slots, decimal price, List<Port> ports) : base(name, amper, slots, price, ports)
         {
             Ports = ports;
             Capacity = 300;

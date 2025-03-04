@@ -12,12 +12,14 @@ namespace FuseBox
 
         // !!! Скрытые списки разьемов
         //[JsonIgnore]
+        [JsonProperty(Order = 8)]
+
         public List<Port> Ports = new List<Port>();
 
         [JsonProperty(Order = 5)]
-        public double Slots { get; set; }
+        public int Slots { get; set; }
 
-        public Component(string name, int amper, List<Port> ports,  int slots, decimal price)
+        public Component(string name, int amper, int slots, decimal price, List<Port> ports)
         {
             Ports = ports;
             Name = name;
@@ -25,7 +27,7 @@ namespace FuseBox
             Slots = slots;
             Price = price;
         }
-        public Component(string name, int amper,int slots, decimal price)
+        public Component(string name, int amper, int slots, decimal price)
         {
             Name = name;
             Amper = amper;

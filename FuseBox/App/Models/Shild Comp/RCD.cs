@@ -33,7 +33,7 @@ namespace FuseBox
             Electricals = electricals;
         }
 
-        public RCD(string name, int amper, List<Port> ports, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, ports, slots, price) // List<Electricals> electricals,
+        public RCD(string name, int amper, int slots, decimal price, List<Port> ports, List<BaseElectrical> electricals) : base(name, amper, slots, price, ports) // List<Electricals> electricals,
         {
 
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
@@ -41,7 +41,5 @@ namespace FuseBox
             Capacity = 30;
             Electricals = electricals;
         }
-
-
     }
 }

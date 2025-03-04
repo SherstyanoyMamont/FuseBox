@@ -1,5 +1,6 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using Newtonsoft.Json.Converters;
 
 namespace FuseBox
 {
@@ -25,20 +26,26 @@ namespace FuseBox
     public class Port : BaseEntity
     {
         public int connectionsCount {  get; set; }
-        public PortOut portOut { get; set; } // Выход
-        public PortIn PortIn { get; set; } // Вход
+
+        public string portOut { get; set; }
+
+        public string PortIn { get; set; }
+
+        //public PortOut portOut { get; set; } // Выход
+
+        //public PortIn PortIn { get; set; } // Вход
 
         public Cable cableType;
 
         public Port(PortOut connectorType, Cable cableType)
         {
-            this.portOut = connectorType;
+            this.portOut = Convert.ToString(connectorType);
             this.cableType = cableType;
         }
 
         public Port(PortIn portIn, Cable cableType)
         {
-            this.PortIn = portIn;
+            this.PortIn = Convert.ToString(portIn);
             this.cableType = cableType;
         }
     }

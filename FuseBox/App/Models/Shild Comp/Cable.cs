@@ -1,4 +1,5 @@
 ﻿using FuseBox.App.Interfaces;
+using Newtonsoft.Json.Converters;
 using System.Text.Json.Serialization;
 
 namespace FuseBox.App.Models.Shild_Comp
@@ -10,21 +11,21 @@ namespace FuseBox.App.Models.Shild_Comp
         Grey,
         Blue
     }
+
     public class Cable : NonElectrical
     {
         public decimal Length { get; set; } // m
         public decimal Section { get; set; } // mm^2
-        public string? colour1 { get; set; }
+        public string? Сolour { get; set; }
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ConnectorColour Colour { get; set; }
+        //[JsonConverter(typeof(StringEnumConverter))]
+        //public ConnectorColour Colour { get; set; }
 
         public Cable(ConnectorColour colour, decimal section) 
         {
-            Colour = colour;
+            Сolour = Convert.ToString(colour);
             Section = section;
-            colour1 = Convert.ToString(Colour);
-
+            //this.colour = Convert.ToString(Colour);
         }
     }
 }

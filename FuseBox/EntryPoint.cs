@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace FuseBox
 {
@@ -58,14 +59,19 @@ namespace FuseBox
                 Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
                 ConfigurationService configurationService = new ConfigurationService();       // создание экземпляра сервиса конфигурации
 
-                var options = new JsonSerializerOptions
+                //var options = new JsonSerializerOptions
+                //{
+                //    WriteIndented = true,
+                //    Converters = { new JsonStringEnumConverter() }
+                //};
+
+                var settings = new JsonSerializerSettings
                 {
-                    WriteIndented = true,
-                    Converters = { new JsonStringEnumConverter() }
+                    Formatting = Formatting.Indented,  // Для красивого форматирования
                 };
 
                 // JSON-строка с данными о проекте
-                string jsonData = @"
+                string inputJsonData = @"
                 {
                   ""floorGrouping"": {
                     ""FloorGroupingP"": true,
@@ -236,11 +242,17 @@ namespace FuseBox
                     }
                   ]
                 }";
-                Project project = JsonConvert.DeserializeObject<Project>(jsonData);        // десериализация данных
-                var pc = configurationService.GenerateConfiguration(project);
-                var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
 
-                Console.Write(data);
+                Project project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
+                var newProject = configurationService.GenerateConfiguration(project);         // генерация конфигурации
+
+
+                var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings); // сериализация данных
+
+                // Сериализация с использованием настроек
+                //var newProjectSerialized = System.Text.Json.JsonSerializer.Serialize(newProject, options);
+
+                Console.Write(newProjectSerialized);
                 Console.WriteLine("\nРазъемы были скрыты в классе Component!\n");
 
             }
