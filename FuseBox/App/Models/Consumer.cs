@@ -5,5 +5,10 @@ namespace FuseBox
 {
     public class Consumer : BaseElectrical, IZone
     {
+        public Consumer(string name, int maxLoad)        // Для тестов
+        {
+            this.Name = name;
+            this.Amper = maxLoad;
+        }
     }
 }

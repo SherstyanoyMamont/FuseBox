@@ -18,5 +18,11 @@ namespace FuseBox
             Ports = ports;
             Type = Convert.ToString(type);
         }
+        public Introductory(string name, Type3PN type, int slots)   // Для тестов    
+        {
+            this.Name = name;
+            this.Type = Convert.ToString(type);
+            this.Slots = slots;
+        }
     }
 }

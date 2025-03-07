@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace FuseBox
 {
-    internal class EmptySlot : BaseElectrical
+    public class EmptySlot : BaseElectrical           // изменил с internal на public для тестов
     {
         [JsonProperty(Order = 4)]
         public int Slots { get; set; }

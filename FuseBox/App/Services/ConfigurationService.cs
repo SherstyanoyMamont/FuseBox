@@ -17,6 +17,7 @@ namespace FuseBox
     public class ConfigurationService
     {
         public List<Port> ports = new List<Port>();
+        //List<Port> ports = Enumerable.Repeat<Port>(null, 8).ToList();
         public List<Component> shieldModuleSet = new List<Component>();
 
         // Создаем/Модифицируем объект проекта
@@ -94,8 +95,10 @@ namespace FuseBox
             };
         }
 
+        
+
         // Логика конфигурации устройств...
-        private FuseBox ConfigureShield(FuseBox fuseBox, int MainAmperage)
+        public  FuseBox ConfigureShield(FuseBox fuseBox, int MainAmperage)      // Изменил с private на public для тестов
         {
             List<Port> ports2x2 = new List<Port>{ports[0], ports[1], ports[6], ports[7] };
             List<Port> ports2 = new List<Port> { ports[1], ports[7] };
@@ -114,7 +117,7 @@ namespace FuseBox
 
             return fuseBox;
         }
-        private FuseBox ConfigureShield3(FuseBox fuseBox, int MainAmperage)
+        public FuseBox ConfigureShield3(FuseBox fuseBox, int MainAmperage)         // Изменил с private на public для тестов
         {
             List<Port> ports2x2 = new List<Port> { ports[1], ports[3], ports[5], ports[7] };
             List<Port> ports1_6 = new List<Port> { ports[0], ports[1], ports[2], ports[3], ports[4], ports[5]};
@@ -125,34 +128,27 @@ namespace FuseBox
             List<Port> ports456 = new List<Port> { ports[4], ports[5], ports[6] };
 
             // Настройки опцыонных автоматов \\
-            if (fuseBox.MainBreaker)
-            {
-                // Если да, то добавляем 3 фазы + ноль
-                if (fuseBox.Main3PN)
-                    shieldModuleSet.Add(new Introductory("Introductory 3P+N", MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N));                                                                                           
-                else                                                                                                                                                                                   
-                    shieldModuleSet.Add(new Introductory("Introductory 3P",   MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3));
-            }
+            // У нас два отдельных поля в FuseBox для MainBreaker и Main3PN - их нужно явно разделять и взаимоисключать
+            if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
+            if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
             if (fuseBox.SurgeProtection)  { shieldModuleSet.Add(new Component("SPD",              100, 2, 65, ports2x2)); }
             if (fuseBox.RailMeter)        { shieldModuleSet.Add(new Component("DinRailMeter",     63,  6, 145, ports1_8)); }
             if (fuseBox.FireUZO)          { shieldModuleSet.Add(new RCDFire  ("RCDFire",          63,  2, 75, ports1_8)); }
-            if (fuseBox.VoltageRelay)
-            {
-                if (fuseBox.ThreePRelay)
-                    shieldModuleSet.Add(new Component("VoltageRelay",  16,  2, 60, ports1_7));                                                                                                            
-                else                                                       
-                {                                                          
-                    shieldModuleSet.Add(new Component("VoltageRelay1", 16,  2, 40, ports016));
-                    shieldModuleSet.Add(new Component("VoltageRelay2", 16,  2, 40, ports236));
-                    shieldModuleSet.Add(new Component("VoltageRelay3", 16,  2, 40, ports456));
-                }
+
+            // У нас два отдельных поля в FuseBox для VoltageRelay и ThreePRelay - их нужно явно разделять и взаимоисключать
+            if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
+            {                                                         
+                shieldModuleSet.Add(new Component("VoltageRelay1", 16,  2, 40, ports016));
+                shieldModuleSet.Add(new Component("VoltageRelay2", 16,  2, 40, ports236));
+                shieldModuleSet.Add(new Component("VoltageRelay3", 16,  2, 40, ports456));
             }
+            if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
             if (fuseBox.RailSocket)       { shieldModuleSet.Add(new Component("DinRailSocket",    16,  3, 22)); }
             if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, fuseBox.Contactor)); } // !!!
             if (fuseBox.CrossModule)      { shieldModuleSet.Add(new Component("CrossBlock",       100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
 
             return fuseBox;
-        }
+        }       
 
         // Добавляем порты
         public void AddPorts(Project project)

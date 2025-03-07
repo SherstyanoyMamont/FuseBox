@@ -41,5 +41,6 @@ namespace FuseBox
             Capacity = 30;
             Electricals = electricals;
         }
+        
     }
 }
