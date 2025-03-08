@@ -9,8 +9,21 @@ namespace TestServices;
 
 public class ConfigurationServiceTest
 {
-    //ConfigurationService config = new ConfigurationService();
-    FuseBox.FuseBox fuseBox = new FuseBox.FuseBox();
+    /*
+     * Все автотесты работают с входными данными, которые инициируются в static методах, которые собственно возвращают тестовые кейсы:
+     *  - Можно добавлять новые тест кейсы через добавление новой строки yield return;
+     *  - Нельзя менять последовательность ввода переменных, сокращать их;
+     * 
+     *  Специфика формата тестовых кейсов не позволяет протестировать все методы в проекте за раз,
+     *  поэтому при необходимости протестировать конкретный метод необходимо найти его в коде, 
+     *  нажать ПКМ и запустить тест. Протестируеться в итоге только он, остальные не запустятся
+     *  (иногда бывают исключения, до конца не понятно почему)
+     *  
+     *  Перед тестовыми методами есть место с комментариями по поводу 
+     *  ошибок/ньюансов ввода/логики работы/предложений по улучшений тестируемых методов
+     */
+
+
     public static IEnumerable<double> AmperCases()
     {
         return new double[] { 10, 18, 24, 32, 63 };
@@ -35,8 +48,8 @@ public class ConfigurationServiceTest
                 ModularContactor = false, //true
                 CrossModule = true
             },
-            10, // Компонентов создатся при 1 фазе
-            9,  // Компонентов создатся при 3 фазах
+            10, // Кол-во компонентов создатся при 1 фазе
+            9,  // Кол-во компонентов создатся при 3 фазах
             1,  // Кол-во фаз
             18  // Кол-во соединений
         };
@@ -62,22 +75,22 @@ public class ConfigurationServiceTest
             1,
             0
         };
-        yield return new object[] 
+        yield return new object[]
         {
             "Case 3",
             new FuseBox.FuseBox
             {
-                Main3PN = true,
-                SurgeProtection = true,
-                LoadSwitch2P = true,    // Не должен создастся
-                ThreePRelay = true
+                Main3PN = true, // 4
+                SurgeProtection = true, //4
+                LoadSwitch2P = true,    // 0
+                ThreePRelay = true // 6
             },
             2,
             3,
             3,
-            12
+            14
         };
-        yield return new object[] 
+        yield return new object[]
         {
             "Case 4",
             new FuseBox.FuseBox
@@ -98,7 +111,7 @@ public class ConfigurationServiceTest
             6,
             5,
             3,
-            0, // 3 + 0 + 0 + 0 + 0 + 4 + 3 + 
+            0,
         };
     }
 
@@ -185,17 +198,24 @@ public class ConfigurationServiceTest
     public void ConfigureShieldTest(string caseName, FuseBox.FuseBox fuseBox, int componentCountPhase1, int componentCountPhase3, int phaseCount, int connectionCount)
     {
         ConfigurationService config = new ConfigurationService();
+        CreatePortsCombination(config);
         int amper = 0;
 
         if (phaseCount == 1)
         {
+            // Запуск тестируемого метода
             config.ConfigureShield(fuseBox, amper);
+
+            // Проверка
             var result = config.shieldModuleSet.Count;
             Assert.That(result, Is.EqualTo(componentCountPhase1));
         }
         else
         {
+            // Запуск тестируемого метода
             config.ConfigureShield3(fuseBox, amper);
+
+            // Проверка
             var result = config.shieldModuleSet.Count;
             Assert.That(result, Is.EqualTo(componentCountPhase3));
         }
@@ -230,20 +250,29 @@ public class ConfigurationServiceTest
     [TestCaseSource(nameof(ShieldModuleSetCases))]
     public void ShieldByLevelTest(string caseName, int shieldWidth, List<Component> shieldComponents, int slotsCount, int minDINLevelCount, int phaseCount)
     {
+        // Создаем необходимые объекты для работы
         List<List<BaseElectrical>> resultList = new List<List<BaseElectrical>>();
         ConfigurationService config = new ConfigurationService();
         Project project = new Project();
         FuseBox.FuseBox fuseBox = new FuseBox.FuseBox();
 
+        // Заполняем созданные объекты вводными данными
         config.shieldModuleSet = shieldComponents;
         project.InitialSettings.ShieldWidth = shieldWidth;
 
+        // Запуск тестируемого метода
         config.ShieldByLevel(project, fuseBox);
+
+
+        // Результат работы тестируемого метода записываем отдельно для проведения проверок
         resultList = fuseBox.Components;
 
+        // Проверка #1
         if (minDINLevelCount > resultList.Count)
             Assert.Fail("Кол-во уровней щита меньше ожидаемого");
 
+        // Блок кода проверяет количество занятых слотов на уровне.
+        // Если какой то компонент помещался на уровне, но метод перенёс его на следующий - тест провалится 
         for (int i = 0; i < resultList.Count; i++)
         {
             Component firstComponentOnNewLine = new Component();
@@ -265,11 +294,13 @@ public class ConfigurationServiceTest
                 }
             }
             if (shieldWidth - slotsOnLvl >= firstComponentOnNewLine.Slots && i != resultList.Count - 1)
-                Assert.Fail("Элемент должен быть на предидущем уровне щита ");
-        }
+                Assert.Fail($"Элемент {firstComponentOnNewLine.Name} должен быть на предидущем уровне щита "); 
+        };
     }
 
-    // SPD, NDiscLine, Socket and Modular Cont doesn't have output ports
+    /* SPD, NDiscLine, Socket and Modular Cont doesn't have output ports
+     * Метод работает некорректно для 3-фазного/3 однофазных реле напряжения, так как в них отсутствует выход на ноль
+     */
     [TestCaseSource(nameof(ConfigureShieldCases))]
     public void CreateConnectionsTest(string caseName, FuseBox.FuseBox fuseBox, int componentCountPhase1, int componentCountPhase3, int phaseCount, int connectionCount)
     {
@@ -296,6 +327,7 @@ public class ConfigurationServiceTest
 
     }
 
+    // Вспомогательный метод для создания портов компонентов config.shieldModuleSet
     public void CreatePortsCombination(ConfigurationService config)
     {
         var portData = new (PortIn? portIn, PortOut? portOut, ConnectorColour colour)[]

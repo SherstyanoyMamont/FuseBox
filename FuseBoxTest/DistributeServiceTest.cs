@@ -11,10 +11,19 @@ namespace FuseBox.Tests
     [TestFixture]
     public class DistributeLogicTest
     {
-        Project testPoject = new Project();
-        DistributionService distributionService = new DistributionService();
-
-        List<RCD> uzos = new List<RCD>();
+        /*
+         * Все автотесты работают с входными данными, которые инициируются в static методах, которые собственно возвращают тестовые кейсы:
+         *  - Можно добавлять новые тест кейсы через добавление новой строки yield return;
+         *  - Нельзя менять последовательность ввода переменных, сокращать их;
+         * 
+         *  Специфика формата тестовых кейсов не позволяет протестировать все методы в проекте за раз,
+         *  поэтому при необходимости протестировать конкретный метод необходимо найти его в коде, 
+         *  нажать ПКМ и запустить тест. Протестируеться в итоге только он, остальные не запустятся
+         *  (иногда бывают исключения, до конца не понятно почему)
+         *  
+         *  Перед тестовыми методами есть место с комментариями по поводу 
+         *  ошибок/ньюансов ввода/логики работы/предложений по улучшений тестируемых методов
+         */
 
         public static IEnumerable<object[]> GetAllConsumers()
         {
@@ -77,21 +86,22 @@ namespace FuseBox.Tests
             };
         }
 
-
         /* 1. Нужно добавить проверку на перегруз автомата потребителями по амперажу
            2. Нужно добавить возможность отключить GlobalGrouping (разделять автоматы по помещениям, а не потребителям)
            3. OK
         */
-
         [TestCaseSource(nameof(GetAllConsumers))]
-        public List<Fuse> DistributeOfConsumersTest(string caseName, GlobalGrouping globalGrouping, List<BaseElectrical> consumers, double phaseCount)   //Тестировка глобальной групировки 
+        public void DistributeOfConsumersTest(string caseName, GlobalGrouping globalGrouping, List<BaseElectrical> consumers, double phaseCount)   //Тестировка глобальной групировки 
         {
-            // Socket -> Lighting -> Air Conditioner
+            // Создаем все необходимые объекты для работы теста
+            Project testPoject = new Project();
+            DistributionService distributionService = new DistributionService();
             var avFuses = new List<Fuse>();
 
-            distributionService.DistributeOfConsumers(globalGrouping, consumers, avFuses); // Получаем данные для теста
+            // Запускаем тестируемый метод, который должен заполнить список avFuses
+            distributionService.DistributeOfConsumers(globalGrouping, consumers, avFuses); 
 
-            // Получаем данные референса
+            // Получаем эталонные данные для сравнения с результатами работы тестируемого метода
             int countOfFuses = 0;
             for (int i = 0; i < consumers.Count(); i++)
             {
@@ -101,11 +111,11 @@ namespace FuseBox.Tests
             }
             countOfFuses += globalGrouping.Sockets + globalGrouping.Lighting + globalGrouping.Conditioners;
 
-            Assert.That(avFuses.Count, Is.EqualTo(countOfFuses)); // Сравнение
-
-            return avFuses; // Закомментировать эту строку и сделать этот метод void, если хочешь протестировать только этот метод
+            // Собственно, сама проверка
+            Assert.That(avFuses.Count, Is.EqualTo(countOfFuses)); 
         }
 
+        // Вспомагательный метод для тестов
         public double GetTotalPower(List<BaseElectrical> consumers)
         {
             double totalPower = 0;
@@ -113,6 +123,7 @@ namespace FuseBox.Tests
                 totalPower += consumer.Amper;
             return totalPower;
         }
+
 
         /*
          * 1. Когда создаются дополнительные узо, нужно проверить его параметр ампеража (нужны ли всегда УЗО на 63 ампера)
@@ -123,17 +134,27 @@ namespace FuseBox.Tests
         [TestCaseSource(nameof(GetAllConsumers))]
         public void DistributeRCDFromLoadTest(string caseName, GlobalGrouping globalGrouping, List<BaseElectrical> consumers, double phaseCount)
         {
+            // Создаем необходимые объекты для работы теста 
+            Project testPoject = new Project();
+            DistributionService distributionService = new DistributionService();
+            var avFuses = new List<Fuse>();
+            List<RCD> uzos = new List<RCD>();
+
+            // Переписал пару констант с DistributionService
             double RCD64A = 32.00;
             double RCDPerPhases = 3.00;
 
             double tAmper = GetTotalPower(consumers);
-            List<RCD> uzos = new List<RCD>();
+            
 
-            // Получаем данные для теста
-            List<Fuse> avFuses = DistributeOfConsumersTest(caseName, globalGrouping, consumers, phaseCount);
+            // Запускаем тестируемый метод. Он работает только в связке с DistributeOfConsumers, поэтому запускаем и его
+            distributionService.DistributeOfConsumers(globalGrouping, consumers, avFuses);
             distributionService.DistributeRCDFromLoad(tAmper, uzos, avFuses, (int)phaseCount);
 
+
             // Получаем данные для референса
+
+            // Получаем эталонное необходимое кол-во созданых УЗО для первого сравнения          
             var uzoCount = 0;
             if (tAmper <= RCD64A) uzoCount = 1;
             else
@@ -160,7 +181,7 @@ namespace FuseBox.Tests
                 }
             }
 
-            // Проверить равномерность распределения мощности между УЗО (дельта - мощность самого нагруженого автомата)
+            // Проверить равномерность распределения мощности между УЗО (Максимальное значение дельты - мощность самого нагруженого автомата)
             double maxLoadFuse = 0;
             foreach (var fuse in avFuses)  //  поиск ампеража самого нагруженого автомата
             {
@@ -173,7 +194,7 @@ namespace FuseBox.Tests
                     }
                 }
             }
-            //var uzoLoads = uzos.Select(uzo => uzo.Electricals.Sum(e => e.Amper)).ToList();
+
             var uzoLoads = uzos.Select(uzo =>
                 uzo.Electricals
                 .OfType<Fuse>()
@@ -184,6 +205,7 @@ namespace FuseBox.Tests
             double maxLoad = uzoLoads.Max();
             double minLoad = uzoLoads.Min();
 
+            // Сама проверка
             Assert.AreEqual(uzos.Count, uzoCount, $"в {caseName} неверное кол-во УЗО");
             Assert.LessOrEqual((int)(maxLoad - minLoad), maxLoadFuse, $"в {caseName} неравномерная нагрузка!");
         }
