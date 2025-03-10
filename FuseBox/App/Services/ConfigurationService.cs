@@ -203,6 +203,7 @@ namespace FuseBox
                     {
                         Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
 
+
                         // Если у компонента есть такой же тип выхода, то создаем подключение
                         if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?
                         {

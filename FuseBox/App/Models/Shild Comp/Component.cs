@@ -34,5 +34,11 @@ namespace FuseBox
             Slots = slots;
             Price = price;
         }
+        public Component(string name, int slot)     // Для тестов
+        {
+            this.Name = name;
+            this.Slots = slot;
+        }
+        public Component() { }      // Для тестов
     }
 }

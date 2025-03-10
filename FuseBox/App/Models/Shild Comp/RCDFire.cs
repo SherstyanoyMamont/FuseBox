@@ -20,5 +20,10 @@ namespace FuseBox
             Capacity = 300;
             base.Price = price;
         }
+        public RCDFire(string name, int slots)  // для тестов
+        {
+            this.Name = name;
+            this.Slots = slots;
+        }
     }
 }

@@ -21,5 +21,10 @@ namespace FuseBox
         {
             Electricals = electricals;
         }
+        public Contactor(string name, int slots)
+        {
+            this.Name = name;
+            this.Slots = slots;
+        }
     }
 }
