@@ -11,7 +11,7 @@ namespace FuseBox
         Phase2,
         Phase3,
         Zero,
-        AV,
+        AV,            // Имееться ввиду разьем только для AV автоматов
     }
     public enum PortOut
     {
@@ -23,7 +23,7 @@ namespace FuseBox
         AV,
     }
 
-    public class Port : BaseEntity
+    public class Port
     {
         public int connectionsCount {  get; set; }
 

@@ -57,7 +57,7 @@ namespace FuseBox
             else
             {
                 Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
-                ConfigurationService configurationService = new ConfigurationService();       // создание экземпляра сервиса конфигурации
+                
 
                 //var options = new JsonSerializerOptions
                 //{
@@ -244,16 +244,24 @@ namespace FuseBox
                 }";
 
                 Project project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
-                var newProject = configurationService.GenerateConfiguration(project);         // генерация конфигурации
+
+                ConfigurationService configurationService = new ConfigurationService(project);     // создание экземпляра сервиса конфигурации
+
+                configurationService.GenerateConfiguration();         // генерация конфигурации
 
 
-                var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings); // сериализация данных
+                //var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings);           // сериализация данных
+                var newFuseBox = JsonConvert.SerializeObject(configurationService.project, settings);           // сериализация данных
+
+                //var configurationS = JsonConvert.SerializeObject(configurationService.ports, settings); // сериализация данных
 
                 // Сериализация с использованием настроек
-                //var newProjectSerialized = System.Text.Json.JsonSerializer.Serialize(newProject, options);
+                // var newProjectSerialized = System.Text.Json.JsonSerializer.Serialize(newProject, options);
 
-                Console.Write(newProjectSerialized);
+                Console.Write(newFuseBox);
                 Console.WriteLine("\nРазъемы были скрыты в классе Component!\n");
+
+                //Console.Write(configurationS); // вывод данных о разъемах
 
             }
         }

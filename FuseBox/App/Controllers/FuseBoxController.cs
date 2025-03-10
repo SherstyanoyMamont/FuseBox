@@ -15,15 +15,15 @@ namespace FuseBox.Controllers
         {
             try
             {
-                ConfigurationService configurationService = new();            // Создаю объект сервиса
-                var pc = configurationService.GenerateConfiguration(input);   // Модифицирую конфигурацию входного объекта
+                ConfigurationService configurationService = new ConfigurationService(input);  // Создаю объект сервиса
+                configurationService.GenerateConfiguration();                    // Модифицирую конфигурацию входного объекта
 
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto                  // Для поддержки полиморфизма
                 };
 
-                var data = JsonConvert.SerializeObject(pc, Formatting.Indented);
+                var data = JsonConvert.SerializeObject(configurationService.project, Formatting.Indented);
 
                 return Ok(data);                 
             }

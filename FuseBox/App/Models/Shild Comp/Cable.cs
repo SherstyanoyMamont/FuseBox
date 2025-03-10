@@ -12,7 +12,7 @@ namespace FuseBox.App.Models.Shild_Comp
         Blue
     }
 
-    public class Cable : NonElectrical
+    public class Cable
     {
         public decimal Length { get; set; } // m
         public decimal Section { get; set; } // mm^2
