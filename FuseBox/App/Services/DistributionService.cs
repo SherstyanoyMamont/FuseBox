@@ -189,7 +189,7 @@ namespace FuseBox
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                 }
                 
-                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses) || uzos.Count > Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)) // !!!
+                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))        //&& uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                     countOfRCD++;

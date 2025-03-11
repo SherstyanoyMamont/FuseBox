@@ -7,5 +7,12 @@ namespace FuseBox
     {
         // public int Rating { get; set; }                // ... 10А, 16А, 20А ...
         public List<Consumer> Consumer { get; set; } = new List<Consumer>();
+
+        public Room() { }
+        
+        public Room(List<Consumer> consumers) 
+        {
+            Consumer = consumers;
+        }
     }
 }

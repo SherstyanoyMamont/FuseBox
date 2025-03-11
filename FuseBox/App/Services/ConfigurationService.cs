@@ -27,8 +27,8 @@ namespace FuseBox
         public FuseBox fuseBox;
 
         public decimal WireSection;
-        
-        public ConfigurationService(Project Project) 
+
+        public ConfigurationService(Project Project)
         {
             project = Project;
             fuseBox = project.FuseBox;
@@ -52,19 +52,19 @@ namespace FuseBox
 
         }
         // Логика конфигурации устройств...
-        private void ConfigureShield()
+        public void ConfigureShield()        // Изменил с private на public для тестов
         {
             List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
 
             var ports2x2 = SelectPorts(0, 1, 6, 7);
-            var ports2   = SelectPorts(1, 7);
-            var ports2x2i= SelectPorts(1, 3, 5, 7);
+            var ports2 = SelectPorts(1, 7);
+            var ports2x2i = SelectPorts(1, 3, 5, 7);
             var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
             var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
             var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
-            var ports016 = SelectPorts(0, 1, 6);
-            var ports236 = SelectPorts(2, 3, 6);
-            var ports456 = SelectPorts(4, 5, 6);
+            var ports017 = SelectPorts(0, 1, 7);
+            var ports237 = SelectPorts(2, 3, 7);
+            var ports457 = SelectPorts(4, 5, 7);
 
             if (project.InitialSettings.PhasesCount == 1) // Входим в расчеты 1 фазы
             {
@@ -82,26 +82,17 @@ namespace FuseBox
             }
             else // Входим в расчеты 3 фазы
             {
-                if (fuseBox.MainBreaker)
-                {
-                    if (fuseBox.Main3PN) // Если да, то добавляем 3 фазы + ноль
-                        shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N));
-                    else
-                        shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3));
-                }
+                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
+                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
                 if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
                 if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
                 if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports1_8)); }
-                if (fuseBox.VoltageRelay)
+                if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
+                if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
                 {
-                    if (fuseBox.ThreePRelay)
-                        shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7));
-                    else
-                    {
-                        shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports016));
-                        shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports236));
-                        shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports456));
-                    }
+                    shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
+                    shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
+                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));
                 }
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
                 if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, fuseBox.Contactor)); } // !!!
@@ -118,7 +109,7 @@ namespace FuseBox
             shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
         }
         // Логика распределения модулей по уровням...
-        private void ShieldByLevel()
+        public void ShieldByLevel()     // Поменял private на public для тестов
         {
             int occupiedSlots = 0;
             int currentLevel = 0;
@@ -154,7 +145,7 @@ namespace FuseBox
             }
         }
         // Расчет сечения провода по мощности
-        private void CalculateWireCrossSection()
+        public void CalculateWireCrossSection()     // Поменял private на public для тестов
         {
             // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
             var copperWireTable = new Dictionary<double, double>
@@ -168,7 +159,7 @@ namespace FuseBox
                 if (project.CalculateTotalPower() <= wire.Value)
                     WireSection = (decimal)wire.Key;
 
-                    //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
+                //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
             }
 
             // Если ток выше максимального в таблице — требуется индивидуальный расчёт
@@ -181,7 +172,7 @@ namespace FuseBox
             // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
         }
         // Создаем соединение проводами
-        private void CreateConnections()
+        public void CreateConnections()     // Поменял private на public для тестов
         {
             List<Connection> сableConnections = fuseBox.CableConnections;
 
@@ -202,7 +193,6 @@ namespace FuseBox
                     for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
                     {
                         Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
-
 
                         // Если у компонента есть такой же тип выхода, то создаем подключение
                         if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?

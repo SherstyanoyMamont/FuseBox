@@ -27,5 +27,11 @@ namespace FuseBox
             ShieldWidth = 12;
             VoltageStandard = 220;
         }
+
+        public InitialSettings(int phasesCount, int shieldWidth)
+        {
+            PhasesCount = phasesCount;
+            ShieldWidth= shieldWidth;
+        }
     }
 }

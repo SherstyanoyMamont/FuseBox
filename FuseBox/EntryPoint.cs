@@ -233,7 +233,7 @@ namespace FuseBox
                             {
                               ""id"": 17,
                               ""name"": ""Lighting"",
-                              ""Amper"": 3,
+                              ""Amper"": 5,
                             }
                           ],
                           ""tPower"": 12

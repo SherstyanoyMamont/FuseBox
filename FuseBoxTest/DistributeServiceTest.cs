@@ -27,63 +27,168 @@ namespace FuseBox.Tests
 
         public static IEnumerable<object[]> GetAllConsumers()
         {
-            yield return new object[] { "Case 1", new GlobalGrouping(0, 0, 0), new List<BaseElectrical>(), 1 };
-            yield return new object[] { "Case 2", new GlobalGrouping(0, 0, 1), new List<BaseElectrical> { new Consumer("Air Conditioner", 16) }, 1 };
-            yield return new object[] { "Case 3", new GlobalGrouping(0, 1, 0), new List<BaseElectrical> { new Consumer("Lighting", 16) }, 3 };
-            yield return new object[] { "Case 4", new GlobalGrouping(1, 0, 0), new List<BaseElectrical> { new Consumer("Socket", 16) }, 3 };
+
+            yield return new object[]
+            {
+                "Case 1",
+                new Project
+                (
+                    new InitialSettings(1, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(0, 0, 1),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room( new List<Consumer> { new Consumer("Air Conditioner", 16) } )
+                            }
+                        )
+                    }
+                )
+            };
+            yield return new object[]
+            {
+                "Case 2",
+                new Project
+                (
+                    new InitialSettings(3, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(0, 1, 0),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room( new List<Consumer> { new Consumer("Lighting", 16) } )
+                            }
+                        )
+                    }
+                )
+            };
+            yield return new object[]
+            {
+                "Case 3",
+                new Project
+                (
+                    new InitialSettings(3, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(1, 0, 0),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room( new List<Consumer> { new Consumer("Socket", 16) } )
+                            }
+                        )
+                    }
+                )
+            };
+            yield return new object[]
+            {
+                "Case 4",
+                new Project
+                (
+                    new InitialSettings(1, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(1, 1, 1),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room
+                                (
+                                    new List<Consumer>
+                                    {
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Lighting", 16),
+                                        new Consumer("Air Conditioner", 10)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            };
             yield return new object[]
             {
                 "Case 5",
-                new GlobalGrouping(1, 1, 1),
-                new List<BaseElectrical>
-                {
-                    new Consumer("Socket", 16),
-                    new Consumer("Lighting", 16),
-                    new Consumer("Air Conditioner", 10)
-                },
-                1
+                new Project
+                (
+                    new InitialSettings(3, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(2, 2, 0),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room
+                                (
+                                    new List<Consumer>
+                                    {
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Heating floor", 15),
+                                        new Consumer("Refrigerator", 15),
+                                        new Consumer("Oven", 20)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
             };
             yield return new object[]
             {
                 "Case 6",
-                new GlobalGrouping(2, 2, 0),
-                new List<BaseElectrical>
-                {
-                    new Consumer("Socket", 16),
-                    new Consumer("Socket", 16),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Heating floor", 15),
-                    new Consumer("Refrigerator", 15),
-                    new Consumer("Oven", 20)
-                },
-                3
-            };
-            yield return new object[]
-            {
-                "Case 7",
-                new GlobalGrouping(3, 6, 3),
-                new List<BaseElectrical>
-                {
-                    new Consumer("Socket", 16),
-                    new Consumer("Socket", 16),
-                    new Consumer("Socket", 16),
-                    new Consumer("Socket", 16),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Lighting", 10),
-                    new Consumer("Air Conditioner", 15),
-                    new Consumer("Air Conditioner", 15),
-                    new Consumer("Air Conditioner", 15),
-                    new Consumer("Refrigerator", 15),
-                    new Consumer("Oven", 20)
-                },
-                3
-            };
+                new Project
+                (
+                    new InitialSettings(3, 16),
+                    new FloorGrouping(true, false),
+                    new GlobalGrouping(3, 6, 3),
+                    new List<Floor>
+                    {
+                        new Floor
+                        (
+                            new List<Room>
+                            {
+                                new Room
+                                (
+                                    new List<Consumer>
+                                    {
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Socket", 16),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Lighting", 10),
+                                        new Consumer("Air Conditioner", 15),
+                                        new Consumer("Air Conditioner", 15),
+                                        new Consumer("Air Conditioner", 15),
+                                        new Consumer("Refrigerator", 15),
+                                        new Consumer("Oven", 20)
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            };            
         }
 
         /* 1. Нужно добавить проверку на перегруз автомата потребителями по амперажу
@@ -91,28 +196,30 @@ namespace FuseBox.Tests
            3. OK
         */
         [TestCaseSource(nameof(GetAllConsumers))]
-        public void DistributeOfConsumersTest(string caseName, GlobalGrouping globalGrouping, List<BaseElectrical> consumers, double phaseCount)   //Тестировка глобальной групировки 
+        public void DistributeOfConsumersTest(string caseName, Project testProject)   //Тестировка глобальной групировки 
         {
             // Создаем все необходимые объекты для работы теста
-            Project testPoject = new Project();
-            DistributionService distributionService = new DistributionService();
-            var avFuses = new List<Fuse>();
-
+            //Project testProject = new Project();
+            //var avFuses = new List<Fuse>();
+            
+            DistributionService distributionService = new DistributionService(testProject);
+            
             // Запускаем тестируемый метод, который должен заполнить список avFuses
-            distributionService.DistributeOfConsumers(globalGrouping, consumers, avFuses); 
+            distributionService.DistributeOfConsumers();
 
             // Получаем эталонные данные для сравнения с результатами работы тестируемого метода
             int countOfFuses = 0;
+            var consumers = testProject.Floors[0].Rooms[0].Consumer;
             for (int i = 0; i < consumers.Count(); i++)
             {
                 if (consumers[i].Name == "Socket" || consumers[i].Name == "Lighting" || consumers[i].Name == "Air Conditioner")
                     continue;
                 countOfFuses++;
             }
-            countOfFuses += globalGrouping.Sockets + globalGrouping.Lighting + globalGrouping.Conditioners;
+            countOfFuses += testProject.GlobalGrouping.Sockets + testProject.GlobalGrouping.Lighting + testProject.GlobalGrouping.Conditioners;
 
             // Собственно, сама проверка
-            Assert.That(avFuses.Count, Is.EqualTo(countOfFuses)); 
+            Assert.That(distributionService.AVFuses.Count, Is.EqualTo(countOfFuses));
         }
 
         // Вспомагательный метод для тестов
@@ -132,30 +239,31 @@ namespace FuseBox.Tests
          * Ok
          */
         [TestCaseSource(nameof(GetAllConsumers))]
-        public void DistributeRCDFromLoadTest(string caseName, GlobalGrouping globalGrouping, List<BaseElectrical> consumers, double phaseCount)
+        public void DistributeRCDFromLoadTest(string caseName, Project testProject)
         {
             // Создаем необходимые объекты для работы теста 
-            Project testPoject = new Project();
-            DistributionService distributionService = new DistributionService();
-            var avFuses = new List<Fuse>();
-            List<RCD> uzos = new List<RCD>();
+            //Project testPoject = new Project();
+            //var avFuses = new List<Fuse>();
+            var consumers = testProject.Floors[0].Rooms[0].Consumer;
+            DistributionService distributionService = new DistributionService(testProject);
 
             // Переписал пару констант с DistributionService
             double RCD64A = 32.00;
             double RCDPerPhases = 3.00;
-
-            double tAmper = GetTotalPower(consumers);
             
+            double tAmper = GetTotalPower(consumers.Cast<BaseElectrical>().ToList());
+
 
             // Запускаем тестируемый метод. Он работает только в связке с DistributeOfConsumers, поэтому запускаем и его
-            distributionService.DistributeOfConsumers(globalGrouping, consumers, avFuses);
-            distributionService.DistributeRCDFromLoad(tAmper, uzos, avFuses, (int)phaseCount);
+            distributionService.DistributeOfConsumers();
+            distributionService.DistributeRCDFromLoad();        //tAmper, uzos, avFuses, (int)phaseCount
 
 
             // Получаем данные для референса
 
             // Получаем эталонное необходимое кол-во созданых УЗО для первого сравнения          
             var uzoCount = 0;
+            var phaseCount = testProject.InitialSettings.PhasesCount;
             if (tAmper <= RCD64A) uzoCount = 1;
             else
             {
@@ -165,8 +273,8 @@ namespace FuseBox.Tests
                     case 1:
                         {
 
-                            if (uzoCount < (int)Math.Ceiling(avFuses.Count / RCD.LimitOfConnectedFuses))
-                                uzoCount = (int)Math.Ceiling(avFuses.Count / RCD.LimitOfConnectedFuses);
+                            if (uzoCount < (int)Math.Ceiling(distributionService.AVFuses.Count / RCD.LimitOfConnectedFuses))
+                                uzoCount = (int)Math.Ceiling(distributionService.AVFuses.Count / RCD.LimitOfConnectedFuses);
                             break;
                         }
                     case 3:
@@ -183,7 +291,7 @@ namespace FuseBox.Tests
 
             // Проверить равномерность распределения мощности между УЗО (Максимальное значение дельты - мощность самого нагруженого автомата)
             double maxLoadFuse = 0;
-            foreach (var fuse in avFuses)  //  поиск ампеража самого нагруженого автомата
+            foreach (var fuse in distributionService.AVFuses)  //  поиск ампеража самого нагруженого автомата
             {
                 if (GetTotalPower(fuse.Electricals) > maxLoadFuse)
                 {
@@ -195,7 +303,7 @@ namespace FuseBox.Tests
                 }
             }
 
-            var uzoLoads = uzos.Select(uzo =>
+            var uzoLoads = distributionService.uzos.Select(uzo =>
                 uzo.Electricals
                 .OfType<Fuse>()
                 .Sum(fuse => fuse.Electricals
@@ -206,7 +314,7 @@ namespace FuseBox.Tests
             double minLoad = uzoLoads.Min();
 
             // Сама проверка
-            Assert.AreEqual(uzos.Count, uzoCount, $"в {caseName} неверное кол-во УЗО");
+            Assert.AreEqual(distributionService.uzos.Count, uzoCount, $"в {caseName} неверное кол-во УЗО");
             Assert.LessOrEqual((int)(maxLoad - minLoad), maxLoadFuse, $"в {caseName} неравномерная нагрузка!");
         }
     }

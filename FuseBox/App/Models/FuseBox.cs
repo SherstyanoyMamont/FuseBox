@@ -55,13 +55,36 @@ namespace FuseBox
 
         // Список подключенных к контактору устройств
         public List<BaseElectrical> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
-        
+
         public List<List<BaseElectrical>> Components { get; set; } = new List<List<BaseElectrical>> // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
         {
             new List<BaseElectrical>(),
-        }; 
+        };
         public List<BaseElectrical> Electricals { get; set; } = new(); // Базовый список 
 
         public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+
+        public FuseBox(bool mainBreaker, bool main3PN, bool surgeProtection, bool loadSwitch2P,
+                       bool modularContactor, bool railMeter, bool fireUzo, bool voltageRelay,
+                       bool threePRelay, bool railSocket, bool nDiscLine, bool loadSwitch, bool crossModule)
+        {
+
+            MainBreaker = mainBreaker;
+            Main3PN = main3PN;
+            SurgeProtection = surgeProtection;
+            LoadSwitch2P = loadSwitch2P;
+            ModularContactor = modularContactor;
+            RailMeter = railMeter;
+            FireUZO = fireUzo;
+            VoltageRelay = voltageRelay;
+            ThreePRelay = threePRelay;
+            RailSocket = railSocket;
+            NDiscLine = nDiscLine;
+            LoadSwitch = loadSwitch;
+            CrossModule = crossModule;
+
+        }
+
+        public FuseBox() { }
     }
 }
