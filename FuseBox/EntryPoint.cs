@@ -83,7 +83,7 @@ namespace FuseBox
                     ""Conditioners"": 1
                   },
                   ""initialSettings"": {
-                    ""PhasesCount"": 3,
+                    ""PhasesCount"": 1,
                     ""MainAmperage"": 25,
                     ""ShieldWidth"": 16,
                     ""VoltageStandard"": 220,
@@ -233,7 +233,7 @@ namespace FuseBox
                             {
                               ""id"": 17,
                               ""name"": ""Lighting"",
-                              ""Amper"": 200,
+                              ""Amper"": 3,
                             }
                           ],
                           ""tPower"": 12

@@ -7,7 +7,6 @@ namespace FuseBox.App.Controllers
         public Guid UserId { get; private set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public int Age { get; set; }
         public string Address { get; set; }
         public string PasswordHash { get; private set; }
         public List<Project> Projects { get; set; } = new List<Project>();
@@ -20,7 +19,6 @@ namespace FuseBox.App.Controllers
             UserId = Guid.NewGuid();
             Name = name;
             Email = email;
-            Age = age;
             Address = address;
             CreatedAt = DateTime.Now;
             LastLogin = DateTime.Now;

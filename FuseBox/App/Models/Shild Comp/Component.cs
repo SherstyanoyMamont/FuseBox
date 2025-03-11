@@ -11,7 +11,7 @@ namespace FuseBox
         public decimal Price { get; set; }
 
         // !!! Скрытые списки разьемов
-        //[JsonIgnore]
+        [JsonIgnore]
         [JsonProperty(Order = 8)]
 
         public List<Port> Ports = new List<Port>();

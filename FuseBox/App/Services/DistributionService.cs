@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace FuseBox
 {
@@ -11,7 +12,7 @@ namespace FuseBox
         public List<BaseElectrical> AirConditioner = new();
         public List<BaseElectrical> HeatedFloor = new();
         public List<Fuse> AVFuses = new();
-        public List<RCD> uzos = new();
+        public List<RCD> uzos;
 
         public Project project;
         public double countOfRCD;
@@ -23,9 +24,10 @@ namespace FuseBox
         public double AVPerRCD = 6.00;
         public double RCDPerPhases = 3.00;
 
-        public DistributionService(Project project)
+        public DistributionService(Project project, List<RCD> uzos)
         {
             this.project = project;
+            this.uzos = uzos;
         }
 
         // Логика распределения модулей по порядку
@@ -67,19 +69,19 @@ namespace FuseBox
             // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
             if (AllConsumers.Any(e => e.Name.Equals("Lighting", StringComparison.OrdinalIgnoreCase)))
             {
-                AutomatPerCons(globalGrouping.Lighting, Lightings);
+                AutomatPerCons(globalGrouping.Lighting, Lightings, "Lighting");
             }
             if (AllConsumers.Any(e => e.Name.Equals("Socket", StringComparison.OrdinalIgnoreCase)))
             {
-                AutomatPerCons(globalGrouping.Sockets, Socket);
+                AutomatPerCons(globalGrouping.Sockets, Socket, "Socket");
             }
             if (AllConsumers.Any(e => e.Name.Equals("Air Conditioner", StringComparison.OrdinalIgnoreCase)))
             {
-                AutomatPerCons(globalGrouping.Conditioners, AirConditioner);
+                AutomatPerCons(globalGrouping.Conditioners, AirConditioner, "Air Conditioner");
             }
             if (AllConsumers.Any(e => e.Name.Equals("Heated Floor", StringComparison.OrdinalIgnoreCase)))
             {
-                AutomatPerCons(heatingPerAV, HeatedFloor);
+                AutomatPerCons(heatingPerAV, HeatedFloor, "Heated Floor");
             }
             foreach (var consumer in AllConsumers) // Добавляем автоматы без сортировки
             {
@@ -90,29 +92,61 @@ namespace FuseBox
             }
         }
 
-        private void AutomatPerCons(int groupingParam, List<BaseElectrical> list)
+        private void AutomatPerCons(int groupingParam, List<BaseElectrical> list, string? name)
         {
-            var buckets = new List<List<BaseElectrical>>(groupingParam);
-            for (int i = 0; i < groupingParam; i++)
+            if (groupingParam == 0)
             {
-                buckets.Add(new List<BaseElectrical>());
-            }
+                var buckets1 = new List<List<BaseElectrical>>();
 
-            // Распределяем потребителей по группам
-            for (int i = 0; i < list.Count; i++)
-            {
-                buckets[i % groupingParam].Add(list[i]);
-            }
+                // Создаем группы
+                for (int i = 0; i < project.GetTotalNumberOfRooms(); i++)
+                {
+                    buckets1.Add(new List<BaseElectrical>());
+                }
 
-            // Создаём автоматы и добавляем в AVFuses
-            for (int i = 0; i < groupingParam; i++)
-            {
-                var consumers = buckets[i];
-                AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
+                // Распределяем потребителей по группам
+                for (int i = 0; i < list.Count; i++)
+                {
+                    buckets1[i].Add(list[i]);
+                }
+
+                // Удаляем пустые группы
+                buckets1.RemoveAll(innerList => innerList == null || innerList.Count == 0);
+
+
+                // Создаём автоматы и добавляем в AVFuses
+                for (int i = 0; i < buckets1.Count; i++)
+                {
+                    var consumers = buckets1[i];
+                    AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
+                }
             }
+            else
+            {
+                var buckets = new List<List<BaseElectrical>>(groupingParam);
+
+                for (int i = 0; i < groupingParam; i++)
+                {
+                    buckets.Add(new List<BaseElectrical>());
+                }
+
+                // Распределяем потребителей по группам
+                for (int i = 0; i < list.Count; i++)
+                {
+                    buckets[i % groupingParam].Add(list[i]);
+                }
+
+                // Создаём автоматы и добавляем в AVFuses
+                for (int i = 0; i < groupingParam; i++)
+                {
+                    var consumers = buckets[i];
+                    AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
+                }
+            }
+            
         }
 
-        public List<RCD> DistributeRCDFromLoad()
+        public void DistributeRCDFromLoad()
         {
             double TAmper = project.CalculateTotalPower();
 
@@ -138,8 +172,6 @@ namespace FuseBox
                 DistributeFusesToRCDs();
                 DistributePerPhases();
             }
-
-            return uzos;
         }
 
         private void Distribute()

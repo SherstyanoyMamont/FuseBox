@@ -28,5 +28,12 @@ namespace FuseBox
                 .SelectMany(room => room.Consumer)
                 .Sum(equipment => equipment.Amper);
         }
+
+        public int GetTotalNumberOfRooms() // Returns the total number of rooms in the project
+        {
+            return Floors
+                .SelectMany(floor => floor.Rooms)
+                .Count();
+        }
     }
 }
