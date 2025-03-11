@@ -19,7 +19,7 @@ namespace FuseBox
     public class ConfigurationService
     {
         public List<Component> shieldModuleSet = new();
-        public List<RCD> uzos = new();
+        //public List<RCD> uzos = new();
         public List<Port> ports;
 
         public Project project;
@@ -109,10 +109,10 @@ namespace FuseBox
         }
         private void Distribute()
         {
-            DistributionService distributionService = new(project, uzos);
+            DistributionService distributionService = new(project);
 
             distributionService.DistributeOfConsumers(); // Логика распределения потребителей
-            distributionService.DistributeRCDFromLoad(); // Логика распределения УЗО от нагрузки
+            List<RCD> uzos = distributionService.DistributeRCDFromLoad(); // Логика распределения УЗО от нагрузки
 
             shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
         }

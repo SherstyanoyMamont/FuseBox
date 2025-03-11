@@ -71,7 +71,7 @@ namespace FuseBox
                 };
 
                 // JSON-строка с данными о проекте
-                string inputJsonData = @"
+                string? inputJsonData = @"
                 {
                   ""floorGrouping"": {
                     ""FloorGroupingP"": true,
@@ -243,9 +243,9 @@ namespace FuseBox
                   ]
                 }";
 
-                Project project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
+                Project? project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
 
-                ConfigurationService configurationService = new ConfigurationService(project);     // создание экземпляра сервиса конфигурации
+                ConfigurationService configurationService = new(project);     // создание экземпляра сервиса конфигурации
 
                 var validationResults = ValidationHelper.Validate(project);
 

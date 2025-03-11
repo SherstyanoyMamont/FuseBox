@@ -11,7 +11,7 @@ namespace FuseBox
         public List<BaseElectrical> AirConditioner = new();
         public List<BaseElectrical> HeatedFloor = new();
         public List<Fuse> AVFuses = new();
-        public List<RCD> uzos;
+        public List<RCD> uzos = new();
 
         public Project project;
         public double countOfRCD;
@@ -23,9 +23,8 @@ namespace FuseBox
         public double AVPerRCD = 6.00;
         public double RCDPerPhases = 3.00;
 
-        public DistributionService(Project project, List<RCD> uzos)
+        public DistributionService(Project project)
         {
-            this.uzos = uzos;
             this.project = project;
         }
 
@@ -113,7 +112,7 @@ namespace FuseBox
             }
         }
 
-        public void DistributeRCDFromLoad()
+        public List<RCD> DistributeRCDFromLoad()
         {
             double TAmper = project.CalculateTotalPower();
 
@@ -139,6 +138,8 @@ namespace FuseBox
                 DistributeFusesToRCDs();
                 DistributePerPhases();
             }
+
+            return uzos;
         }
 
         private void Distribute()
