@@ -91,7 +91,7 @@ namespace FuseBox
             }
         }
 
-        public void AutomatPerCons(int groupingParam, List<BaseElectrical> list)
+        private void AutomatPerCons(int groupingParam, List<BaseElectrical> list)
         {
             var buckets = new List<List<BaseElectrical>>(groupingParam);
             for (int i = 0; i < groupingParam; i++)
@@ -141,7 +141,7 @@ namespace FuseBox
             }
         }
 
-        public void Distribute()
+        private void Distribute()
         {
             int AVCount = AVFuses.Count;
 
@@ -155,7 +155,8 @@ namespace FuseBox
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                 }
-                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)) // !!!
+                
+                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses) || uzos.Count > Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)) // !!!
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                     countOfRCD++;
@@ -175,7 +176,7 @@ namespace FuseBox
             }
         }
 
-        public void DistributePerPhases()
+        private void DistributePerPhases()
         {
             // Массив с нагрузкой на 3 фазы
             var phases = new int[3];
@@ -206,7 +207,7 @@ namespace FuseBox
             }
         }
 
-        public void DistributeFusesToRCDs()
+        private void DistributeFusesToRCDs()
         {
             List<RCD> filledRCDs = new List<RCD>();
 
@@ -238,7 +239,6 @@ namespace FuseBox
                 uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
             }
         }
-
     }
 }
 

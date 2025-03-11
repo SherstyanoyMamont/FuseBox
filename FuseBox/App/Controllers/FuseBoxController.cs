@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
+using System.Collections.Generic;
+using FuseBox;
 
 namespace FuseBox.Controllers
 {
@@ -16,6 +18,24 @@ namespace FuseBox.Controllers
             try
             {
                 ConfigurationService configurationService = new ConfigurationService(input);  // Создаю объект сервиса
+
+                var validationResults = ValidationHelper.Validate(configurationService.project);
+
+                if (validationResults.Count == 0)
+                {
+                    Console.WriteLine("Validation was successful!");
+                    //Console.WriteLine($"Id: {user.Id}, Name: {user.Name}, Age: {user.Age}");
+                }
+                else
+                {
+                    Console.WriteLine("Validation error:");
+                    foreach (var validationResult in validationResults)
+                    {
+                        Console.WriteLine($" - {validationResult.ErrorMessage}");
+                    }
+                }
+
+
                 configurationService.GenerateConfiguration();                    // Модифицирую конфигурацию входного объекта
 
                 JsonSerializerSettings settings = new JsonSerializerSettings
@@ -25,11 +45,11 @@ namespace FuseBox.Controllers
 
                 var data = JsonConvert.SerializeObject(configurationService.project, Formatting.Indented);
 
-                return Ok(data);                 
+                return Ok(data);               
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Deserializ error: {ex.Message}");
             }
         }
 

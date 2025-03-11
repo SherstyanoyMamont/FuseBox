@@ -330,12 +330,12 @@ public class ConfigurationServiceTest
     // Вспомогательный метод для создания портов компонентов config.shieldModuleSet
     public void CreatePortsCombination(ConfigurationService config)
     {
-        var portData = new (PortIn? portIn, PortOut? portOut, ConnectorColour colour)[]
+        var portData = new (PortInEnum? portIn, PortOutEnum? portOut, ConnectorColour colour)[]
         {
-            (PortIn.Phase1, PortOut.Phase1, ConnectorColour.Red),
-            (PortIn.Phase2, PortOut.Phase2, ConnectorColour.Orange),
-            (PortIn.Phase3, PortOut.Phase3, ConnectorColour.Grey),
-            (PortIn.Zero,   PortOut.Zero,   ConnectorColour.Blue)
+            (PortInEnum.Phase1, PortOutEnum.Phase1, ConnectorColour.Red),
+            (PortInEnum.Phase2, PortOutEnum.Phase2, ConnectorColour.Orange),
+            (PortInEnum.Phase3, PortOutEnum.Phase3, ConnectorColour.Grey),
+            (PortInEnum.Zero,   PortOutEnum.Zero,   ConnectorColour.Blue)
         };
         foreach (var (portIn, portOut, colour) in portData)
         {

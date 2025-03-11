@@ -19,8 +19,8 @@ namespace FuseBox
     public class ConfigurationService
     {
         public List<Component> shieldModuleSet = new();
-        public List<Port> ports = new();
         public List<RCD> uzos = new();
+        public List<Port> ports;
 
         public Project project;
         public FuseBox fuseBox;
@@ -31,24 +31,23 @@ namespace FuseBox
         {
             project = Project;
             fuseBox = project.FuseBox;
+            ports = Port.CreateStandardPorts(WireSection);
         }
 
         // Создаем/Модифицируем объект проекта
         public void GenerateConfiguration() // Метод возвращает объект ProjectConfiguration
         {
-            //ValidateInitialSettings(input.InitialSettings); // Проверка первичных данных***
+            ValidateInitialSettings();      // Проверка первичных данных***
 
-            CreatePortsSetup();            // Создаем разьемы
+            CalculateWireCrossSection();    // Расчет сечения провода по мощности
 
-            CalculateWireCrossSection();   // Расчет сечения провода по мощности
+            ConfigureShield();              // Входим в расчеты 1 или 3 фазы
 
-            ConfigureShield();             // Входим в расчеты 1 или 3 фазы
+            Distribute();                   // Логика распределения потребителей и УЗО от нагрузки
 
-            Distribute();                  // Логика распределения потребителей и УЗО от нагрузки
+            CreateConnections();            // Создаем соединения
 
-            CreateConnections();           // Создаем соединения
-
-            ShieldByLevel();               // Компонуем щит по уровням
+            ShieldByLevel();                // Компонуем щит по уровням
 
         }
         // Логика конфигурации устройств...
@@ -219,21 +218,10 @@ namespace FuseBox
                 }
             }
         }
-        private void CreatePortsSetup()
-        {
-            var portPairs = new[]
-            {
-                (PortIn.Phase1, PortOut.Phase1, ConnectorColour.Red),
-                (PortIn.Phase2, PortOut.Phase2, ConnectorColour.Orange),
-                (PortIn.Phase3, PortOut.Phase3, ConnectorColour.Grey),
-                (PortIn.Zero,   PortOut.Zero,   ConnectorColour.Blue)
-            };
 
-            foreach (var (portIn, portOut, colour) in portPairs)
-            {
-                ports.Add(new Port(portIn, new Cable(colour, WireSection)));
-                ports.Add(new Port(portOut, new Cable(colour, WireSection)));
-            }
+        private void ValidateInitialSettings()
+        {
+
         }
         //private void CalculateConnectionCount(){}
     }

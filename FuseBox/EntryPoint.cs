@@ -1,6 +1,5 @@
 ﻿
 using System;
-using FuseBox.Controllers;
 using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -8,6 +7,7 @@ using System.Text.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using FuseBox;
 
 namespace FuseBox
 {
@@ -83,7 +83,7 @@ namespace FuseBox
                     ""Conditioners"": 1
                   },
                   ""initialSettings"": {
-                    ""PhaseCount"": 3,
+                    ""PhasesCount"": 3,
                     ""MainAmperage"": 25,
                     ""ShieldWidth"": 16,
                     ""VoltageStandard"": 220,
@@ -233,7 +233,7 @@ namespace FuseBox
                             {
                               ""id"": 17,
                               ""name"": ""Lighting"",
-                              ""Amper"": 2,
+                              ""Amper"": 200,
                             }
                           ],
                           ""tPower"": 12
@@ -246,6 +246,22 @@ namespace FuseBox
                 Project project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
 
                 ConfigurationService configurationService = new ConfigurationService(project);     // создание экземпляра сервиса конфигурации
+
+                var validationResults = ValidationHelper.Validate(project);
+
+                if (validationResults.Count == 0)
+                {
+                    Console.WriteLine("Validation was successful!");
+                    //Console.WriteLine($"Id: {user.Id}, Name: {user.Name}, Age: {user.Age}");
+                }
+                else
+                {
+                    Console.WriteLine("Validation error:");
+                    foreach (var validationResult in validationResults)
+                    {
+                        Console.WriteLine($" - {validationResult.ErrorMessage}");
+                    }
+                }
 
                 configurationService.GenerateConfiguration();         // генерация конфигурации
 
