@@ -33,65 +33,65 @@ public class ConfigurationServiceTest
 
     public static IEnumerable<object[]> ConfigureShieldCases()
     {
-        //yield return new object[]
-        //{
-        //    "Case 1",
-        //    new Project
-        //    (
-        //        new FuseBox.FuseBox
-        //        (
-        //            false,  // mainBraker
-        //            true,   // main3PN  false
-        //            true,   // surgeProtection 2
-        //            true,   // LoadSwitch2P  2
-        //            false,  // ModularContactor 
-        //            false,  // railMeter
-        //            false,  // fireUzo
-        //            true,   // VoltageRelay 2
-        //            false,  // ThreePRelay
-        //            false,  // RailSocket
-        //            true,  // NDiscLine 2
-        //            false,  // LoadSwitch
-        //            true   // crossModule 2
-        //        ),
-        //        new InitialSettings(1,16),
-        //        new FloorGrouping(true,false)
-        //    ),
-        //    5, 0, 14,
-        //    new List<Component>
-        //    {
-        //        new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()), // 2
-        //        new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()), // 2
-        //        new RCD("RCD", 25, 7, 0, new List<BaseElectrical>()), // last
-        //    }
-        //};
-        //yield return new object[]
-        //{
-        //    "Case 2",
-        //    new Project
-        //    (
-        //        new FuseBox.FuseBox
-        //        (
-        //            false,  // mainBraker
-        //            false,   // main3PN  
-        //            false,   // surgeProtection 
-        //            false,   // LoadSwitch2P  
-        //            false,  // ModularContactor 
-        //            false,  // railMeter
-        //            false,  // fireUzo
-        //            false,   // VoltageRelay 
-        //            false,  // ThreePRelay
-        //            false,  // RailSocket
-        //            false,  // NDiscLine 
-        //            false,  // LoadSwitch
-        //            false   // crossModule 
-        //        ),
-        //        new InitialSettings(1, 16),
-        //        new FloorGrouping(true, false)
-        //    ),
-        //    0, 0, 0,
-        //    new List<Component> { }
-        //};
+        yield return new object[]
+        {
+            "Case 1",
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    false,  // mainBraker
+                    true,   // main3PN  false
+                    true,   // surgeProtection 2
+                    true,   // LoadSwitch2P  2
+                    false,  // ModularContactor 
+                    false,  // railMeter
+                    false,  // fireUzo
+                    true,   // VoltageRelay 2
+                    false,  // ThreePRelay
+                    false,  // RailSocket
+                    true,  // NDiscLine 2
+                    false,  // LoadSwitch
+                    true   // crossModule last
+                ),
+                new InitialSettings(1,16),
+                new FloorGrouping(true,false)
+            ),
+            5, 0, 8,
+            new List<Component>
+            {
+                new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()), // 2
+                new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()), // 2
+                new RCD("RCD", 25, 7, 0, new List<BaseElectrical>()), // last
+            }
+        };
+        yield return new object[]
+        {
+            "Case 2",
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    false,  // mainBraker
+                    false,   // main3PN  
+                    false,   // surgeProtection 
+                    false,   // LoadSwitch2P  
+                    false,  // ModularContactor 
+                    false,  // railMeter
+                    false,  // fireUzo
+                    false,   // VoltageRelay 
+                    false,  // ThreePRelay
+                    false,  // RailSocket
+                    false,  // NDiscLine 
+                    false,  // LoadSwitch
+                    false   // crossModule 
+                ),
+                new InitialSettings(1, 16),
+                new FloorGrouping(true, false)
+            ),
+            0, 0, 0,
+            new List<Component> { }
+        };
         yield return new object[]
         {
             "Case 3",
@@ -101,12 +101,12 @@ public class ConfigurationServiceTest
                 (
                     false,  // mainBraker
                     true,   // main3PN                  4
-                    true,   // surgeProtection          4
+                    true,   // surgeProtection          6
                     true,   // LoadSwitch2P  false      0
                     false,  // ModularContactor
                     false,  // railMeter
                     false,  // fireUzo
-                    true,   // VoltageRelay             6
+                    true,   // VoltageRelay             last         
                     false,  // ThreePRelay
                     false,  // RailSocket
                     false,  // NDiscLine
@@ -116,36 +116,36 @@ public class ConfigurationServiceTest
                 new InitialSettings(3,16),
                 new FloorGrouping(true,false)
             ),
-            0, 5, 8,
+            0, 5, 10,
             new List<Component> { }
         };
-        //yield return new object[]
-        //{
-        //    "Case 4",
-        //    new Project
-        //    (
-        //        new FuseBox.FuseBox
-        //        (
-        //            true,  // mainBraker                3
-        //            false,   // main3PN  false
-        //            false,   // surgeProtection
-        //            true,   // LoadSwitch2P  false      0
-        //            true,  // ModularContactor          4
-        //            true,  // railMeter                 4
-        //            false,  // fireUzo
-        //            false,   // VoltageRelay
-        //            true,  // ThreePRelay               4
-        //            false,  // RailSocket
-        //            true,  // NDiscLine  false          0
-        //            false,  // LoadSwitch
-        //            true   // crossModule               4
-        //        ),
-        //        new InitialSettings(3,16),
-        //        new FloorGrouping(true,false)
-        //    ),
-        //    0, 5, 19,
-        //    new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
-        //};
+        yield return new object[]
+        {
+            "Case 4",
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    true,  // mainBraker                3
+                    false,   // main3PN  false
+                    false,   // surgeProtection
+                    true,   // LoadSwitch2P  false      0
+                    true,  // ModularContactor          4
+                    true,  // railMeter                 4
+                    false,  // fireUzo
+                    false,   // VoltageRelay
+                    true,  // ThreePRelay               4
+                    false,  // RailSocket
+                    true,  // NDiscLine  false          0
+                    false,  // LoadSwitch
+                    true   // crossModule               last
+                ),
+                new InitialSettings(3,16),
+                new FloorGrouping(true,false)
+            ),
+            0, 5, 15,
+            new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
+        };
     }
 
     

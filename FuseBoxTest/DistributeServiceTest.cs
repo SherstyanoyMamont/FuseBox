@@ -201,9 +201,10 @@ namespace FuseBox.Tests
             // Создаем все необходимые объекты для работы теста
             //Project testProject = new Project();
             //var avFuses = new List<Fuse>();
-            
-            DistributionService distributionService = new DistributionService(testProject);
-            
+
+            List<RCD> uzos = new List<RCD>();
+            DistributionService distributionService = new DistributionService(testProject, uzos);
+
             // Запускаем тестируемый метод, который должен заполнить список avFuses
             distributionService.DistributeOfConsumers();
 
@@ -245,7 +246,8 @@ namespace FuseBox.Tests
             //Project testPoject = new Project();
             //var avFuses = new List<Fuse>();
             var consumers = testProject.Floors[0].Rooms[0].Consumer;
-            DistributionService distributionService = new DistributionService(testProject);
+            List <RCD> uzos = new List<RCD>();
+            DistributionService distributionService = new DistributionService(testProject, uzos);
 
             // Переписал пару констант с DistributionService
             double RCD64A = 32.00;
