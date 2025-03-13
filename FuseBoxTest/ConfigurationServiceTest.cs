@@ -52,12 +52,12 @@ public class ConfigurationServiceTest
                     false,  // RailSocket
                     true,  // NDiscLine 2
                     false,  // LoadSwitch
-                    true   // crossModule last
+                    true   // crossModule 2
                 ),
                 new InitialSettings(1,16),
                 new FloorGrouping(true,false)
             ),
-            5, 0, 8,
+            5, 0, 14,
             new List<Component>
             {
                 new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()), // 2
@@ -130,7 +130,7 @@ public class ConfigurationServiceTest
                     false,   // main3PN  false
                     false,   // surgeProtection
                     true,   // LoadSwitch2P  false      0
-                    true,  // ModularContactor          4
+                    true,  // ModularContactor          0
                     true,  // railMeter                 4
                     false,  // fireUzo
                     false,   // VoltageRelay
@@ -138,12 +138,12 @@ public class ConfigurationServiceTest
                     false,  // RailSocket
                     true,  // NDiscLine  false          0
                     false,  // LoadSwitch
-                    true   // crossModule               last
+                    true   // crossModule               2
                 ),
                 new InitialSettings(3,16),
                 new FloorGrouping(true,false)
             ),
-            0, 5, 15,
+            0, 5, 13,
             new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
         };
     }
@@ -186,7 +186,7 @@ public class ConfigurationServiceTest
     //[TestCaseSource(nameof(AmperCases))]
     //public void CalculateWireCrossSection(double currentAmper)
     //{
-    //    ConfigurationService config = new ConfigurationService(testProject);
+    //    ConfigurationService config = new ConfigurationService();
     //    double result,
     //           reference = 0;
 
@@ -256,6 +256,7 @@ public class ConfigurationServiceTest
 
     ///* SPD, NDiscLine, Socket and Modular Cont doesn't have output ports
     // * Метод работает некорректно для 3-фазного/3 однофазных реле напряжения, так как в них отсутствует выход на ноль
+    // * Модульный контактор создается без соединений - так и должно быть?
     // */
     [TestCaseSource(nameof(ConfigureShieldCases))]
     public void CreateConnectionsTest(string caseName, Project testProject, int componentCountPhase1, int componentCountPhase3, int connectionCount, List<Component> uzos)
