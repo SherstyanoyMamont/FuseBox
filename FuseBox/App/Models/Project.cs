@@ -13,10 +13,6 @@ namespace FuseBox
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
 
-        // Связь с User
-        public int UserId { get; set; }
-        public User User { get; set; }
-
         public Project()
         {
             InitialSettings = new InitialSettings();
@@ -26,11 +22,33 @@ namespace FuseBox
             Floors = new List<Floor>();
         }
 
+        public Project(FuseBox fuseBox, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)     // Конструктор для тестов
+        {
+            FuseBox = fuseBox;
+            FloorGrouping = floorGrouping;
+            GlobalGrouping = globalGrouping;
+            Floors = floors;
+        }
+
+        public Project(InitialSettings initialSettings, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)      // Конструктор для тестов
+        {
+            InitialSettings = initialSettings;
+            FloorGrouping = floorGrouping;
+            GlobalGrouping = globalGrouping;
+            Floors = floors;
+        }
+        public Project(FuseBox fuseBox, InitialSettings initialSettings, FloorGrouping floorGrouping)      // Конструктор для тестов
+        {
+            FuseBox = fuseBox;
+            InitialSettings = initialSettings;
+            FloorGrouping = floorGrouping;
+        }
+
         public double CalculateTotalPower() // Calculates the total power of the entire object
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
-                .SelectMany(room => room.Consumers)
+                .SelectMany(room => room.Consumer)
                 .Sum(equipment => equipment.Amper);
         }
 

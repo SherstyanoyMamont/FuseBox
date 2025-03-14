@@ -7,7 +7,7 @@ namespace FuseBox
 {
     public class DistributionService
     {
-        public List<BaseElectrical> Lightings = new ();
+        public List<BaseElectrical> Lightings = new();
         public List<BaseElectrical> Socket = new();
         public List<BaseElectrical> AirConditioner = new();
         public List<BaseElectrical> HeatedFloor = new();
@@ -43,7 +43,7 @@ namespace FuseBox
             {
                 foreach (var room in floor.Rooms)
                 {
-                    foreach (var equipment in room.Consumers)
+                    foreach (var equipment in room.Consumer)
                     {
                         AllConsumers.Add(equipment);
                     }
@@ -143,7 +143,7 @@ namespace FuseBox
                     AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
                 }
             }
-            
+
         }
 
         public void DistributeRCDFromLoad()
@@ -188,8 +188,8 @@ namespace FuseBox
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                 }
-                
-                while (uzos.Count != Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses) || uzos.Count > Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)) // !!!
+
+                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))        //&& uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
                     countOfRCD++;
@@ -274,7 +274,6 @@ namespace FuseBox
         }
     }
 }
-
 
 //Примерная мощность автомата С16 - 3.6 кВт.
 

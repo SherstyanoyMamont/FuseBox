@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FuseBox.App.DataBase;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace FuseBox.App.Controllers

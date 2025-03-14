@@ -22,7 +22,7 @@ namespace FuseBox
             
 
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -32,13 +32,13 @@ namespace FuseBox
                 //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
 
                 // Конфигурации сервисов
-                builder.Services.AddControllers();
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(
-                        builder.Configuration.GetConnectionString("DefaultConnection"),
-                        new MySqlServerVersion(new Version(8, 0, 41))
-                    )
-                );
+                //builder.Services.AddControllers();
+                //builder.Services.AddDbContext<AppDbContext>(options =>
+                //    options.UseMySql(
+                //        builder.Configuration.GetConnectionString("DefaultConnection"),
+                //        new MySqlServerVersion(new Version(8, 0, 41))
+                //    )
+                //);
 
                 // Добавляет поддержку контроллеров к фукнционалу веб-приложения
                 // Контроллеры - это классы, которые отвечают за обработку входящих HTTP запросов

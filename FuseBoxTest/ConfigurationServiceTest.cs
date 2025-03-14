@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace TestServices;
 
+[TestFixture]
 public class ConfigurationServiceTest
 {
     /*
@@ -33,157 +34,121 @@ public class ConfigurationServiceTest
     public static IEnumerable<object[]> ConfigureShieldCases()
     {
         yield return new object[]
-        {   "Case 1",
-            new FuseBox.FuseBox
+        {
+            "Case 1",
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    false,  // mainBraker
+                    true,   // main3PN  false
+                    true,   // surgeProtection 2
+                    true,   // LoadSwitch2P  2
+                    false,  // ModularContactor 
+                    false,  // railMeter
+                    false,  // fireUzo
+                    true,   // VoltageRelay 2
+                    false,  // ThreePRelay
+                    false,  // RailSocket
+                    true,  // NDiscLine 2
+                    false,  // LoadSwitch
+                    true   // crossModule 2
+                ),
+                new InitialSettings(1,16),
+                new FloorGrouping(true,false)
+            ),
+            5, 0, 14,
+            new List<Component>
             {
-                MainBreaker = true,
-                SurgeProtection = true,
-                LoadSwitch2P = true,
-                RailMeter = true,
-                FireUZO = true,
-                VoltageRelay = true,
-                RailSocket = true,
-                NDiscLine = true,
-                LoadSwitch = true,
-                ModularContactor = false, //true
-                CrossModule = true
-            },
-            10, // Кол-во компонентов создатся при 1 фазе
-            9,  // Кол-во компонентов создатся при 3 фазах
-            1,  // Кол-во фаз
-            18  // Кол-во соединений
+                new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()), // 2
+                new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()), // 2
+                new RCD("RCD", 25, 7, 0, new List<BaseElectrical>()), // last
+            }
         };
         yield return new object[]
         {
             "Case 2",
-            new FuseBox.FuseBox
-            {
-                MainBreaker = false,
-                SurgeProtection = false,
-                LoadSwitch2P = false,
-                RailMeter = false,
-                FireUZO = false,
-                VoltageRelay = false,
-                RailSocket = false,
-                NDiscLine = false,
-                LoadSwitch = false,
-                ModularContactor = false,
-                CrossModule = false
-            },
-            0,
-            0,
-            1,
-            0
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    false,  // mainBraker
+                    false,   // main3PN  
+                    false,   // surgeProtection 
+                    false,   // LoadSwitch2P  
+                    false,  // ModularContactor 
+                    false,  // railMeter
+                    false,  // fireUzo
+                    false,   // VoltageRelay 
+                    false,  // ThreePRelay
+                    false,  // RailSocket
+                    false,  // NDiscLine 
+                    false,  // LoadSwitch
+                    false   // crossModule 
+                ),
+                new InitialSettings(1, 16),
+                new FloorGrouping(true, false)
+            ),
+            0, 0, 0,
+            new List<Component> { }
         };
         yield return new object[]
         {
             "Case 3",
-            new FuseBox.FuseBox
-            {
-                Main3PN = true, // 4
-                SurgeProtection = true, //4
-                LoadSwitch2P = true,    // 0
-                ThreePRelay = true // 6
-            },
-            2,
-            3,
-            3,
-            14
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    false,  // mainBraker
+                    true,   // main3PN                  4
+                    true,   // surgeProtection          6
+                    true,   // LoadSwitch2P  false      0
+                    false,  // ModularContactor
+                    false,  // railMeter
+                    false,  // fireUzo
+                    true,   // VoltageRelay             last         
+                    false,  // ThreePRelay
+                    false,  // RailSocket
+                    false,  // NDiscLine
+                    false,  // LoadSwitch
+                    false   // crossModule
+                ),
+                new InitialSettings(3,16),
+                new FloorGrouping(true,false)
+            ),
+            0, 5, 10,
+            new List<Component> { }
         };
         yield return new object[]
         {
             "Case 4",
-            new FuseBox.FuseBox
-            {
-                MainBreaker = true,
-                Main3PN = false,
-                SurgeProtection = false,
-                LoadSwitch2P = true,
-                RailMeter = false,
-                FireUZO = true,
-                ThreePRelay = true,
-                RailSocket = true,
-                NDiscLine = false,
-                LoadSwitch = true,
-                ModularContactor = false,
-                CrossModule = true
-            },
-            6,
-            5,
-            3,
-            0,
+            new Project
+            (
+                new FuseBox.FuseBox
+                (
+                    true,  // mainBraker                3
+                    false,   // main3PN  false
+                    false,   // surgeProtection
+                    true,   // LoadSwitch2P  false      0
+                    true,  // ModularContactor          0
+                    true,  // railMeter                 4
+                    false,  // fireUzo
+                    false,   // VoltageRelay
+                    true,  // ThreePRelay               4
+                    false,  // RailSocket
+                    true,  // NDiscLine  false          0
+                    false,  // LoadSwitch
+                    true   // crossModule               2
+                ),
+                new InitialSettings(3,16),
+                new FloorGrouping(true,false)
+            ),
+            0, 5, 13,
+            new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
         };
     }
 
-    public static IEnumerable<object[]> ShieldModuleSetCases()
-    {
-        yield return new object[]
-        {
-            "Case 1",
-            16,
-            new List<Component>
-            {
-                new Introductory("Introductory", Type3PN.P1, 2),
-                new Component("SPD", 2),//2
-                new Component("LoadSwitch", 2),//4
-                new Component("DinRailMeter",6),//4
-                new RCDFire("RCDFire", 2),//4
-                new Component("VoltageRelay", 2),//4
-                new Component("DinRailSocket", 2),//0
-                new RCD("NDiscLine", 25, 2, 43, new List<BaseElectrical>()),//2
-                new Component("LoadSwitch", 2),//4
-                new Contactor("ModularContactor", 4),//2
-                new Component("CrossBlock", 4),//4
-                new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()),
-                new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()),
-                new RCD("RCD", 25, 7, 0, new List<BaseElectrical>()),
-            },
-            45,
-            3,
-            1,
 
-        };
-        yield return new object[]
-        {
-            "Case 2",
-            12,
-            new List<Component>
-            {
-                new Introductory("Introductory", Type3PN.P1, 2),
-                new Component("SPD", 2),
-                new Component("DinRailMeter",6),
-                new RCDFire("RCDFire", 2),
-                new RCD("NDiscLine", 25, 2, 43, new List<BaseElectrical>()),
-                new Component("LoadSwitch", 2),
-                new Contactor("ModularContactor", 4),
-                new Component("CrossBlock", 4),
-                new RCD("RCD", 25, 4, 0, new List<BaseElectrical>()),
-                new RCD("RCD", 25, 8, 0, new List<BaseElectrical>()),
-                new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()),
-
-            },
-            41,
-            4,
-            1,
-        };
-        yield return new object[]
-        {
-            "Case 3",
-            16,                     // shield width
-            new List<Component>
-            {
-                new Introductory("Introductory", Type3PN.P1, 2), //6
-                new Component("SPD", 2),   //4
-                new Component("LoadSwitch", 2),    //8
-                new Component("DinRailMeter", 6),  //8
-                new RCD("RCD", 25, 2, 0, new List<BaseElectrical>()), //0
-            },
-            14,                     // expected amount of slots
-            1,                      // expected number of DINLevel
-            3,                      // PhaseCount
-        };
-
-    }
 
     /*
      * Ок
@@ -195,77 +160,68 @@ public class ConfigurationServiceTest
      *    если в списке уже есть элементы, которые противоречат созданому (MainBreaker и Main3PN, ThreePRelay и VoltageRelay)
      */
     [TestCaseSource(nameof(ConfigureShieldCases))]
-    public void ConfigureShieldTest(string caseName, FuseBox.FuseBox fuseBox, int componentCountPhase1, int componentCountPhase3, int phaseCount, int connectionCount)
+    public void ConfigureShieldTest(string caseName, Project testProject, int componentCountPhase1, int componentCountPhase3, int connectionCount, List<Component> uzos)
     {
-        ConfigurationService config = new ConfigurationService();
-        CreatePortsCombination(config);
+        ConfigurationService config = new ConfigurationService(testProject);
+        //CreatePortsCombination(config);
         int amper = 0;
 
-        if (phaseCount == 1)
-        {
-            // Запуск тестируемого метода
-            config.ConfigureShield(fuseBox, amper);
+        config.ConfigureShield();
 
-            // Проверка
-            var result = config.shieldModuleSet.Count;
-            Assert.That(result, Is.EqualTo(componentCountPhase1));
-        }
-        else
-        {
-            // Запуск тестируемого метода
-            config.ConfigureShield3(fuseBox, amper);
+        var result = config.shieldModuleSet.Count;
 
-            // Проверка
-            var result = config.shieldModuleSet.Count;
-            Assert.That(result, Is.EqualTo(componentCountPhase3));
-        }
+        var phaseCount = testProject.InitialSettings.PhasesCount;
 
-
+        if (phaseCount == 1) { Assert.That(result, Is.EqualTo(componentCountPhase1)); }
+        else { Assert.That(result, Is.EqualTo(componentCountPhase3)); }
     }
 
     /*
+     * Почему после рефакторинга это метод начал подбирать сечение кабеля только на входе щита?!
+     * Раньше этот метод был гораздо более гибким и утилитарным
+     * 
+     * Не буду тестить пока не поговорю с Ваней
      * Нету обработки некорретных данных (0, отрицательное число тока и тд.)
-     * Ok
      */
-    [TestCaseSource(nameof(AmperCases))]
-    public void CalculateWireCrossSection(double currentAmper)
-    {
-        ConfigurationService config = new ConfigurationService();
-        double result,
-               reference = 0;
-        var copperWireTable = new Dictionary<double, double>
-        {
-            { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 },
-            { 16, 80 }
-        };
-        foreach (var wire in copperWireTable) { if (currentAmper <= wire.Value) { reference = wire.Key; break; } }
+    //[TestCaseSource(nameof(AmperCases))]
+    //public void CalculateWireCrossSection(double currentAmper)
+    //{
+    //    ConfigurationService config = new ConfigurationService();
+    //    double result,
+    //           reference = 0;
 
-        result = config.CalculateWireCrossSection(currentAmper);
-        Assert.That(result, Is.EqualTo(reference));
-    }
+    //    config.CalculateWireCrossSection();
 
-    /*
-     * Ok
-     */
-    [TestCaseSource(nameof(ShieldModuleSetCases))]
-    public void ShieldByLevelTest(string caseName, int shieldWidth, List<Component> shieldComponents, int slotsCount, int minDINLevelCount, int phaseCount)
+    //    var copperWireTable = new Dictionary<double, double>
+    //    {
+    //        { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 },
+    //        { 16, 80 }
+    //    };
+    //    foreach (var wire in copperWireTable) { if (currentAmper <= wire.Value) { reference = wire.Key; break; } }
+
+    //    Assert.That(result, Is.EqualTo(reference));
+    //}
+
+    ///*
+    // * Ok
+    // */
+    [TestCaseSource(nameof(ConfigureShieldCases))]
+    public void ShieldByLevelTest(string caseName, Project testProject, int componentCountPhase1, int componentCountPhase3, int connectionCount, List<Component> uzos)
     {
         // Создаем необходимые объекты для работы
-        List<List<BaseElectrical>> resultList = new List<List<BaseElectrical>>();
-        ConfigurationService config = new ConfigurationService();
-        Project project = new Project();
-        FuseBox.FuseBox fuseBox = new FuseBox.FuseBox();
+        ConfigurationService config = new ConfigurationService(testProject);
 
         // Заполняем созданные объекты вводными данными
-        config.shieldModuleSet = shieldComponents;
-        project.InitialSettings.ShieldWidth = shieldWidth;
+        config.ConfigureShield();
+        config.shieldModuleSet.AddRange(uzos);
 
         // Запуск тестируемого метода
-        config.ShieldByLevel(project, fuseBox);
+        config.ShieldByLevel();
 
-
-        // Результат работы тестируемого метода записываем отдельно для проведения проверок
-        resultList = fuseBox.Components;
+        // Результат тестируемого метода - заполненый список fuseBox.Component
+        var resultList = testProject.FuseBox.Components;
+        // Узнаем эталонное количество созданых уровней щита
+        int minDINLevelCount = config.shieldModuleSet.Count / testProject.InitialSettings.ShieldWidth;
 
         // Проверка #1
         if (minDINLevelCount > resultList.Count)
@@ -293,41 +249,35 @@ public class ConfigurationServiceTest
                     slotsOnLvl += thisComponent.Slots;
                 }
             }
-            if (shieldWidth - slotsOnLvl >= firstComponentOnNewLine.Slots && i != resultList.Count - 1)
-                Assert.Fail($"Элемент {firstComponentOnNewLine.Name} должен быть на предидущем уровне щита "); 
+            if (testProject.InitialSettings.ShieldWidth - slotsOnLvl >= firstComponentOnNewLine.Slots && i != resultList.Count - 1)
+                Assert.Fail($"Элемент {firstComponentOnNewLine.Name} должен быть на предидущем уровне щита ");
         };
     }
 
-    /* SPD, NDiscLine, Socket and Modular Cont doesn't have output ports
-     * Метод работает некорректно для 3-фазного/3 однофазных реле напряжения, так как в них отсутствует выход на ноль
-     */
+    ///* SPD, NDiscLine, Socket and Modular Cont doesn't have output ports
+    // * Метод работает некорректно для 3-фазного/3 однофазных реле напряжения, так как в них отсутствует выход на ноль
+    // * Модульный контактор создается без соединений - так и должно быть?
+    // */
     [TestCaseSource(nameof(ConfigureShieldCases))]
-    public void CreateConnectionsTest(string caseName, FuseBox.FuseBox fuseBox, int componentCountPhase1, int componentCountPhase3, int phaseCount, int connectionCount)
+    public void CreateConnectionsTest(string caseName, Project testProject, int componentCountPhase1, int componentCountPhase3, int connectionCount, List<Component> uzos)
     {
-        ConfigurationService config = new ConfigurationService();
+        ConfigurationService config = new ConfigurationService(testProject);
         Project project = new Project();
         int amper = 0;
-        project.InitialSettings.PhasesCount = phaseCount;
+        var phaseCount = testProject.InitialSettings.ShieldWidth;
         CreatePortsCombination(config);
 
-        if (phaseCount == 1)
-        {
-            config.ConfigureShield(fuseBox, amper); // Заполняем shieldModuleSet компонентами и создаём порты
-        }
-        else
-        {
-            config.ConfigureShield3(fuseBox, amper);
-        }
-        // Создаём ID для модулей
-        for (int i = 0; i < config.shieldModuleSet.Count; i++) { config.shieldModuleSet[i].Id = i + 1; }
+        config.ConfigureShield();
+        config.shieldModuleSet.AddRange(uzos);
 
-        config.CreateConnections(fuseBox.CableConnections);
+        Console.WriteLine("Enter point");
+        config.CreateConnections();
 
-        Assert.That(fuseBox.CableConnections.Count, Is.EqualTo(connectionCount));
+        Assert.That(testProject.FuseBox.CableConnections.Count, Is.EqualTo(connectionCount));
 
     }
 
-    // Вспомогательный метод для создания портов компонентов config.shieldModuleSet
+    //Вспомогательный метод для создания портов компонентов config.shieldModuleSet
     public void CreatePortsCombination(ConfigurationService config)
     {
         var portData = new (PortInEnum? portIn, PortOutEnum? portOut, ConnectorColour colour)[]

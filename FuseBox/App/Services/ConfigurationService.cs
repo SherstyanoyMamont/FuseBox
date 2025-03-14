@@ -52,7 +52,7 @@ namespace FuseBox
 
         }
         // Логика конфигурации устройств...
-        private void ConfigureShield()
+        public void ConfigureShield()
         {
             List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
 
@@ -108,7 +108,7 @@ namespace FuseBox
                 if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
             }
         }
-        private void Distribute()
+        public void Distribute()
         {
             DistributionService distributionService = new(project, uzos);
 
@@ -118,7 +118,7 @@ namespace FuseBox
             shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
         }
         // Логика распределения модулей по уровням...
-        private void ShieldByLevel()
+        public void ShieldByLevel()
         {
             int occupiedSlots = 0;
             int currentLevel = 0;
@@ -154,7 +154,7 @@ namespace FuseBox
             }
         }
         // Расчет сечения провода по мощности
-        private void CalculateWireCrossSection()
+        public void CalculateWireCrossSection()
         {
             // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
             var copperWireTable = new Dictionary<double, double>
@@ -181,7 +181,7 @@ namespace FuseBox
             // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
         }
         // Создаем соединение проводами
-        private void CreateConnections()
+        public void CreateConnections()
         {
             List<Connection> сableConnections = fuseBox.CableConnections;
 
@@ -220,7 +220,7 @@ namespace FuseBox
             }
         }
 
-        private void ValidateInitialSettings()
+        public void ValidateInitialSettings()
         {
 
         }

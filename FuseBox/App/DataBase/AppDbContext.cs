@@ -1,9 +1,11 @@
-﻿using FuseBox.App.Models;
+﻿using FuseBox.App.Controllers;
+using FuseBox.App.Models;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Microsoft.EntityFrameworkCore;
 using Mysqlx.Crud;
 
-namespace FuseBox.App.Controllers
+namespace FuseBox.App.DataBase
 {
     public class AppDbContext : DbContext
     {
@@ -19,7 +21,7 @@ namespace FuseBox.App.Controllers
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Cable> Cables { get; set; }
-        public DbSet<Component> Components { get; set; }
+        //public DbSet<Component> Components { get; set; }
         public DbSet<Port> Ports { get; set; }
 
 
@@ -32,16 +34,15 @@ namespace FuseBox.App.Controllers
         {
             base.OnModelCreating(modelBuilder);
 
-            //// Пример конфигурации связи между таблицами
-            //modelBuilder.Entity<Order>()
-            //    .HasOne(o => o.User)       // Один заказ принадлежит одному пользователю
-            //    .WithMany(u => u.Orders)   // У пользователя может быть много заказов
-            //    .HasForeignKey(o => o.UserId); // Связь через поле UserId
+            //modelBuilder.Entity<BaseElectrical>()
+            //    .HasDiscriminator<string>("Type")
+            //    .HasValue<SomeElectrical>("SomeElectrical");
 
-            
+            // Пример игнорирования какого-то поля
+            //modelBuilder.Ignore<BaseElectrical>();
 
-            // Наследование класа Component элементов щита
-            // На выходе получаем одну таблицу Components со всеми компонентами в ней
+            //Наследование класа Component элементов щита
+            //На выходе получаем одну таблицу Components со всеми компонентами в ней
             modelBuilder.Entity<Component>()
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue<Component>("Component")
@@ -49,16 +50,8 @@ namespace FuseBox.App.Controllers
                 .HasValue<RCD>("RCD")
                 .HasValue<RCDFire>("RCDFire")
                 .HasValue<Introductory>("Introductory")
-                .HasValue<EmptySlot>("EmptySlot")
+                //.HasValue<EmptySlot>("EmptySlot")
                 .HasValue<Contactor>("Contactor");
-
-            /////////////////////////////////////////////////////////////////////
-
-            // Пример конфигурации связи между таблицами
-            modelBuilder.Entity<User>()
-                .HasMany(o => o.Projects)
-                .WithOne()
-                .HasForeignKey(fb => fb.UserId);
 
             /////////////////////////////////////////////////////////////////////
 
@@ -82,13 +75,13 @@ namespace FuseBox.App.Controllers
 
             /////////////////////////////////////////////////////////////////////
 
-            // Project → FuseBox (один к одному)
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.FuseBox)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<FuseBox>(fb => fb.ProjectId);
+            //Project → FuseBox(один к одному)
+            //modelBuilder.Entity<Project>()
+            //    .HasOne(p => p.FuseBoxUnit)
+            //    .WithOne(fb => fb.Project)
+            //    .HasForeignKey<FuseBoxUnit>(fb => fb.ProjectId);
 
-            // FuseBox → CableConnections (один ко многим)
+            //FuseBox → CableConnections(один ко многим)
             modelBuilder.Entity<FuseBox>()
                 .HasMany(p => p.CableConnections)
                 .WithOne()
@@ -106,19 +99,19 @@ namespace FuseBox.App.Controllers
                 .WithOne(fb => fb.Connection)
                 .HasForeignKey<Cable>(fb => fb.ConnectionId);
 
-            // CableConnections
+            //CableConnections
 
             //// FuseBox → ComponentGroups (один ко многим)
-            //modelBuilder.Entity<FuseBox>()
-            //    .HasMany(fb => fb.ComponentGroups)
-            //    .WithOne(cg => cg.FuseBox)
-            //    .HasForeignKey(cg => cg.Id);
+            //modelBuilder.Entity<FuseBoxUnit>()
+            //    .HasMany(fb => fb.Components)
+            //    .WithOne()
+            //    .HasForeignKey(cg => cg.);
 
-            // ComponentGroup → BaseElectrical (один ко многим)
+            //ComponentGroup → BaseElectrical(один ко многим)
             //modelBuilder.Entity<FuseBoxComponentGroup>()
             //    .HasMany(cg => cg.Components)
-            //    .WithOne(c => c.FuseBoxComponentGroup)
-            //    .HasForeignKey(c => c.FuseBoxComponentGroupId);
+            //    .WithOne()
+            //    .HasForeignKey(c => c.Id);
 
             ////////////////////////////////////////////////////////////////////
 
@@ -136,17 +129,12 @@ namespace FuseBox.App.Controllers
 
             // Room → Consumers (один ко многим)
             modelBuilder.Entity<Room>()
-                .HasMany(p => p.Consumers)
+                .HasMany(p => p.Consumer)
                 .WithOne()
                 .HasForeignKey(f => f.RoomId);
 
             ///////////////////////////////////////////////////////////////////
 
         }
-
-        // Cтрока подключения
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseMySql("server=localhost;database=mydb;user=myuser;password=mypassword", ServerVersion.AutoDetect("server=localhost"));
-
     }
 }

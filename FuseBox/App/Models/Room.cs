@@ -6,7 +6,7 @@ namespace FuseBox
     public class Room : NonElectrical, IZone
     {
         // public int Rating { get; set; }                // ... 10А, 16А, 20А ...
-        public List<Consumer> Consumers { get; set; } = new List<Consumer>();
+        public List<Consumer> Consumer { get; set; } = new List<Consumer>();
 
         // Связь с этажом
         public int FloorId { get; set; }
