@@ -10,5 +10,7 @@ namespace FuseBox
 
         // Связь с проектом
         public int ProjectId { get; set; }
+
+        public Floor() { }
     }
 }

@@ -7,6 +7,8 @@ namespace FuseBox
     {
         // Связь с комнатой
         public int RoomId { get; set; }
+
+        public Consumer() { }
         public Consumer(string name, int maxLoad)        // Для тестов
         {
             this.Name = name;

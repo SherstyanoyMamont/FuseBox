@@ -10,5 +10,7 @@ namespace FuseBox
 
         // Связь с этажом
         public int FloorId { get; set; }
+
+        public Room() { }
     }
 }

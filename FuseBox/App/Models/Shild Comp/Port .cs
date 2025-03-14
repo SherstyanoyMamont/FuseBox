@@ -23,7 +23,7 @@ namespace FuseBox
         AV,
     }
 
-    public class Port
+    public class Port : BaseEntity
     {
         public int connectionsCount {  get; set; }
         public string portOut { get; set; }
@@ -43,6 +43,8 @@ namespace FuseBox
             this.PortIn = Convert.ToString(portIn);
             this.cableType = cableType;
         }
+
+        public Port() { }
 
 
         // Фабричный метод для создания стандартного набора портов

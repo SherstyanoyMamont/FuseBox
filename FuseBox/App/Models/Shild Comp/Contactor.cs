@@ -26,5 +26,7 @@ namespace FuseBox
             this.Name = name;
             this.Slots = slots;
         }
+
+        public Contactor() { }
     }
 }

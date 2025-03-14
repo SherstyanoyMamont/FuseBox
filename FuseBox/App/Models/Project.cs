@@ -1,5 +1,6 @@
 ﻿using FuseBox.App.Controllers;
 using FuseBox.App.Models.BaseAbstract;
+using FuseBox.FuseBox;
 using System.Text.Json.Serialization;
 
 namespace FuseBox
@@ -9,20 +10,20 @@ namespace FuseBox
         public FloorGrouping FloorGrouping { get; set; }
         public GlobalGrouping GlobalGrouping { get; set; }
         public InitialSettings InitialSettings { get; set; }
-        public FuseBox FuseBox { get; set; }
+        public FuseBoxUnit FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
 
         public Project()
         {
             InitialSettings = new InitialSettings();
-            FuseBox = new FuseBox();
+            FuseBox = new FuseBoxUnit();
             FloorGrouping = new FloorGrouping();
             GlobalGrouping = new GlobalGrouping();
             Floors = new List<Floor>();
         }
 
-        public Project(FuseBox fuseBox, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)     // Конструктор для тестов
+        public Project(FuseBoxUnit fuseBox, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)     // Конструктор для тестов
         {
             FuseBox = fuseBox;
             FloorGrouping = floorGrouping;
@@ -37,7 +38,7 @@ namespace FuseBox
             GlobalGrouping = globalGrouping;
             Floors = floors;
         }
-        public Project(FuseBox fuseBox, InitialSettings initialSettings, FloorGrouping floorGrouping)      // Конструктор для тестов
+        public Project(FuseBoxUnit fuseBox, InitialSettings initialSettings, FloorGrouping floorGrouping)      // Конструктор для тестов
         {
             FuseBox = fuseBox;
             InitialSettings = initialSettings;

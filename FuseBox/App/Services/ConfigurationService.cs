@@ -24,7 +24,7 @@ namespace FuseBox
         public List<RCD> uzos = new();
 
         public Project project;
-        public FuseBox fuseBox;
+        public FuseBoxUnit fuseBox;
 
         public decimal WireSection;
         

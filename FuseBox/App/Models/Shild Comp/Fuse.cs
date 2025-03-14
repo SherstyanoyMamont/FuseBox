@@ -18,6 +18,8 @@ namespace FuseBox
             //TotalLoad = totalLoad;
         }
 
+        public Fuse() { }
+
         public double GetTotalLoad()
         {
             double totalLoad = 0;

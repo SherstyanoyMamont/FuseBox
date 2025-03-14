@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FuseBox;
 using FuseBox.App.Controllers;
 using Microsoft.EntityFrameworkCore;
+using FuseBox.App.DataBase;
 
 
 namespace FuseBox
@@ -22,7 +23,7 @@ namespace FuseBox
             
 
             // testing switch
-            if (false)
+            if (true)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -31,19 +32,21 @@ namespace FuseBox
                 //builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
                 //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
 
-                // Конфигурации сервисов
-                //builder.Services.AddControllers();
-                //builder.Services.AddDbContext<AppDbContext>(options =>
-                //    options.UseMySql(
-                //        builder.Configuration.GetConnectionString("DefaultConnection"),
-                //        new MySqlServerVersion(new Version(8, 0, 41))
-                //    )
-                //);
+                //Конфигурации сервисов
+                builder.Services.AddControllers();
+                builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseMySql(
+                        builder.Configuration.GetConnectionString("DefaultConnection"),
+                        new MySqlServerVersion(new Version(8, 0, 41))
+                    )
+                );
 
                 // Добавляет поддержку контроллеров к фукнционалу веб-приложения
                 // Контроллеры - это классы, которые отвечают за обработку входящих HTTP запросов
                 // Контроллеры обрабатывают запросы и возвращают ответы
                 //builder.Services.AddControllers();
+
+
                 // Добавляет поддержку генерации документации по API
                 builder.Services.AddEndpointsApiExplorer();
                 // Добавляет поддержку Swagger

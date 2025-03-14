@@ -92,7 +92,7 @@ namespace FuseBox
             }
         }
 
-        private void AutomatPerCons(int groupingParam, List<BaseElectrical> list, string? name)
+        public void AutomatPerCons(int groupingParam, List<BaseElectrical> list, string? name)
         {
             if (groupingParam == 0)
             {
@@ -174,7 +174,7 @@ namespace FuseBox
             }
         }
 
-        private void Distribute()
+        public void Distribute()
         {
             int AVCount = AVFuses.Count;
 
@@ -209,7 +209,7 @@ namespace FuseBox
             }
         }
 
-        private void DistributePerPhases()
+        public void DistributePerPhases()
         {
             // Массив с нагрузкой на 3 фазы
             var phases = new int[3];
@@ -240,7 +240,7 @@ namespace FuseBox
             }
         }
 
-        private void DistributeFusesToRCDs()
+        public void DistributeFusesToRCDs()
         {
             List<RCD> filledRCDs = new List<RCD>();
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FuseBox
 {
-    public class FuseBox : BaseEntity, IPricedComponent, IHasConsumer
+    public class FuseBoxUnit : BaseEntity, IPricedComponent, IHasConsumer
     {
         [Required(ErrorMessage = "Required field")]
         public bool MainBreaker { get; set; }
@@ -68,6 +68,29 @@ namespace FuseBox
         // Связь с проектом
         public int ProjectId { get; set; }
         public Project Project { get; set; }
+
+        public FuseBoxUnit() { }
+
+        public FuseBoxUnit(bool mainBreaker, bool main3PN, bool surgeProtection, bool loadSwitch2P,
+                       bool modularContactor, bool railMeter, bool fireUzo, bool voltageRelay,
+                       bool threePRelay, bool railSocket, bool nDiscLine, bool loadSwitch, bool crossModule)
+        {
+
+            MainBreaker = mainBreaker;
+            Main3PN = main3PN;
+            SurgeProtection = surgeProtection;
+            LoadSwitch2P = loadSwitch2P;
+            ModularContactor = modularContactor;
+            RailMeter = railMeter;
+            FireUZO = fireUzo;
+            VoltageRelay = voltageRelay;
+            ThreePRelay = threePRelay;
+            RailSocket = railSocket;
+            NDiscLine = nDiscLine;
+            LoadSwitch = loadSwitch;
+            CrossModule = crossModule;
+
+        }
     }
 
     public class FuseBoxComponentGroup : BaseEntity
@@ -77,6 +100,6 @@ namespace FuseBox
 
         // Связь с FuseBox
         public int FuseBoxId { get; set; }
-        public FuseBox FuseBox { get; set; }
+        public FuseBoxUnit FuseBox { get; set; }
     }
 }

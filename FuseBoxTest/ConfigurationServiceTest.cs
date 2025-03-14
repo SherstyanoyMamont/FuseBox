@@ -1,9 +1,11 @@
 ﻿using FuseBox;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.App;
 using NUnit.Framework.Interfaces;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using FuseBox.FuseBox;
 
 namespace TestServices;
 
@@ -39,7 +41,7 @@ public class ConfigurationServiceTest
             "Case 1",
             new Project
             (
-                new FuseBox.FuseBox
+                new FuseBoxUnit
                 (
                     false,  // mainBraker
                     true,   // main3PN  false
@@ -71,7 +73,7 @@ public class ConfigurationServiceTest
             "Case 2",
             new Project
             (
-                new FuseBox.FuseBox
+                new FuseBoxUnit
                 (
                     false,  // mainBraker
                     false,   // main3PN  
@@ -98,7 +100,7 @@ public class ConfigurationServiceTest
             "Case 3",
             new Project
             (
-                new FuseBox.FuseBox
+                new FuseBoxUnit
                 (
                     false,  // mainBraker
                     true,   // main3PN                  4
@@ -125,7 +127,7 @@ public class ConfigurationServiceTest
             "Case 4",
             new Project
             (
-                new FuseBox.FuseBox
+                new FuseBoxUnit
                 (
                     true,  // mainBraker                3
                     false,   // main3PN  false

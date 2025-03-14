@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FuseBox.App.Models.BaseAbstract;
+using System.ComponentModel.DataAnnotations;
 
 namespace FuseBox
 {
     // Grouping lines (default: "By rooms")
-    public class GlobalGrouping
+    public class GlobalGrouping : BaseEntity
     {
         [Required(ErrorMessage = "Required field")]
         [Range(0, 5, ErrorMessage = "Sockets from 0 to 5")]

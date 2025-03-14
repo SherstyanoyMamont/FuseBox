@@ -2,6 +2,7 @@
 using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.FuseBox;
 using Microsoft.EntityFrameworkCore;
 using Mysqlx.Crud;
 
@@ -11,7 +12,7 @@ namespace FuseBox.App.DataBase
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<FuseBox> FuseBoxes { get; set; }
+        public DbSet<FuseBoxUnit> FuseBoxes { get; set; }
         public DbSet<FloorGrouping> FloorGroupings { get; set; }
         public DbSet<GlobalGrouping> GlobalGroupings { get; set; }
         public DbSet<InitialSettings> InitialSettings { get; set; }
@@ -55,11 +56,11 @@ namespace FuseBox.App.DataBase
 
             /////////////////////////////////////////////////////////////////////
 
-            // Project → FloorGrouping (один к одному)
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.FloorGrouping)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<FloorGrouping>(fb => fb.ProjectId);
+            //// Project → FloorGrouping (один к одному)
+            //modelBuilder.Entity<Project>()
+            //    .HasOne(p => p.FloorGrouping)
+            //    .WithOne(fb => fb.Project)
+            //    .HasForeignKey<FloorGrouping>(fb => fb.ProjectId);
 
             // Project → GlobalGrouping (один к одному)
             modelBuilder.Entity<Project>()
@@ -67,11 +68,11 @@ namespace FuseBox.App.DataBase
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<GlobalGrouping>(fb => fb.ProjectId);
 
-            // Project → InitialSettings (один к одному)
-            modelBuilder.Entity<Project>()
-                .HasOne(p => p.InitialSettings)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<InitialSettings>(fb => fb.ProjectId);
+            //// Project → InitialSettings (один к одному)
+            //modelBuilder.Entity<Project>()
+            //    .HasOne(p => p.InitialSettings)
+            //    .WithOne(fb => fb.Project)
+            //    .HasForeignKey<InitialSettings>(fb => fb.ProjectId);
 
             /////////////////////////////////////////////////////////////////////
 
@@ -81,11 +82,11 @@ namespace FuseBox.App.DataBase
             //    .WithOne(fb => fb.Project)
             //    .HasForeignKey<FuseBoxUnit>(fb => fb.ProjectId);
 
-            //FuseBox → CableConnections(один ко многим)
-            modelBuilder.Entity<FuseBox>()
-                .HasMany(p => p.CableConnections)
-                .WithOne()
-                .HasForeignKey(f => f.FuseBoxId);
+            ////FuseBox → CableConnections(один ко многим)
+            //modelBuilder.Entity<FuseBox>()
+            //    .HasMany(p => p.CableConnections)
+            //    .WithOne()
+            //    .HasForeignKey(f => f.FuseBoxId);
 
             // CableConnections → CableConnections (один ко одному)
             modelBuilder.Entity<Connection>()

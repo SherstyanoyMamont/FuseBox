@@ -24,5 +24,7 @@ namespace FuseBox
             this.Type = Convert.ToString(type);
             this.Slots = slots;
         }
+
+        public Introductory() { }
     }
 }

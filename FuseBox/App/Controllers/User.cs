@@ -1,11 +1,13 @@
-﻿namespace FuseBox.App.Controllers
+﻿using FuseBox.App.Models.BaseAbstract;
+
+namespace FuseBox.App.Controllers
 {
-    public class User
+    public class User : BaseEntity
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
         public string Email { get; set; }
 
         public List<Project> Projects { get; set; }
+
+        public User() { }
     }
 }

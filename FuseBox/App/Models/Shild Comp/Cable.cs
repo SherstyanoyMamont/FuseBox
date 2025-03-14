@@ -1,4 +1,5 @@
 ﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models.BaseAbstract;
 using Newtonsoft.Json.Converters;
 using System.Text.Json.Serialization;
 
@@ -12,7 +13,7 @@ namespace FuseBox.App.Models.Shild_Comp
         Blue
     }
 
-    public class Cable
+    public class Cable : BaseEntity
     {
         public decimal Length { get; set; } // m
         public decimal Section { get; set; } // mm^2
@@ -24,6 +25,8 @@ namespace FuseBox.App.Models.Shild_Comp
         // Связь с Connection
         public int ConnectionId { get; set; }
         public Connection Connection { get; set; }
+
+        public Cable() { }
 
         public Cable(ConnectorColour colour, decimal section) 
         {
