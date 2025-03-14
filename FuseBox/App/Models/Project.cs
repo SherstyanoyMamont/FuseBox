@@ -1,4 +1,5 @@
-﻿using FuseBox.App.Models.BaseAbstract;
+﻿using FuseBox.App.Controllers;
+using FuseBox.App.Models.BaseAbstract;
 using System.Text.Json.Serialization;
 
 namespace FuseBox
@@ -11,6 +12,10 @@ namespace FuseBox
         public FuseBox FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
+
+        // Связь с User
+        public int UserId { get; set; }
+        public User User { get; set; }
 
         public Project()
         {
@@ -25,7 +30,7 @@ namespace FuseBox
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
-                .SelectMany(room => room.Consumer)
+                .SelectMany(room => room.Consumers)
                 .Sum(equipment => equipment.Amper);
         }
 

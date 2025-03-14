@@ -5,6 +5,8 @@ namespace FuseBox
 {
     public class Consumer : BaseElectrical, IZone
     {
+        // Связь с комнатой
+        public int RoomId { get; set; }
         public Consumer(string name, int maxLoad)        // Для тестов
         {
             this.Name = name;

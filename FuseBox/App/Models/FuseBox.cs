@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FuseBox
 {
-    public class FuseBox : IPricedComponent, IHasConsumer
+    public class FuseBox : BaseEntity, IPricedComponent, IHasConsumer
     {
         [Required(ErrorMessage = "Required field")]
         public bool MainBreaker { get; set; }
@@ -56,6 +56,7 @@ namespace FuseBox
         // Список подключенных к контактору устройств
         public List<BaseElectrical> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
         
+        // Это надо оптимизировать
         public List<List<BaseElectrical>> Components { get; set; } = new List<List<BaseElectrical>> // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
         {
             new List<BaseElectrical>(),
@@ -63,5 +64,19 @@ namespace FuseBox
         public List<BaseElectrical> Electricals { get; set; } = new(); // Базовый список 
 
         public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+
+        // Связь с проектом
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
+    }
+
+    public class FuseBoxComponentGroup : BaseEntity
+    {
+        // Компоненты в группе
+        public List<BaseElectrical> Components { get; set; }
+
+        // Связь с FuseBox
+        public int FuseBoxId { get; set; }
+        public FuseBox FuseBox { get; set; }
     }
 }

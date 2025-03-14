@@ -43,7 +43,7 @@ namespace FuseBox
             {
                 foreach (var room in floor.Rooms)
                 {
-                    foreach (var equipment in room.Consumer)
+                    foreach (var equipment in room.Consumers)
                     {
                         AllConsumers.Add(equipment);
                     }

@@ -16,6 +16,10 @@ namespace FuseBox
         [Required(ErrorMessage = "Required field")]
         [Range(0, 5, ErrorMessage = "Conditioners from 0 to 5")]
         public int Conditioners { get; set; }
+
+        // Связь с проектом
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
         public GlobalGrouping(int sockets, int lighting, int conditioners)
         {
             this.Sockets = sockets;

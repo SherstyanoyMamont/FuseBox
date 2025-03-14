@@ -21,6 +21,10 @@ namespace FuseBox.App.Models.Shild_Comp
         //[JsonConverter(typeof(StringEnumConverter))]
         //public ConnectorColour Colour { get; set; }
 
+        // Связь с Connection
+        public int ConnectionId { get; set; }
+        public Connection Connection { get; set; }
+
         public Cable(ConnectorColour colour, decimal section) 
         {
             Сolour = Convert.ToString(colour);

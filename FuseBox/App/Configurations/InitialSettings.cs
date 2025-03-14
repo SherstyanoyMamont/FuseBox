@@ -20,6 +20,10 @@ namespace FuseBox
         [Range(0, 2, ErrorMessage = "Power Coefficient from 0 to 2")]
         public int PowerCoefficient { get; set; } // 0.5, 0.9, 1.0
 
+        // Связь с проектом
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
+
         public InitialSettings()
         {
             PhasesCount = 3;

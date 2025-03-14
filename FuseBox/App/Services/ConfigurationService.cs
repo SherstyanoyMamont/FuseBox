@@ -62,9 +62,9 @@ namespace FuseBox
             var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
             var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
             var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
-            var ports016 = SelectPorts(0, 1, 6);
-            var ports236 = SelectPorts(2, 3, 6);
-            var ports456 = SelectPorts(4, 5, 6);
+            var ports017 = SelectPorts(0, 1, 7);
+            var ports237 = SelectPorts(2, 3, 7);
+            var ports457 = SelectPorts(4, 5, 7);
 
             if (project.InitialSettings.PhasesCount == 1) // Входим в расчеты 1 фазы
             {
@@ -98,9 +98,9 @@ namespace FuseBox
                         shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7));
                     else
                     {
-                        shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports016));
-                        shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports236));
-                        shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports456));
+                        shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
+                        shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
+                        shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));
                     }
                 }
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }

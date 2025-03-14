@@ -5,6 +5,10 @@
         public int IndexStart { get; set; }
         public int IndexFinish { get; set; }
 
+        // Связь с Connection
+        public int ConnectionId { get; set; }
+        public Connection Connection { get; set; }
+
         public Position(int indexStart, int indexFinish)
         {
             IndexStart = indexStart;

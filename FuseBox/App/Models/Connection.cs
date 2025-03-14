@@ -9,6 +9,8 @@ namespace FuseBox
         public Cable Cable { get; set; }
         public Position CabelWay { get; set; }
 
+        public int FuseBoxId { get; set; }
+
         public Connection(Cable cable, Position cabelWay)
         {
             Cable = cable;
