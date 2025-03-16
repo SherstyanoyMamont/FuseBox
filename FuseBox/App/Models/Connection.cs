@@ -9,7 +9,10 @@ namespace FuseBox
         public Cable Cable { get; set; }
         public Position CabelWay { get; set; }
 
-        public int FuseBoxId { get; set; }
+
+        // Связь с FuseBoxUnit
+        public int FuseBoxUnitId6 { get; set; }
+        public FuseBoxUnit FuseBoxUnit { get; set; }
 
         public Connection(Cable cable, Position cabelWay)
         {

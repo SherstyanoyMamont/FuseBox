@@ -8,6 +8,10 @@ namespace FuseBox
         // Связь с комнатой
         public int RoomId { get; set; }
 
+        // Связь с FuseBoxUnit
+        public int FuseBoxUnitId4 { get; set; }
+        public FuseBoxUnit FuseBoxUnit { get; set; }
+
         public Consumer() { }
         public Consumer(string name, int maxLoad)        // Для тестов
         {

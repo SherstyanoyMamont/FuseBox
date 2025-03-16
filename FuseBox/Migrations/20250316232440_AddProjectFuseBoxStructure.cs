@@ -227,7 +227,8 @@ namespace FuseBox.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    FuseBoxId = table.Column<int>(type: "int", nullable: false),
+                    FuseBoxUnitId6 = table.Column<int>(type: "int", nullable: false),
+                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -235,8 +236,14 @@ namespace FuseBox.Migrations
                 {
                     table.PrimaryKey("PK_Connections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Connections_FuseBoxes_FuseBoxId",
-                        column: x => x.FuseBoxId,
+                        name: "FK_Connections_FuseBoxes_FuseBoxUnitId",
+                        column: x => x.FuseBoxUnitId,
+                        principalTable: "FuseBoxes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Connections_FuseBoxes_FuseBoxUnitId6",
+                        column: x => x.FuseBoxUnitId6,
                         principalTable: "FuseBoxes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -247,7 +254,9 @@ namespace FuseBox.Migrations
                 name: "FuseBoxComponentGroup",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FuseBoxUnit5 = table.Column<int>(type: "int", nullable: false),
                     FuseBoxId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -262,8 +271,8 @@ namespace FuseBox.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FuseBoxComponentGroup_FuseBoxes_Id",
-                        column: x => x.Id,
+                        name: "FK_FuseBoxComponentGroup_FuseBoxes_FuseBoxUnit5",
+                        column: x => x.FuseBoxUnit5,
                         principalTable: "FuseBoxes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -330,13 +339,12 @@ namespace FuseBox.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
                     Slots = table.Column<int>(type: "int", nullable: true),
+                    FuseBoxUnitId3 = table.Column<int>(type: "int", nullable: true),
                     ContactorId = table.Column<int>(type: "int", nullable: true),
-                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: true),
-                    FuseBoxUnitId1 = table.Column<int>(type: "int", nullable: true),
-                    FuseBoxUnitId2 = table.Column<int>(type: "int", nullable: true),
-                    FuseId = table.Column<int>(type: "int", nullable: true),
                     RCDId = table.Column<int>(type: "int", nullable: true),
                     RoomId = table.Column<int>(type: "int", nullable: true),
+                    FuseBoxUnitId4 = table.Column<int>(type: "int", nullable: true),
+                    FuseId = table.Column<int>(type: "int", nullable: true),
                     Type = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Capacity = table.Column<int>(type: "int", nullable: true),
@@ -370,20 +378,11 @@ namespace FuseBox.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId",
-                        column: x => x.FuseBoxUnitId,
+                        name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId3",
+                        column: x => x.FuseBoxUnitId3,
                         principalTable: "FuseBoxes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId1",
-                        column: x => x.FuseBoxUnitId1,
-                        principalTable: "FuseBoxes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId2",
-                        column: x => x.FuseBoxUnitId2,
-                        principalTable: "FuseBoxes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BaseElectrical_Rooms_RoomId",
                         column: x => x.RoomId,
@@ -399,19 +398,9 @@ namespace FuseBox.Migrations
                 column: "ContactorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaseElectrical_FuseBoxUnitId",
+                name: "IX_BaseElectrical_FuseBoxUnitId3",
                 table: "BaseElectrical",
-                column: "FuseBoxUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BaseElectrical_FuseBoxUnitId1",
-                table: "BaseElectrical",
-                column: "FuseBoxUnitId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BaseElectrical_FuseBoxUnitId2",
-                table: "BaseElectrical",
-                column: "FuseBoxUnitId2");
+                column: "FuseBoxUnitId3");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BaseElectrical_FuseId",
@@ -435,9 +424,14 @@ namespace FuseBox.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Connections_FuseBoxId",
+                name: "IX_Connections_FuseBoxUnitId",
                 table: "Connections",
-                column: "FuseBoxId");
+                column: "FuseBoxUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Connections_FuseBoxUnitId6",
+                table: "Connections",
+                column: "FuseBoxUnitId6");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FloorGroupings_ProjectId",
@@ -454,6 +448,11 @@ namespace FuseBox.Migrations
                 name: "IX_FuseBoxComponentGroup_FuseBoxId",
                 table: "FuseBoxComponentGroup",
                 column: "FuseBoxId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FuseBoxComponentGroup_FuseBoxUnit5",
+                table: "FuseBoxComponentGroup",
+                column: "FuseBoxUnit5");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FuseBoxes_ProjectId",

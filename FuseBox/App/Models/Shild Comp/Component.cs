@@ -19,6 +19,10 @@ namespace FuseBox
         [JsonProperty(Order = 5)]
         public int Slots { get; set; }
 
+        // Связь с FuseBoxUnit
+        public int FuseBoxUnitId3 { get; set; }
+        public FuseBoxUnit FuseBoxUnit { get; set; }
+
         public Component(string name, int amper, int slots, decimal price, List<Port> ports)
         {
             Ports = ports;

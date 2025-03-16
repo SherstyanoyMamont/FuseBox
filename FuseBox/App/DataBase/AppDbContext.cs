@@ -25,19 +25,11 @@ namespace FuseBox.App.DataBase
         public DbSet<Component> Components { get; set; }
         public DbSet<Port> Ports { get; set; }
 
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-
-        }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            //modelBuilder.Entity<BaseElectrical>()
-            //    .HasDiscriminator<string>("Type")
-            //    .HasValue<SomeElectrical>("SomeElectrical");
 
             // Пример игнорирования какого-то поля
             //modelBuilder.Ignore<BaseElectrical>();
@@ -74,47 +66,13 @@ namespace FuseBox.App.DataBase
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<InitialSettings>(fb => fb.ProjectId);
 
-            /////////////////////////////////////////////////////////////////////
-
             //Project → FuseBoxUnit(один к одному)
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.FuseBox)
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<FuseBoxUnit>(fb => fb.ProjectId);
 
-            //FuseBox → CableConnections(один ко многим)
-            modelBuilder.Entity<FuseBoxUnit>()
-                .HasMany(p => p.CableConnections)
-                .WithOne()
-                .HasForeignKey(f => f.FuseBoxId);
-
-            // CableConnections → CableConnections (один ко одному)
-            modelBuilder.Entity<Connection>()
-                .HasOne(p => p.CabelWay)
-                .WithOne(fb => fb.Connection)
-                .HasForeignKey<Position>(fb => fb.ConnectionId);
-
-            // CableConnections → CableConnections (один ко одному)
-            modelBuilder.Entity<Connection>()
-                .HasOne(p => p.Cable)
-                .WithOne(fb => fb.Connection)
-                .HasForeignKey<Cable>(fb => fb.ConnectionId);
-
-            //CableConnections
-
-            // FuseBox → ComponentGroups (один ко многим)
-            modelBuilder.Entity<FuseBoxUnit>()
-                .HasMany(fb => fb.Components)
-                .WithOne()
-                .HasForeignKey(cg => cg.Id);
-
-            //ComponentGroup → BaseElectrical(один ко многим)
-            modelBuilder.Entity<FuseBoxComponentGroup>()
-                .HasMany(cg => cg.Components)
-                .WithOne()
-                .HasForeignKey(c => c.Id);
-
-            ////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////
 
             // Project → Floors (один ко многим)
             modelBuilder.Entity<Project>()
@@ -135,6 +93,53 @@ namespace FuseBox.App.DataBase
                 .HasForeignKey(f => f.RoomId);
 
             ///////////////////////////////////////////////////////////////////
+
+            // FuseBox → ComponentGroups (один ко многим)
+            modelBuilder.Entity<FuseBoxUnit>()
+                .HasMany(fb => fb.Components)
+                .WithOne()
+                .HasForeignKey(cg => cg.FuseBoxUnit5);
+
+            // FuseBox → ComponentGroups (один ко многим)
+            modelBuilder.Entity<FuseBoxUnit>()
+                .HasMany(fb => fb.Electricals)
+                .WithOne()
+                .HasForeignKey(cg => cg.FuseBoxUnitId3);
+
+            //FuseBox → CableConnections(один ко многим)
+            modelBuilder.Entity<FuseBoxUnit>()
+                .HasMany(p => p.CableConnections)
+                .WithOne()
+                .HasForeignKey(f => f.FuseBoxUnitId6);
+
+            ////////////////////////////////////////////////////////////////////
+
+            // CableConnections → CableConnections (один ко одному)
+            modelBuilder.Entity<Connection>()
+                .HasOne(p => p.CabelWay)
+                .WithOne(fb => fb.Connection)
+                .HasForeignKey<Position>(fb => fb.ConnectionId);
+
+            // CableConnections → CableConnections (один ко одному)
+            modelBuilder.Entity<Connection>()
+                .HasOne(p => p.Cable)
+                .WithOne(fb => fb.Connection)
+                .HasForeignKey<Cable>(fb => fb.ConnectionId);
+
+            //ComponentGroup → BaseElectrical(один ко многим)
+            modelBuilder.Entity<FuseBoxComponentGroup>()
+                .HasMany(cg => cg.Components)
+                .WithOne()
+                .HasForeignKey(c => c.Id);
+
+            modelBuilder.Entity<Component>()
+                .HasOne(c => c.FuseBoxUnit)
+                .WithMany(f => f.Electricals)
+                .HasForeignKey(c => c.FuseBoxUnitId3);
+
+            ////////////////////////////////////////////////////////////////////
+
+            
 
         }
     }

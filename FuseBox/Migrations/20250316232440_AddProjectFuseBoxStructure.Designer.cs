@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FuseBox.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250315000719_AddProjectFuseBoxStructure")]
+    [Migration("20250316232440_AddProjectFuseBoxStructure")]
     partial class AddProjectFuseBoxStructure
     {
         /// <inheritdoc />
@@ -137,7 +137,10 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FuseBoxId")
+                    b.Property<int>("FuseBoxUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FuseBoxUnitId6")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -145,7 +148,9 @@ namespace FuseBox.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FuseBoxId");
+                    b.HasIndex("FuseBoxUnitId");
+
+                    b.HasIndex("FuseBoxUnitId6");
 
                     b.ToTable("Connections");
                 });
@@ -239,9 +244,15 @@ namespace FuseBox.Migrations
             modelBuilder.Entity("FuseBox.FuseBoxComponentGroup", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("FuseBoxId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FuseBoxUnit5")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -250,6 +261,8 @@ namespace FuseBox.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FuseBoxId");
+
+                    b.HasIndex("FuseBoxUnit5");
 
                     b.ToTable("FuseBoxComponentGroup");
                 });
@@ -431,16 +444,7 @@ namespace FuseBox.Migrations
                     b.Property<int?>("ContactorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FuseBoxUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseBoxUnitId1")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseBoxUnitId2")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseId")
+                    b.Property<int>("FuseBoxUnitId3")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -454,13 +458,7 @@ namespace FuseBox.Migrations
 
                     b.HasIndex("ContactorId");
 
-                    b.HasIndex("FuseBoxUnitId");
-
-                    b.HasIndex("FuseBoxUnitId1");
-
-                    b.HasIndex("FuseBoxUnitId2");
-
-                    b.HasIndex("FuseId");
+                    b.HasIndex("FuseBoxUnitId3");
 
                     b.HasIndex("RCDId");
 
@@ -471,8 +469,16 @@ namespace FuseBox.Migrations
                 {
                     b.HasBaseType("FuseBox.Component");
 
+                    b.Property<int>("FuseBoxUnitId4")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FuseId")
+                        .HasColumnType("int");
+
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
+
+                    b.HasIndex("FuseId");
 
                     b.HasIndex("RoomId");
 
@@ -572,11 +578,19 @@ namespace FuseBox.Migrations
 
             modelBuilder.Entity("FuseBox.Connection", b =>
                 {
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("CableConnections")
-                        .HasForeignKey("FuseBoxId")
+                    b.HasOne("FuseBox.FuseBoxUnit", "FuseBoxUnit")
+                        .WithMany()
+                        .HasForeignKey("FuseBoxUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("FuseBox.FuseBoxUnit", null)
+                        .WithMany("CableConnections")
+                        .HasForeignKey("FuseBoxUnitId6")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FuseBoxUnit");
                 });
 
             modelBuilder.Entity("FuseBox.Floor", b =>
@@ -620,7 +634,7 @@ namespace FuseBox.Migrations
 
                     b.HasOne("FuseBox.FuseBoxUnit", null)
                         .WithMany("Components")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("FuseBoxUnit5")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -671,29 +685,25 @@ namespace FuseBox.Migrations
                         .WithMany("Electricals")
                         .HasForeignKey("ContactorId");
 
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("Contactor")
-                        .HasForeignKey("FuseBoxUnitId");
-
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("CriticalLine")
-                        .HasForeignKey("FuseBoxUnitId1");
-
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
+                    b.HasOne("FuseBox.FuseBoxUnit", "FuseBoxUnit")
                         .WithMany("Electricals")
-                        .HasForeignKey("FuseBoxUnitId2");
-
-                    b.HasOne("FuseBox.Fuse", null)
-                        .WithMany("Electricals")
-                        .HasForeignKey("FuseId");
+                        .HasForeignKey("FuseBoxUnitId3")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FuseBox.RCD", null)
                         .WithMany("Electricals")
                         .HasForeignKey("RCDId");
+
+                    b.Navigation("FuseBoxUnit");
                 });
 
             modelBuilder.Entity("FuseBox.Consumer", b =>
                 {
+                    b.HasOne("FuseBox.Fuse", null)
+                        .WithMany("Electricals")
+                        .HasForeignKey("FuseId");
+
                     b.HasOne("FuseBox.Room", null)
                         .WithMany("Consumer")
                         .HasForeignKey("RoomId")
@@ -730,10 +740,6 @@ namespace FuseBox.Migrations
                     b.Navigation("CableConnections");
 
                     b.Navigation("Components");
-
-                    b.Navigation("Contactor");
-
-                    b.Navigation("CriticalLine");
 
                     b.Navigation("Electricals");
                 });

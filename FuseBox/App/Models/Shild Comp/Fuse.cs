@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 
 namespace FuseBox
 {
-    public class Fuse : Component, IHasConsumer
+    public class Fuse : Component
     {
         [JsonProperty(Order = 8)]
-        public List<Component> Electricals { get; set; } = new List<Component>();
+        public List<Consumer> Electricals { get; set; } = new List<Consumer>();
 
-        public Fuse(string name,  int amper, int slots, decimal price, List<Component> electricals) : base(name, amper, slots, price)
+        public Fuse(string name,  int amper, int slots, decimal price, List<Consumer> electricals) : base(name, amper, slots, price)
         {
             // В список разьемов добавляем разьем с входом для АВ и кабелем красного цвета
             Ports = new List<Port> { new Port(PortInEnum.AV, new Cable(ConnectorColour.Red, (decimal)1.5)) }; 
