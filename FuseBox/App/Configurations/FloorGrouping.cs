@@ -12,6 +12,10 @@ namespace FuseBox
         [Required(ErrorMessage = "Required field")]
         public bool SeparateUZOPerFloor { get; set; }
 
+        // Связь с проектом
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
+
         public FloorGrouping() { }
 
         public FloorGrouping(bool individualFloorGrouping, bool separeteUzoPerFloor)

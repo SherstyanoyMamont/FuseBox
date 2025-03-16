@@ -7,10 +7,10 @@ namespace FuseBox
 {
     public class DistributionService
     {
-        public List<BaseElectrical> Lightings = new();
-        public List<BaseElectrical> Socket = new();
-        public List<BaseElectrical> AirConditioner = new();
-        public List<BaseElectrical> HeatedFloor = new();
+        public List<Component> Lightings = new();
+        public List<Component> Socket = new();
+        public List<Component> AirConditioner = new();
+        public List<Component> HeatedFloor = new();
         public List<Fuse> AVFuses = new();
         public List<RCD> uzos;
 
@@ -33,7 +33,7 @@ namespace FuseBox
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers()
         {
-            List<BaseElectrical> AllConsumers = new();
+            List<Component> AllConsumers = new();
             // Логика распределения потребителей
             int heatingPerAV = 1;
             GlobalGrouping globalGrouping = project.GlobalGrouping;
@@ -50,7 +50,7 @@ namespace FuseBox
                 }
             }
 
-            var consumerGroups = new Dictionary<string, List<BaseElectrical>>
+            var consumerGroups = new Dictionary<string, List<Component>>
             {
                 { "Lighting", Lightings },
                 { "Socket", Socket },
@@ -87,21 +87,21 @@ namespace FuseBox
             {
                 if (consumer.Name != "Lighting" && consumer.Name != "Socket" && consumer.Name != "Air Conditioner" && consumer.Name != "Heated Floor")
                 {
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, new List<BaseElectrical> { consumer }));
+                    AVFuses.Add(new Fuse("AV", 16, 1, 10, new List<Component> { consumer }));
                 }
             }
         }
 
-        public void AutomatPerCons(int groupingParam, List<BaseElectrical> list, string? name)
+        public void AutomatPerCons(int groupingParam, List<Component> list, string? name)
         {
             if (groupingParam == 0)
             {
-                var buckets1 = new List<List<BaseElectrical>>();
+                var buckets1 = new List<List<Component>>();
 
                 // Создаем группы
                 for (int i = 0; i < project.GetTotalNumberOfRooms(); i++)
                 {
-                    buckets1.Add(new List<BaseElectrical>());
+                    buckets1.Add(new List<Component>());
                 }
 
                 // Распределяем потребителей по группам
@@ -123,11 +123,11 @@ namespace FuseBox
             }
             else
             {
-                var buckets = new List<List<BaseElectrical>>(groupingParam);
+                var buckets = new List<List<Component>>(groupingParam);
 
                 for (int i = 0; i < groupingParam; i++)
                 {
-                    buckets.Add(new List<BaseElectrical>());
+                    buckets.Add(new List<Component>());
                 }
 
                 // Распределяем потребителей по группам
@@ -146,7 +146,7 @@ namespace FuseBox
 
         }
 
-        public void DistributeRCDFromLoad()
+        public void DistributeRCDFromLoad() 
         {
             double TAmper = project.CalculateTotalPower();
 
@@ -156,15 +156,15 @@ namespace FuseBox
             if (TAmper <= RCD16A)
             {
                 // Создаем УЗО
-                uzos.Add(new RCD("RCD", 16, 2, 43, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 16, 2, 43, new List<Component>(AVFuses)));
             }
             else if (TAmper > RCD16A && TAmper <= RCD32B)
             {
-                uzos.Add(new RCD("RCD", 32, 2, 43, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 32, 2, 43, new List<Component>(AVFuses)));
             }
             else if (TAmper > 16 && TAmper <= 32)
             {
-                uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>(AVFuses)));
+                uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>(AVFuses)));
             }
             else
             {
@@ -186,12 +186,12 @@ namespace FuseBox
                 }
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
                 }
 
                 while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))        //&& uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
                     countOfRCD++;
                 }
             }
@@ -204,7 +204,7 @@ namespace FuseBox
                 // Добавляем УЗО
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<BaseElectrical>()));
+                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
                 }
             }
         }

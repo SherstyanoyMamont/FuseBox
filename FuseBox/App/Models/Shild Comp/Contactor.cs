@@ -9,15 +9,15 @@ namespace FuseBox
 {
     public class Contactor : Component, IHasConsumer
     {
-        public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
+        public List<Component> Electricals { get; set; } = new List<Component>();
 
-        public Contactor(string name, int amper, int slots, decimal price, List<Port> ports, List<BaseElectrical> electricals) : base(name, amper, slots, price)
+        public Contactor(string name, int amper, int slots, decimal price, List<Port> ports, List<Component> electricals) : base(name, amper, slots, price)
         {
             Ports = ports;
             Electricals = electricals;
         }
 
-        public Contactor(string name, int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price)
+        public Contactor(string name, int amper, int slots, decimal price, List<Component> electricals) : base(name, amper, slots, price)
         {
             Electricals = electricals;
         }

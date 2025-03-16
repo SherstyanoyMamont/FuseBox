@@ -3,7 +3,7 @@ using FuseBox.App.Models.BaseAbstract;
 
 namespace FuseBox
 {
-    public class Consumer : BaseElectrical, IZone
+    public class Consumer : Component, IZone
     {
         // Связь с комнатой
         public int RoomId { get; set; }

@@ -9,7 +9,7 @@ namespace FuseBox
 {
     public class RCD : Component, IHasConsumer
     {
-        public List<BaseElectrical> Electricals { get; set; } = new List<BaseElectrical>();
+        public List<Component> Electricals { get; set; } = new List<Component>();
 
         [JsonProperty(Order = 8)]
         public int Capacity { get; set; }
@@ -19,7 +19,7 @@ namespace FuseBox
         [JsonProperty(Order = 4)]
         public double TotalLoad { get; set; } // Added in DistributeFusesToRCDs
 
-        public RCD(string name, int amper, int slots, decimal price, List<BaseElectrical> electricals) : base(name, amper, slots, price) // List<Electricals> electricals,
+        public RCD(string name, int amper, int slots, decimal price, List<Component> electricals) : base(name, amper, slots, price) // List<Electricals> electricals,
         {
 
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
@@ -33,7 +33,7 @@ namespace FuseBox
             Electricals = electricals;
         }
 
-        public RCD(string name, int amper, int slots, decimal price, List<Port> ports, List<BaseElectrical> electricals) : base(name, amper, slots, price, ports) // List<Electricals> electricals,
+        public RCD(string name, int amper, int slots, decimal price, List<Port> ports, List<Component> electricals) : base(name, amper, slots, price, ports) // List<Electricals> electricals,
         {
 
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход

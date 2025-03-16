@@ -11,6 +11,17 @@ namespace FuseBox.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Username",
+                table: "Users");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Name",
+                table: "Users",
+                type: "longtext",
+                nullable: true)
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "Ports",
                 columns: table => new
@@ -38,7 +49,7 @@ namespace FuseBox.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     TotalPower = table.Column<double>(type: "double", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -49,8 +60,7 @@ namespace FuseBox.Migrations
                         name: "FK_Projects_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -239,7 +249,6 @@ namespace FuseBox.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     FuseBoxId = table.Column<int>(type: "int", nullable: false),
-                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -247,8 +256,8 @@ namespace FuseBox.Migrations
                 {
                     table.PrimaryKey("PK_FuseBoxComponentGroup", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FuseBoxComponentGroup_FuseBoxes_FuseBoxUnitId",
-                        column: x => x.FuseBoxUnitId,
+                        name: "FK_FuseBoxComponentGroup_FuseBoxes_FuseBoxId",
+                        column: x => x.FuseBoxId,
                         principalTable: "FuseBoxes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -258,35 +267,6 @@ namespace FuseBox.Migrations
                         principalTable: "FuseBoxes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Consumer",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoomId = table.Column<int>(type: "int", nullable: false),
-                    RoomId1 = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Amper = table.Column<double>(type: "double", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Consumer", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Consumer_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Consumer_Rooms_RoomId1",
-                        column: x => x.RoomId1,
-                        principalTable: "Rooms",
-                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -346,18 +326,43 @@ namespace FuseBox.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     Amper = table.Column<double>(type: "double", nullable: false),
+                    Discriminator = table.Column<string>(type: "varchar(21)", maxLength: 21, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Slots = table.Column<int>(type: "int", nullable: true),
                     ContactorId = table.Column<int>(type: "int", nullable: true),
                     FuseBoxUnitId = table.Column<int>(type: "int", nullable: true),
                     FuseBoxUnitId1 = table.Column<int>(type: "int", nullable: true),
                     FuseBoxUnitId2 = table.Column<int>(type: "int", nullable: true),
                     FuseId = table.Column<int>(type: "int", nullable: true),
                     RCDId = table.Column<int>(type: "int", nullable: true),
+                    RoomId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Capacity = table.Column<int>(type: "int", nullable: true),
+                    TotalLoad = table.Column<double>(type: "double", nullable: true),
+                    RCDFire_Capacity = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BaseElectrical", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BaseElectrical_BaseElectrical_ContactorId",
+                        column: x => x.ContactorId,
+                        principalTable: "BaseElectrical",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_BaseElectrical_BaseElectrical_FuseId",
+                        column: x => x.FuseId,
+                        principalTable: "BaseElectrical",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_BaseElectrical_BaseElectrical_RCDId",
+                        column: x => x.RCDId,
+                        principalTable: "BaseElectrical",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_BaseElectrical_FuseBoxComponentGroup_Id",
                         column: x => x.Id,
@@ -379,121 +384,10 @@ namespace FuseBox.Migrations
                         column: x => x.FuseBoxUnitId2,
                         principalTable: "FuseBoxes",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Component",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Slots = table.Column<int>(type: "int", nullable: false),
-                    Discriminator = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Component", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Component_BaseElectrical_Id",
-                        column: x => x.Id,
-                        principalTable: "BaseElectrical",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Contactor",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Contactor", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Contactor_Component_Id",
-                        column: x => x.Id,
-                        principalTable: "Component",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Fuse",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Fuse", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Fuse_Component_Id",
-                        column: x => x.Id,
-                        principalTable: "Component",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Introductory",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Introductory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Introductory_Component_Id",
-                        column: x => x.Id,
-                        principalTable: "Component",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "RCD",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false),
-                    TotalLoad = table.Column<double>(type: "double", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RCD", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RCD_Component_Id",
-                        column: x => x.Id,
-                        principalTable: "Component",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "RCDFire",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RCDFire", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RCDFire_Component_Id",
-                        column: x => x.Id,
-                        principalTable: "Component",
+                        name: "FK_BaseElectrical_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -530,6 +424,11 @@ namespace FuseBox.Migrations
                 column: "RCDId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BaseElectrical_RoomId",
+                table: "BaseElectrical",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cables_ConnectionId",
                 table: "Cables",
                 column: "ConnectionId",
@@ -539,16 +438,6 @@ namespace FuseBox.Migrations
                 name: "IX_Connections_FuseBoxId",
                 table: "Connections",
                 column: "FuseBoxId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Consumer_RoomId",
-                table: "Consumer",
-                column: "RoomId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Consumer_RoomId1",
-                table: "Consumer",
-                column: "RoomId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FloorGroupings_ProjectId",
@@ -562,9 +451,9 @@ namespace FuseBox.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuseBoxComponentGroup_FuseBoxUnitId",
+                name: "IX_FuseBoxComponentGroup_FuseBoxId",
                 table: "FuseBoxComponentGroup",
-                column: "FuseBoxUnitId");
+                column: "FuseBoxId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FuseBoxes_ProjectId",
@@ -599,65 +488,16 @@ namespace FuseBox.Migrations
                 name: "IX_Rooms_FloorId",
                 table: "Rooms",
                 column: "FloorId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BaseElectrical_Contactor_ContactorId",
-                table: "BaseElectrical",
-                column: "ContactorId",
-                principalTable: "Contactor",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BaseElectrical_Fuse_FuseId",
-                table: "BaseElectrical",
-                column: "FuseId",
-                principalTable: "Fuse",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_BaseElectrical_RCD_RCDId",
-                table: "BaseElectrical",
-                column: "RCDId",
-                principalTable: "RCD",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_Contactor_ContactorId",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_FuseBoxComponentGroup_Id",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId1",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_FuseBoxes_FuseBoxUnitId2",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_Fuse_FuseId",
-                table: "BaseElectrical");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_BaseElectrical_RCD_RCDId",
-                table: "BaseElectrical");
+            migrationBuilder.DropTable(
+                name: "BaseElectrical");
 
             migrationBuilder.DropTable(
                 name: "Cables");
-
-            migrationBuilder.DropTable(
-                name: "Consumer");
 
             migrationBuilder.DropTable(
                 name: "FloorGroupings");
@@ -669,16 +509,13 @@ namespace FuseBox.Migrations
                 name: "InitialSettings");
 
             migrationBuilder.DropTable(
-                name: "Introductory");
-
-            migrationBuilder.DropTable(
                 name: "Ports");
 
             migrationBuilder.DropTable(
                 name: "Positions");
 
             migrationBuilder.DropTable(
-                name: "RCDFire");
+                name: "FuseBoxComponentGroup");
 
             migrationBuilder.DropTable(
                 name: "Rooms");
@@ -690,28 +527,21 @@ namespace FuseBox.Migrations
                 name: "Floors");
 
             migrationBuilder.DropTable(
-                name: "Contactor");
-
-            migrationBuilder.DropTable(
-                name: "FuseBoxComponentGroup");
-
-            migrationBuilder.DropTable(
                 name: "FuseBoxes");
 
             migrationBuilder.DropTable(
                 name: "Projects");
 
-            migrationBuilder.DropTable(
-                name: "Fuse");
+            migrationBuilder.DropColumn(
+                name: "Name",
+                table: "Users");
 
-            migrationBuilder.DropTable(
-                name: "RCD");
-
-            migrationBuilder.DropTable(
-                name: "Component");
-
-            migrationBuilder.DropTable(
-                name: "BaseElectrical");
+            migrationBuilder.AddColumn<string>(
+                name: "Username",
+                table: "Users",
+                type: "longtext",
+                nullable: false)
+                .Annotation("MySql:CharSet", "utf8mb4");
         }
     }
 }
