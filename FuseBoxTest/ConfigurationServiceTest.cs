@@ -5,6 +5,7 @@ using FuseBox.App;
 using NUnit.Framework.Interfaces;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using FuseBox;
 using FuseBox.FuseBox;
 
 namespace TestServices;
@@ -150,8 +151,6 @@ public class ConfigurationServiceTest
             new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
         };
     }
-
-
 
     /*
      * Ок

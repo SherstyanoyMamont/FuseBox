@@ -82,27 +82,18 @@ namespace FuseBox
             }
             else // Входим в расчеты 3 фазы
             {
-                if (fuseBox.MainBreaker)
-                {
-                    if (fuseBox.Main3PN) // Если да, то добавляем 3 фазы + ноль
-                        shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N));
-                    else
-                        shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3));
-                }
+                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
+                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
                 if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
                 if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
                 if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports1_8)); }
-                if (fuseBox.VoltageRelay)
-                {
-                    if (fuseBox.ThreePRelay)
-                        shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7));
-                    else
-                    {
-                        shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
-                        shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
-                        shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));
-                    }
+                if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
+                {                                        
+                    shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
+                    shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
+                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));                   
                 }
+                if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
                 if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, fuseBox.Contactor)); } // !!!
                 if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?

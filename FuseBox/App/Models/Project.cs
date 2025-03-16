@@ -1,7 +1,8 @@
 ﻿using FuseBox.App.Controllers;
 using FuseBox.App.Models.BaseAbstract;
-using FuseBox.FuseBox;
+using FuseBox;
 using System.Text.Json.Serialization;
+using FuseBox.FuseBox;
 
 namespace FuseBox
 {
