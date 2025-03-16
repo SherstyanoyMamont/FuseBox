@@ -12,5 +12,10 @@ namespace FuseBox
         public int ProjectId { get; set; }
 
         public Floor() { }
+
+        public Floor(List<Room> rooms)
+        {
+            Rooms = rooms;
+        }
     }
 }
