@@ -225,7 +225,7 @@ namespace FuseBox.Tests
         }
 
         // Вспомагательный метод для тестов
-        public double GetTotalPower(List<BaseElectrical> consumers)
+        public double GetTotalPower(List<Consumer> consumers)
         {
             double totalPower = 0;
             foreach (var consumer in consumers)
@@ -254,7 +254,7 @@ namespace FuseBox.Tests
             double RCD64A = 32.00;
             double RCDPerPhases = 3.00;
 
-            double tAmper = GetTotalPower(consumers.Cast<BaseElectrical>().ToList());
+            double tAmper = GetTotalPower(consumers.Cast<Consumer>().ToList());
 
 
             // Запускаем тестируемый метод. Он работает только в связке с DistributeOfConsumers, поэтому запускаем и его

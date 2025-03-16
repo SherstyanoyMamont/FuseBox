@@ -64,9 +64,9 @@ public class ConfigurationServiceTest
             5, 0, 14,
             new List<Component>
             {
-                new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()), // 2
-                new RCD("RCD", 25, 5, 0, new List<BaseElectrical>()), // 2
-                new RCD("RCD", 25, 7, 0, new List<BaseElectrical>()), // last
+                new RCD("RCD", 25, 3, 0, new List<Component>()), // 2
+                new RCD("RCD", 25, 5, 0, new List<Component>()), // 2
+                new RCD("RCD", 25, 7, 0, new List<Component>()), // last
             }
         };
         yield return new object[]
@@ -148,7 +148,7 @@ public class ConfigurationServiceTest
                 new FloorGrouping(true,false)
             ),
             0, 5, 13,
-            new List<Component> { new RCD("RCD", 25, 3, 0, new List<BaseElectrical>()) }  // last
+            new List<Component> { new RCD("RCD", 25, 3, 0, new List<Component>()) }  // last
         };
     }
 

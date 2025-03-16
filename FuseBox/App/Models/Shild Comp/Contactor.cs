@@ -7,20 +7,16 @@ using FuseBox.App.Models.BaseAbstract;
 
 namespace FuseBox
 {
-    public class Contactor : Component, IHasConsumer
+    public class Contactor : Component
     {
-        public List<Component> Electricals { get; set; } = new List<Component>();
+        //public List<Component> Electricals { get; set; } = new List<Component>();
 
-        public Contactor(string name, int amper, int slots, decimal price, List<Port> ports, List<Component> electricals) : base(name, amper, slots, price)
+        public Contactor(string name, int amper, int slots, decimal price, List<Port> ports) : base(name, amper, slots, price)
         {
             Ports = ports;
-            Electricals = electricals;
         }
 
-        public Contactor(string name, int amper, int slots, decimal price, List<Component> electricals) : base(name, amper, slots, price)
-        {
-            Electricals = electricals;
-        }
+        public Contactor(string name, int amper, int slots, decimal price, List<Component> electricals) : base(name, amper, slots, price) { }
         public Contactor(string name, int slots)
         {
             this.Name = name;

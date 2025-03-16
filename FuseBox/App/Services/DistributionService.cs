@@ -7,10 +7,10 @@ namespace FuseBox
 {
     public class DistributionService
     {
-        public List<Component> Lightings = new();
-        public List<Component> Socket = new();
-        public List<Component> AirConditioner = new();
-        public List<Component> HeatedFloor = new();
+        public List<Consumer> Lightings = new();
+        public List<Consumer> Socket = new();
+        public List<Consumer> AirConditioner = new();
+        public List<Consumer> HeatedFloor = new();
         public List<Fuse> AVFuses = new();
         public List<RCD> uzos;
 
@@ -33,7 +33,7 @@ namespace FuseBox
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers()
         {
-            List<Component> AllConsumers = new();
+            List<Consumer> AllConsumers = new();
             // Логика распределения потребителей
             int heatingPerAV = 1;
             GlobalGrouping globalGrouping = project.GlobalGrouping;
@@ -50,7 +50,7 @@ namespace FuseBox
                 }
             }
 
-            var consumerGroups = new Dictionary<string, List<Component>>
+            var consumerGroups = new Dictionary<string, List<Consumer>>
             {
                 { "Lighting", Lightings },
                 { "Socket", Socket },
@@ -87,21 +87,21 @@ namespace FuseBox
             {
                 if (consumer.Name != "Lighting" && consumer.Name != "Socket" && consumer.Name != "Air Conditioner" && consumer.Name != "Heated Floor")
                 {
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, new List<Component> { consumer }));
+                    AVFuses.Add(new Fuse("AV", 16, 1, 10, new List<Consumer> { consumer }));
                 }
             }
         }
 
-        public void AutomatPerCons(int groupingParam, List<Component> list, string? name)
+        public void AutomatPerCons(int groupingParam, List<Consumer> list, string? name)
         {
             if (groupingParam == 0)
             {
-                var buckets1 = new List<List<Component>>();
+                var buckets1 = new List<List<Consumer>>();
 
                 // Создаем группы
                 for (int i = 0; i < project.GetTotalNumberOfRooms(); i++)
                 {
-                    buckets1.Add(new List<Component>());
+                    buckets1.Add(new List<Consumer>());
                 }
 
                 // Распределяем потребителей по группам
@@ -123,11 +123,11 @@ namespace FuseBox
             }
             else
             {
-                var buckets = new List<List<Component>>(groupingParam);
+                var buckets = new List<List<Consumer>>(groupingParam);
 
                 for (int i = 0; i < groupingParam; i++)
                 {
-                    buckets.Add(new List<Component>());
+                    buckets.Add(new List<Consumer>());
                 }
 
                 // Распределяем потребителей по группам
