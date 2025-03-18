@@ -19,12 +19,10 @@ namespace FuseBox.App.Models.Shild_Comp
         public decimal Section { get; set; } // mm^2
         public string? Сolour { get; set; }
 
-        //[JsonConverter(typeof(StringEnumConverter))]
-        //public ConnectorColour Colour { get; set; }
-
         // Связь с Connection
-        public int ConnectionId { get; set; }
-        public Connection Connection { get; set; }
+        public int ConnectionCableId { get; set; }
+        [JsonIgnore]
+        public Connection? Connection { get; set; }
 
         public Cable() { }
 

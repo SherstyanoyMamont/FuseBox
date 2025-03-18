@@ -1,5 +1,4 @@
-﻿using FuseBox;
-using FuseBox.App.Models;
+﻿using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Microsoft.AspNetCore.Components;
@@ -19,7 +18,6 @@ namespace FuseBox
     public class ConfigurationService
     {
         public List<Component> shieldModuleSet = new();
-        //public List<RCD> uzos = new();
         public List<Port> ports;
         public List<RCD> uzos = new();
 
@@ -99,6 +97,37 @@ namespace FuseBox
                 if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
             }
         }
+        
+        // Логика распределения модулей по уровням...
+        
+        public void CalculateWireCrossSection()
+        {
+            // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
+            var copperWireTable = new Dictionary<double, double>
+            {
+                { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 }, { 16, 80 }
+            };
+
+            // Поиск минимального сечения, подходящего под заданный ток
+            foreach (var wire in copperWireTable)
+            {
+                if (project.CalculateTotalPower() <= wire.Value)
+                    WireSection = (decimal)wire.Key;
+
+                    //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
+            }
+
+            // Если ток выше максимального в таблице — требуется индивидуальный расчёт
+            //throw new ArgumentException("Требуется кабель большего сечения, рассчитайте вручную.");
+
+            // Сечения медного кабеля для прокладки проводки по дому/ квартире:
+            // автомат C10, сечение кабеля 1,5 мм2 для освещения
+            // автомат C16, сечение кабеля 2,5 мм2 для розеток
+            // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
+            // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
+        }
+        // Создаем соединение проводами
+
         public void Distribute()
         {
             DistributionService distributionService = new(project, uzos);
@@ -108,7 +137,46 @@ namespace FuseBox
 
             shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
         }
-        // Логика распределения модулей по уровням...
+
+        public void CreateConnections()
+        {
+            List<Connection> сableConnections = fuseBox.CableConnections;
+
+            // Добавляем ID ко всем компонентам
+            for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].SerialNumber = i + 1; }
+
+            for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
+            {
+                Component currentComp = shieldModuleSet[i];                            // module - текущий компонент
+
+                for (int port = 0; port < currentComp.Ports.Count; port++)             // Берем каждый разьем компонента
+                {
+                    Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
+
+                    if (currentPort.portOut == null)                                   // если порт не выходящий то пропускаем 
+                        continue;
+
+                    for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
+                    {
+                        Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
+
+
+                        // Если у компонента есть такой же тип выхода, то создаем подключение
+                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?
+                        {
+                            //AddConnection(сableConnections, module.Id, currentPort, n);
+
+                            Position connectionIds = new Position(currentComp.SerialNumber, n + 1);
+                            сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+
+                            //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
+                            break;                               // Берем следующий выходной разьем
+                        }
+                    }
+                }
+            }
+        }
+
         public void ShieldByLevel()
         {
             int occupiedSlots = 0;
@@ -145,72 +213,6 @@ namespace FuseBox
             }
         }
         // Расчет сечения провода по мощности
-        public void CalculateWireCrossSection()
-        {
-            // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
-            var copperWireTable = new Dictionary<double, double>
-            {
-                { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 }, { 16, 80 }
-            };
-
-            // Поиск минимального сечения, подходящего под заданный ток
-            foreach (var wire in copperWireTable)
-            {
-                if (project.CalculateTotalPower() <= wire.Value)
-                    WireSection = (decimal)wire.Key;
-
-                    //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
-            }
-
-            // Если ток выше максимального в таблице — требуется индивидуальный расчёт
-            //throw new ArgumentException("Требуется кабель большего сечения, рассчитайте вручную.");
-
-            // Сечения медного кабеля для прокладки проводки по дому/ квартире:
-            // автомат C10, сечение кабеля 1,5 мм2 для освещения
-            // автомат C16, сечение кабеля 2,5 мм2 для розеток
-            // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
-            // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
-        }
-        // Создаем соединение проводами
-        public void CreateConnections()
-        {
-            List<Connection> сableConnections = fuseBox.CableConnections;
-
-            // Добавляем ID ко всем компонентам
-            for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].Id = i + 1; }
-
-            for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
-            {
-                Component currentComp = shieldModuleSet[i];                            // module - текущий компонент
-
-                for (int port = 0; port < currentComp.Ports.Count; port++)             // Берем каждый разьем компонента
-                {
-                    Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
-
-                    if (currentPort.portOut == null)                                   // если порт не выходящий то пропускаем 
-                        continue;
-
-                    for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
-                    {
-                        Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
-
-
-                        // Если у компонента есть такой же тип выхода, то создаем подключение
-                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?
-                        {
-                            //AddConnection(сableConnections, module.Id, currentPort, n);
-
-                            Position connectionIds = new Position(currentComp.Id, n + 1);
-                            сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-
-                            //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
-                            break;                               // Берем следующий выходной разьем
-                        }
-                    }
-                }
-            }
-        }
-
         public void ValidateInitialSettings()
         {
 
@@ -226,21 +228,24 @@ namespace FuseBox
 /*
 
 {
-    "floorGrouping": {
-        "FloorGroupingP": true,
-        "separateUZO": true
-    },
+  "floorGrouping": {
+    "FloorGroupingP": true,
+    "separateUZO": true,
+    "ProjectId": 1
+  },
   "globalGrouping": {
     "Sockets": 1,
     "Lighting": 1,
-    "Conditioners": 1
+    "Conditioners": 1,
+    "ProjectId": 1
   },
   "initialSettings": {
     "PhasesCount": 1,
     "MainAmperage": 25,
     "ShieldWidth": 16,
     "VoltageStandard": 220,
-    "PowerCoefficient": 1
+    "PowerCoefficient": 1,
+    "ProjectId": 1
   },
   "FuseBox": {
     "MainBreaker": true,
@@ -256,27 +261,34 @@ namespace FuseBox
     "LoadSwitch": true,
     "CrossModule": true,
     "DINLines": 1,
-    "Price": 1000
+    "Price": 1000,
+    "ProjectId": 1
   },
-    "floors": [
-      {
+  "floors": [
+    {
+      "Id": 1,
       "Name": "Ground Floor",
+      "ProjectId": 1,
       "rooms": [
         {
           "Name": "Living Room",
+          "FloorId": 1,
           "Consumer": [
             {
               "Id": 1,
+              "RoomId": 1,
               "name": "TV",
               "Amper": 1
             },
             {
               "Id": 2,
+              "RoomId": 1,
               "name": "Air Conditioner",
               "Amper": 8
             },
             {
               "Id": 3,
+              "RoomId": 1,
               "name": "Lighting",
               "Amper": 1
             }
@@ -285,19 +297,23 @@ namespace FuseBox
         },
         {
           "name": "Kitchen",
+          "FloorId": 1,
           "Consumer": [
             {
               "Id": 4,
+              "RoomId": 2,
               "name": "Refrigerator",
               "Amper": 3
             },
             {
               "Id": 5,
+              "RoomId": 2,
               "name": "Microwave",
               "Amper": 5
             },
             {
               "Id": 6,
+              "RoomId": 2,
               "name": "Oven",
               "Amper": 7
             }
@@ -307,18 +323,23 @@ namespace FuseBox
       ]
     },
     {
+      "Id": 2,
       "Name": "First Floor",
+      "ProjectId": 2,
       "rooms": [
         {
           "name": "Bedroom 1",
+          "FloorId": 2,
           "Consumer": [
             {
-              "id": 7,
+              "Id": 7,
+              "RoomId": 3,
               "name": "Heater",
               "Amper": 13
             },
             {
-              "id": 8,
+              "Id": 8,
+              "RoomId": 3,
               "name": "Fan",
               "Amper": 7
             }
@@ -327,14 +348,17 @@ namespace FuseBox
         },
         {
           "name": "Bathroom",
+          "FloorId": 2,
           "Consumer": [
             {
-              "id": 9,
+              "Id": 9,
+              "RoomId": 4,
               "name": "Water Heater",
               "Amper": 13
             },
             {
-              "id": 10,
+              "Id": 10,
+              "RoomId": 4,
               "name": "Hair Dryer",
               "Amper": 7
             }
@@ -344,43 +368,53 @@ namespace FuseBox
       ]
     },
     {
+      "Id": 3,
       "Name": "Second Floor",
+      "ProjectId": 3,
       "rooms": [
         {
           "name": "Office",
+          "FloorId": 3,
           "Consumer": [
             {
-              "id": 11,
+              "Id": 11,
+              "RoomId": 5,
               "name": "Computer",
               "Amper": 2
             },
             {
-              "id": 12,
+              "Id": 12,
+              "RoomId": 5,
               "name": "Printer",
               "Amper": 1
             },
             {
-              "id": 13,
+              "Id": 13,
+              "RoomId": 5,
               "name": "Lighting",
               "Amper": 2
             },
             {
-              "id": 11,
+              "Id": 14,
+              "RoomId": 5,
               "name": "Air Conditioner",
               "Amper": 2
             },
             {
-              "id": 12,
+              "Id": 15,
+              "RoomId": 5,
               "name": "Air Conditioner",
               "Amper": 1
             },
             {
-              "id": 13,
+              "Id": 16,
+              "RoomId": 5,
               "name": "Lighting",
               "Amper": 2
             },
             {
-              "id": 13,
+              "Id": 17,
+              "RoomId": 5,
               "name": "Lighting",
               "Amper": 2
             }
@@ -391,5 +425,159 @@ namespace FuseBox
     }
   ]
 }
+
+
+
+
+{
+    "floorGrouping": {
+        "FloorGroupingP": true,
+    "separateUZO": true
+    },
+  "globalGrouping": {
+        "Sockets": 1,
+    "Lighting": 1,
+    "Conditioners": 1
+  },
+  "initialSettings": {
+        "PhasesCount": 1,
+    "MainAmperage": 25,
+    "ShieldWidth": 16,
+    "VoltageStandard": 220,
+    "PowerCoefficient": 1
+  },
+  "FuseBox": {
+        "MainBreaker": true,
+    "Main3PN": false,
+    "SurgeProtection": true,
+    "LoadSwitch2P": true,
+    "ModularContactor": true,
+    "RailMeter": true,
+    "FireUZO": true,
+    "VoltageRelay": true,
+    "RailSocket": true,
+    "NDisconnectableLine": true,
+    "LoadSwitch": true,
+    "CrossModule": true,
+    "DINLines": 1,
+    "Price": 1000
+  },
+  "floors": [
+    {
+        "Name": "Ground Floor",
+      "rooms": [
+        {
+            "Name": "Living Room",
+          "Consumer": [
+            {
+                "name": "TV",
+              "Amper": 1
+            },
+            {
+                "name": "Air Conditioner",
+              "Amper": 8
+            },
+            {
+                "name": "Lighting",
+              "Amper": 1
+            }
+          ],
+          "tPower": 10
+        },
+        {
+            "Name": "Kitchen",
+          "Consumer": [
+            {
+                "name": "Refrigerator",
+              "Amper": 3
+            },
+            {
+                "name": "Microwave",
+              "Amper": 5
+            },
+            {
+                "name": "Oven",
+              "Amper": 7
+            }
+          ],
+          "tPower": 15
+        }
+      ]
+    },
+    {
+        "Name": "First Floor",
+      "rooms": [
+        {
+            "Name": "Bedroom 1",
+          "Consumer": [
+            {
+                "name": "Heater",
+              "Amper": 13
+            },
+            {
+                "name": "Fan",
+              "Amper": 7
+            }
+          ],
+          "tPower": 20
+        },
+        {
+            "Name": "Bathroom",
+          "Consumer": [
+            {
+                "name": "Water Heater",
+              "Amper": 13
+            },
+            {
+                "name": "Hair Dryer",
+              "Amper": 7
+            }
+          ],
+          "tPower": 20
+        }
+      ]
+    },
+    {
+        "Name": "Second Floor",
+      "rooms": [
+        {
+            "Name": "Office",
+          "Consumer": [
+            {
+                "name": "Computer",
+              "Amper": 2
+            },
+            {
+                "name": "Printer",
+              "Amper": 1
+            },
+            {
+                "name": "Lighting",
+              "Amper": 2
+            },
+            {
+                "name": "Air Conditioner",
+              "Amper": 2
+            },
+            {
+                "name": "Air Conditioner",
+              "Amper": 1
+            },
+            {
+                "name": "Lighting",
+              "Amper": 2
+            },
+            {
+                "name": "Lighting",
+              "Amper": 2
+            }
+          ],
+          "tPower": 12
+        }
+      ]
+    }
+  ]
+}
+
 
 */

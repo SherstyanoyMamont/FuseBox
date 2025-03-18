@@ -1,18 +1,17 @@
-﻿using FuseBox.App.Models;
-using FuseBox.App.Models.BaseAbstract;
+﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using System.Text.Json.Serialization;
 
-namespace FuseBox
+namespace FuseBox.App.Models
 {
     public class Connection : BaseEntity
     {
-        public Cable Cable { get; set; }
-        public Position CabelWay { get; set; }
+        public Cable? Cable { get; set; }
+        public Position? CabelWay { get; set; }
 
-
-        // Связь с FuseBoxUnit
-        public int FuseBoxUnitId6 { get; set; }
-        public FuseBoxUnit FuseBoxUnit { get; set; }
+        public int FuseBoxUnitId { get; set; }
+        [JsonIgnore]
+        public FuseBoxUnit? FuseBoxUnit { get; set; }
 
         public Connection(Cable cable, Position cabelWay)
         {

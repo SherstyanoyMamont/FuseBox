@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace FuseBox
+namespace FuseBox.App.Models.DTO.ConfugurationDTO
 {
     // Grouping by floors
-    public class FloorGrouping : BaseEntity
+    public class FloorGroupingDTO : BaseEntity
     {
         [Required(ErrorMessage = "Required field")]
         public bool IndividualFloorGrouping { get; set; }
@@ -13,14 +13,9 @@ namespace FuseBox
         [Required(ErrorMessage = "Required field")]
         public bool SeparateUZOPerFloor { get; set; }
 
-        // Связь с проектом
-        public int ProjectId { get; set; }
-        [JsonIgnore]
-        public Project? Project { get; set; }
+        public FloorGroupingDTO() { }
 
-        public FloorGrouping() { }
-
-        public FloorGrouping(bool individualFloorGrouping, bool separeteUzoPerFloor)
+        public FloorGroupingDTO(bool individualFloorGrouping, bool separeteUzoPerFloor)
         {
             IndividualFloorGrouping = individualFloorGrouping;
             SeparateUZOPerFloor = separeteUzoPerFloor;

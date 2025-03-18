@@ -7,21 +7,23 @@ namespace FuseBox
 {
     public class Component : BaseElectrical, IPricedComponent // Abstract?
     {
-        // public static int _idCounter = 0; // Static counter for all objects of this class
+        public int SerialNumber { get; set; } // Serial number of the component
         public decimal Price { get; set; }
 
         // !!! Скрытые списки разьемов
         [JsonIgnore]
         [JsonProperty(Order = 8)]
 
-        public List<Port> Ports = new List<Port>();
+        public List<Port>? Ports = new List<Port>();
 
         [JsonProperty(Order = 5)]
         public int Slots { get; set; }
 
-        // Связь с FuseBoxUnit
-        public int FuseBoxUnitId3 { get; set; }
-        public FuseBoxUnit FuseBoxUnit { get; set; }
+
+        //Связь с группой компонентов
+        public int FuseBoxComponentGroupId { get; set; }
+        [JsonIgnore]
+        public FuseBoxComponentGroup? FuseBoxComponentGroup { get; set; }
 
         public Component(string name, int amper, int slots, decimal price, List<Port> ports)
         {

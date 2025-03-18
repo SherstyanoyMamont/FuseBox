@@ -6,7 +6,7 @@ namespace FuseBox
     public class EmptySlot : Component           // изменил с internal на public для тестов
     {
         [JsonProperty(Order = 4)]
-        public int Slots { get; set; }
+        public new int Slots { get; set; }
 
         public EmptySlot(int slots)
         {

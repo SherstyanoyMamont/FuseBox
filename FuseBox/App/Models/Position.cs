@@ -1,4 +1,5 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
+using System.Text.Json.Serialization;
 
 namespace FuseBox.App.Models
 {
@@ -8,8 +9,9 @@ namespace FuseBox.App.Models
         public int IndexFinish { get; set; }
 
         // Связь с Connection
-        public int ConnectionId { get; set; }
-        public Connection Connection { get; set; }
+        public int ConnectionPositionId { get; set; }
+        [JsonIgnore]
+        public Connection? Connection { get; set; }
 
         public Position() { }
 

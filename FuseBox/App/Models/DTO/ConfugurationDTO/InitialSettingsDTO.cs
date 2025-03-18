@@ -7,7 +7,7 @@ namespace FuseBox
 {
     namespace FuseBox
     {
-        public class InitialSettings : BaseEntity
+        public class InitialSettingsDTO : BaseEntity
         {
             [AllowedValues(1, 3, ErrorMessage = "PhasesCount only 1 or 3")]
             public int PhasesCount { get; set; } // 1 or 3
@@ -24,15 +24,10 @@ namespace FuseBox
             [Range(0, 2, ErrorMessage = "Power Coefficient from 0 to 2")]
             public int PowerCoefficient { get; set; } // 0.5, 0.9, 1.0
 
-            // Связь с проектом
-            public int ProjectId { get; set; }
-            [JsonIgnore]
-            public Project? Project { get; set; }
 
+            public InitialSettingsDTO() { }
 
-            public InitialSettings() { }
-
-            public InitialSettings(int phasesCount, int shieldWidth)
+            public InitialSettingsDTO(int phasesCount, int shieldWidth)
             {
                 PhasesCount = phasesCount;
                 ShieldWidth = shieldWidth;

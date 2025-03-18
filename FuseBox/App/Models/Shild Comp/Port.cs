@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {
@@ -26,11 +27,18 @@ namespace FuseBox
     public class Port : BaseEntity
     {
         public int connectionsCount {  get; set; }
-        public string portOut { get; set; }
-        public string PortIn { get; set; }
+        public string? portOut { get; set; }
+        public string? PortIn { get; set; }
 
+        // Связь с Cable
+        public int CableId { get; set; }
+        [JsonIgnore]
+        public Cable? cableType;
 
-        public Cable cableType;
+        // Связь с Component
+        public int ComponentId { get; set; }
+        [JsonIgnore]
+        public Component? Component { get; set; }
 
         public Port(PortOutEnum connectorType, Cable cableType)
         {

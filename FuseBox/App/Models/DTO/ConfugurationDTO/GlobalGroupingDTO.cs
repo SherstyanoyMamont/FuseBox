@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace FuseBox
+namespace FuseBox.App.Models.DTO.ConfugurationDTO
 {
     // Grouping lines (default: "By rooms")
-    public class GlobalGrouping : BaseEntity
+    public class GlobalGroupingDTO : BaseEntity
     {
         [Required(ErrorMessage = "Required field")]
         [Range(0, 5, ErrorMessage = "Sockets from 0 to 5")]
@@ -19,16 +19,12 @@ namespace FuseBox
         [Range(0, 5, ErrorMessage = "Conditioners from 0 to 5")]
         public int Conditioners { get; set; }
 
-        // Связь с проектом
-        public int ProjectId { get; set; }
-        [JsonIgnore]
-        public Project? Project { get; set; }
-        public GlobalGrouping(int sockets, int lighting, int conditioners)
+        public GlobalGroupingDTO(int sockets, int lighting, int conditioners)
         {
-            this.Sockets = sockets;
-            this.Lighting = lighting;
-            this.Conditioners = conditioners;
+            Sockets = sockets;
+            Lighting = lighting;
+            Conditioners = conditioners;
         }
-        public GlobalGrouping() { }
+        public GlobalGroupingDTO() { }
     }
 }

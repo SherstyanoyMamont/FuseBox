@@ -1,15 +1,17 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {
     public class FuseBoxComponentGroup : BaseEntity
     {
         // Компоненты в группе
-        public List<BaseElectrical> Components { get; set; } = new();
+        public List<Component> Components { get; set; } = new(); // !!!
 
         // Связь с FuseBox
-        public int FuseBoxUnit5 { get; set; }
-        public FuseBoxUnit FuseBox { get; set; }
+        public int FuseBoxUnitId { get; set; }
+        [JsonIgnore]
+        public FuseBoxUnit? FuseBoxUnit { get; set; }
 
     }
 }

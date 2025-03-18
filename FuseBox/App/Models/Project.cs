@@ -3,6 +3,7 @@ using FuseBox.App.Models.BaseAbstract;
 using FuseBox;
 using System.Text.Json.Serialization;
 using FuseBox.FuseBox;
+using FuseBox.App.Models;
 
 namespace FuseBox
 {
@@ -14,6 +15,11 @@ namespace FuseBox
         public FuseBoxUnit FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
+
+        // Обратная связь с User
+        public int UserId { get; set; }
+        [JsonIgnore]
+        public User? User { get; set; }
 
         public Project()
         {

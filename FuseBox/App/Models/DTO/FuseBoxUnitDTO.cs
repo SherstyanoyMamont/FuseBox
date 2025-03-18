@@ -1,14 +1,11 @@
 ﻿using FuseBox.App.Interfaces;
-using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace FuseBox
+namespace FuseBox.App.Models.DTO
 {
-    public class FuseBoxUnit : BaseEntity, IPricedComponent
+    public class FuseBoxUnitDTO : BaseEntity, IPricedComponent
     {
         [Required(ErrorMessage = "Required field")]
         public bool MainBreaker { get; set; }
@@ -55,33 +52,26 @@ namespace FuseBox
 
 
 
-        //// Список подключенных к контактору устройств
+        // Список подключенных к контактору устройств
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
-        // Это надо оптимизировать
-        public List<FuseBoxComponentGroup> Components { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroupDTO> Components { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
         {
-            new FuseBoxComponentGroup(),
+            new FuseBoxComponentGroupDTO(),
         };
 
         //[NotMapped]
-        //Список не отключаемых устройств
-        public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
+        // Список не отключаемых устройств
+        //public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
         //public List<Component> Electricals { get; set; } = new(); // Базовый список 
 
-        public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+        public List<ConnectionDTO> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
 
 
-        // Связь с проектом
-        public int ProjectId { get; set; }
-        [JsonIgnore]
-        public Project? Project { get; set; }
+        public FuseBoxUnitDTO() { }
 
-
-        public FuseBoxUnit() { }
-
-        public FuseBoxUnit(bool mainBreaker, bool main3PN, bool surgeProtection, bool loadSwitch2P,
+        public FuseBoxUnitDTO(bool mainBreaker, bool main3PN, bool surgeProtection, bool loadSwitch2P,
                        bool modularContactor, bool railMeter, bool fireUzo, bool voltageRelay,
                        bool threePRelay, bool railSocket, bool nDiscLine, bool loadSwitch, bool crossModule)
         {

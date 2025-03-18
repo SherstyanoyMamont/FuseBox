@@ -11,17 +11,18 @@ using FuseBox;
 using FuseBox.App.Controllers;
 using Microsoft.EntityFrameworkCore;
 using FuseBox.App.DataBase;
+using System.Configuration;
+using Microsoft.Extensions.Options;
+using FuseBox.Controllers;
+using AutoMapper;
 
 
 namespace FuseBox
 {
     internal class Program
     {
-        //public static void Main(string[] args)
         static void Main(string[] args)
         {
-            
-
             // testing switch
             if (true)
             {
@@ -33,13 +34,29 @@ namespace FuseBox
                 //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
 
                 //Конфигурации сервисов
-                builder.Services.AddControllers();
+                builder.Services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+                    });
+
+                // Добавляем AutoMapper
+                //CreateHostBuilder(args).Build().Run();
+                builder.Services.AddAutoMapper(typeof(FuseBoxUnitProfile).Assembly);
+
+                
+
+
                 builder.Services.AddDbContext<AppDbContext>(options =>
                     options.UseMySql(
                         builder.Configuration.GetConnectionString("DefaultConnection"),
                         new MySqlServerVersion(new Version(8, 0, 41))
                     )
+                    .EnableSensitiveDataLogging() // <<< добавляем эту строку!
+                    .EnableDetailedErrors() // подробные ошибки EF Core
+                    .LogTo(Console.WriteLine, LogLevel.Information)
                 );
+
 
                 // Добавляет поддержку контроллеров к фукнционалу веб-приложения
                 // Контроллеры - это классы, которые отвечают за обработку входящих HTTP запросов
@@ -125,6 +142,13 @@ namespace FuseBox
                     ""CrossModule"": true,
                     ""DINLines"": 1,
                     ""Price"": 1000,
+                    ""Contactor"": [
+                      {
+                        ""id"": 1,
+                        ""name"": ""TV"",
+                        ""Amper"": 25,
+                      }
+                    ],
                   },
                     ""floors"": [
                       {
