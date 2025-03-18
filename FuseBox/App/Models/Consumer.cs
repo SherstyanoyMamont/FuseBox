@@ -9,10 +9,10 @@ namespace FuseBox
         public int RoomId { get; set; }
 
         public Consumer() { }
-        public Consumer(string name, int maxLoad)        // Для тестов
+        public Consumer(string name, int power)        // Для тестов
         {
             this.Name = name;
-            this.Amper = maxLoad;
+            this.Amper = power;
         }
     }
 }

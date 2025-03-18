@@ -9,6 +9,7 @@ namespace FuseBox
 {
     public class RCD : Component
     {
+        [JsonProperty(Order = 9)]
         public List<Component> Electricals { get; set; } = new List<Component>();
 
         [JsonProperty(Order = 8)]

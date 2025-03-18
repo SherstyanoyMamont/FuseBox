@@ -1,7 +1,11 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Xml.Linq;
+using ZstdSharp.Unsafe;
 
 namespace FuseBox
 {
@@ -11,11 +15,14 @@ namespace FuseBox
         public List<Consumer> Socket = new();
         public List<Consumer> AirConditioner = new();
         public List<Consumer> HeatedFloor = new();
-        public List<Fuse> AVFuses = new();
+        public List<Fuse> AVFuses = new();       
         public List<RCD> uzos;
+        public List<Fuse> contactorFuses = new();
+        public List<RCD> contactorRCDs;
 
         public Project project;
         public double countOfRCD;
+        public double countOfContactorRCD;
 
         // Делаем запас в два раза
         public double RCD16A = 8.00;
@@ -24,10 +31,11 @@ namespace FuseBox
         public double AVPerRCD = 6.00;
         public double RCDPerPhases = 3.00;
 
-        public DistributionService(Project project, List<RCD> uzos)
+        public DistributionService(Project project, List<RCD> uzos, List<RCD> contactorRCDs)
         {
             this.project = project;
             this.uzos = uzos;
+            this.contactorRCDs = contactorRCDs;
         }
 
         // Логика распределения модулей по порядку
@@ -146,7 +154,7 @@ namespace FuseBox
 
         }
 
-        public void DistributeRCDFromLoad() 
+        public void DistributeRCDFromLoad()
         {
             double TAmper = project.CalculateTotalPower();
 
@@ -170,7 +178,8 @@ namespace FuseBox
             {
                 Distribute();
                 DistributeFusesToRCDs();
-                DistributePerPhases();
+                DistributePerPhases(uzos, countOfRCD);
+                CreateContactorFusesAndRCD();
             }
         }
 
@@ -189,7 +198,7 @@ namespace FuseBox
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
                 }
 
-                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))        //&& uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)
+                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))
                 {
                     uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
                     countOfRCD++;
@@ -209,12 +218,12 @@ namespace FuseBox
             }
         }
 
-        public void DistributePerPhases()
+        public void DistributePerPhases(List<RCD> rcdList, double rcdCount)      //  Распределить УЗО контактора по фазам
         {
             // Массив с нагрузкой на 3 фазы
             var phases = new int[3];
 
-            for (int i = 0; i < countOfRCD; i++)
+            for (int i = 0; i < rcdCount; i++)
             {
                 // Найдем фазу с наименьшей текущей нагрузкой
                 int min = phases.Min();
@@ -227,50 +236,84 @@ namespace FuseBox
                 }
                 else if (phaseIndex == 1)
                 {
-                    uzos[i].Ports[0].portOut = "Phase2";
-                    uzos[i].Ports[0].cableType.Сolour = "Orange";
+                    rcdList[i].Ports[0].portOut = "Phase2";
+                    rcdList[i].Ports[0].cableType.Сolour = "Orange";
                 }
                 else
                 {
-                    uzos[i].Ports[0].portOut = "Phase3";
-                    uzos[i].Ports[0].cableType.Сolour = "Grey";
+                    rcdList[i].Ports[0].portOut = "Phase3";
+                    rcdList[i].Ports[0].cableType.Сolour = "Grey";
                 }
                 // Добавим нагрузку к фазе с минимальной нагрузкой
-                phases[phaseIndex] = phases[phaseIndex] + Convert.ToInt32(uzos[i].TotalLoad);
+                phases[phaseIndex] = phases[phaseIndex] + Convert.ToInt32(rcdList[i].TotalLoad);
             }
-        }
+        }   
 
         public void DistributeFusesToRCDs()
         {
-            List<RCD> filledRCDs = new List<RCD>();
-
             // Сортируем УЗО по их текущей нагрузке, чтобы равномерно распределять
-            var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)
+            var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)         
 
             foreach (var breaker in AVFuses)
             {
                 // Вычисляем мощность автомата как сумму всех его потребителей
-                double breakerLoad = breaker.Electricals.Sum(consumer => consumer.Amper);
-
-                // Находим УЗО с минимальной текущей нагрузкой
-                var targetUzo = uzoLoads.OrderBy(uz => uz.Value).First().Key;
-
-                // Удаляем УЗО из списка, если у него уже 5 выключателей
-                if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)
-                {
-                    filledRCDs.Add(targetUzo);
-                    uzoLoads.Remove(targetUzo);
-                    continue;
-                }
-
-                // Добавляем автомат к выбранному УЗО
-                targetUzo.Electricals.Add(breaker);
-                targetUzo.TotalLoad = targetUzo.TotalLoad + breaker.GetTotalLoad();
-                targetUzo.Slots++;                                     // Увеличиваем количество слотов
-                //targetUzo.OrderBreakersId();                         // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
-                // Увеличиваем нагрузку для этого УЗО
-                uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
+                double breakerLoad = breaker.Electricals.Sum(consumer => consumer.Amper);                                                              
+                FindLeastLoadedRCD(uzoLoads, breaker, breakerLoad);               
             }
+        }
+        // Метод создаёт автоматы на основе потребителей из ContactorConsumers во fuseBox,
+        // создаёт под них УЗО и распределяет автоматы, созданные под них
+        public void CreateContactorFusesAndRCD()
+        {
+            foreach (var consumer in project.FuseBox.ContactorConsumers)                    // Создаём автоматы контактора
+            {
+                contactorFuses.Add(new Fuse("AV", 16, 1, 10, new List<Consumer> { consumer }));
+            }
+
+            CreateRCDForContactor();                                                       // Создаём УЗО контактора
+            var contactorRCDsLoads = contactorRCDs.ToDictionary(rcd => rcd, rcd => 0);     // Создаем словарь: УЗО -> текущая мощность (нагрузка)
+
+            foreach (var fuse in contactorFuses)                                           // Распределяем равновмерно автоматы по УЗО
+            {
+                double fuseLoad = fuse.Electricals.Sum(consumer => consumer.Amper);
+                FindLeastLoadedRCD(contactorRCDsLoads, fuse, fuseLoad);
+            }
+            DistributePerPhases(contactorRCDs, countOfContactorRCD);                       // Распределяем равномерно УЗО по фазам
+        }
+
+        public void CreateRCDForContactor()
+        {
+            int contactorFuseCount = contactorFuses.Count();             // Считаем кол-во автоматов подключенные к контактором
+
+            // Считаем сколько УЗО будет подключено к контактору
+            countOfContactorRCD = (int)Math.Ceiling(contactorFuseCount / RCD.LimitOfConnectedFuses);
+
+            // Создаём УЗО под контакторы
+            for (int i = 0; i < countOfContactorRCD; i++)
+            {
+                contactorRCDs.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
+            }
+        }
+
+        public void FindLeastLoadedRCD(Dictionary<RCD, int> uzoDic, Fuse breaker, double breakerLoad)
+        {
+            RCD targetUzo = uzoDic.OrderBy(uz => uz.Value).First().Key;
+
+            // Удаляем УЗО из списка, если у него уже 5 выключателей
+            if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)   // Возможно баг - ранний переход на следующую итерацию цикла
+            {
+                uzoDic.Remove(targetUzo);
+                // Ищем новый наименее нагруженное УЗО
+                targetUzo = uzoDic.OrderBy(uz => uz.Value).First().Key;
+            }
+
+            // Добавляем автомат к выбранному УЗО
+            targetUzo.Electricals.Add(breaker);
+            targetUzo.TotalLoad = targetUzo.TotalLoad + breaker.GetTotalLoad();
+            targetUzo.Slots++;     // Увеличиваем количество слотов
+
+            // Увеличиваем нагрузку для этого УЗО
+            uzoDic[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
         }
     }
 }

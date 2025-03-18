@@ -19,11 +19,9 @@ namespace FuseBox
     {
         //public static void Main(string[] args)
         static void Main(string[] args)
-        {
-            
-
+        {           
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -114,7 +112,7 @@ namespace FuseBox
                     ""Main3PN"": false,
                     ""SurgeProtection"": true,
                     ""LoadSwitch2P"": true,
-                    ""ModularContactor"": false,
+                    ""ModularContactor"": true,
                     ""RailMeter"": true,
                     ""FireUZO"": true,
                     ""VoltageRelay"": true,
@@ -125,6 +123,45 @@ namespace FuseBox
                     ""CrossModule"": true,
                     ""DINLines"": 1,
                     ""Price"": 1000,
+                    ""ContactorConsumers"":[
+                     {
+                       ""id"": 0,
+                       ""name"": ""TV"",
+                       ""Amper"": 4
+                       
+                     },
+                     {
+                       ""id"": 1,
+                       ""name"": ""TV"",
+                       ""Amper"": 6
+                     },
+                     {
+                       ""id"": 2,
+                       ""name"": ""Air Conditioner"",
+                       ""Amper"": 12
+                     },
+                     {
+                       ""id"": 3,
+                       ""name"": ""Lighting"",
+                       ""Amper"": 5
+                     },
+                     {
+                       ""id"": 4,
+                       ""name"": ""PC"",
+                       ""Amper"": 3
+                     },
+                     {
+                       ""id"": 5,
+                       ""name"": ""Heater"",
+                       ""Amper"": 7
+                     },
+                     {
+                       ""id"": 6,
+                       ""name"": ""Air Conditioner"",
+                       ""Amper"": 8
+                     },
+                    ],
+                    
                   },
                     ""floors"": [
                       {
@@ -303,3 +340,56 @@ namespace FuseBox
         }
     }
 }
+
+//""Contactor"":[
+//                     {
+//                       ""id"": 0,
+//                       ""name"": ""TV"",
+//                       ""Amper"": 1
+                       
+//                     }
+//                    ],
+
+//""Contactor"":[
+// {
+//   ""id"": 1,
+//   ""name"": ""TV"",
+//   ""Amper"": 1,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 2,
+//   ""name"": ""Air Conditioner"",
+//   ""Amper"": 8,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 3,
+//   ""name"": ""Lighting"",
+//   ""Amper"": 1,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 4,
+//   ""name"": ""Refrigerator"",
+//   ""Amper"": 3,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 5,
+//   ""name"": ""Microwave"",
+//   ""Amper"": 5,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 6,
+//   ""name"": ""Oven"",
+//   ""Amper"": 7,
+//   ""IsConnectedToContactor"": true,
+// },
+// {
+//    ""id"": 7,
+//   ""name"": ""Oven"",
+//   ""Amper"": 7,
+//   ""IsConnectedToContactor"": true,
+// }

@@ -22,13 +22,14 @@ namespace FuseBox
         //public List<RCD> uzos = new();
         public List<Port> ports;
         public List<RCD> uzos = new();
+        public List<RCD> contactorRCDs = new();
 
         public Project project;
         public FuseBoxUnit fuseBox;
 
         public decimal WireSection;
-        
-        public ConfigurationService(Project Project) 
+
+        public ConfigurationService(Project Project)
         {
             project = Project;
             fuseBox = project.FuseBox;
@@ -36,19 +37,21 @@ namespace FuseBox
         }
 
         // Создаем/Модифицируем объект проекта
-        public void GenerateConfiguration() // Метод возвращает объект ProjectConfiguration
+        public void GenerateConfiguration()         // Метод возвращает объект ProjectConfiguration
         {
-            ValidateInitialSettings();      // Проверка первичных данных***
+            ValidateInitialSettings();              // Проверка первичных данных***
 
-            CalculateWireCrossSection();    // Расчет сечения провода по мощности
+            CalculateWireCrossSection();            // Расчет сечения провода по мощности
 
-            ConfigureShield();              // Входим в расчеты 1 или 3 фазы
+            ConfigureShield();                      // Входим в расчеты 1 или 3 фазы
 
-            Distribute();                   // Логика распределения потребителей и УЗО от нагрузки
+            Distribute();                           // Логика распределения потребителей и УЗО от нагрузки
 
-            CreateConnections();            // Создаем соединения
+            CreateConnections();                    // Создаем соединения
 
-            ShieldByLevel();                // Компонуем щит по уровням
+            AddAndConnectContactorComponents();     // Возвращаем все связанные с контактором компоненты в список и создаём соединения
+
+            ShieldByLevel();                        // Компонуем щит по уровням
 
         }
         // Логика конфигурации устройств...
@@ -57,8 +60,8 @@ namespace FuseBox
             List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
 
             var ports2x2 = SelectPorts(0, 1, 6, 7);
-            var ports2   = SelectPorts(1, 7);
-            var ports2x2i= SelectPorts(1, 3, 5, 7);
+            var ports2 = SelectPorts(1, 7);
+            var ports2x2i = SelectPorts(1, 3, 5, 7);
             var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
             var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
             var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
@@ -88,10 +91,10 @@ namespace FuseBox
                 if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
                 if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports1_8)); }
                 if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
-                {                                        
+                {
                     shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
                     shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
-                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));                   
+                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));
                 }
                 if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
@@ -101,7 +104,7 @@ namespace FuseBox
         }
         public void Distribute()
         {
-            DistributionService distributionService = new(project, uzos);
+            DistributionService distributionService = new(project, uzos, contactorRCDs);
 
             distributionService.DistributeOfConsumers(); // Логика распределения потребителей
             distributionService.DistributeRCDFromLoad(); // Логика распределения УЗО от нагрузки
@@ -159,7 +162,7 @@ namespace FuseBox
                 if (project.CalculateTotalPower() <= wire.Value)
                     WireSection = (decimal)wire.Key;
 
-                    //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
+                //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
             }
 
             // Если ток выше максимального в таблице — требуется индивидуальный расчёт
@@ -175,9 +178,9 @@ namespace FuseBox
         public void CreateConnections()
         {
             List<Connection> сableConnections = fuseBox.CableConnections;
-
             // Добавляем ID ко всем компонентам
             for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].Id = i + 1; }
+            PreparationForCreateConnection(сableConnections);
 
             for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
             {
@@ -187,35 +190,136 @@ namespace FuseBox
                 {
                     Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
 
-                    if (currentPort.portOut == null)                                   // если порт не выходящий то пропускаем 
-                        continue;
+                    if ((currentComp.Name == "VoltageRelay3" || currentComp.Name == "VoltageRelay") && currentPort.portOut == "Zero")
+                        currentPort.portOut = null;
+
+                    if (currentPort.portOut == null) continue;                         // если порт не выходящий то пропускаем 
 
                     for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
                     {
                         Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
-
-
-                        // Если у компонента есть такой же тип выхода, то создаем подключение
-                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?
+                        if (currentComp.Name == nextModule.Name)                       // Ищем соединения между УЗО
                         {
-                            //AddConnection(сableConnections, module.Id, currentPort, n);
+                            if (currentPort.portOut == "Zero") { break; }              // УЗО не должны создавать соединение нуля с другими УЗО
+                            if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Создаём фазовые соединения
+                            {
+                                Position connectionIds = new Position(currentComp.Id, shieldModuleSet[n].Id);
+                                сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+                                break;
+                            }
+                        }
 
-                            Position connectionIds = new Position(currentComp.Id, n + 1);
+                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut))    // Если у компонента есть такой же тип выхода, то создаем подключение
+                        {
+                            Position connectionIds = new Position(currentComp.Id, shieldModuleSet[n].Id);
                             сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-
-                            //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
-                            break;                               // Берем следующий выходной разьем
+                            break;
                         }
                     }
                 }
             }
         }
-
         public void ValidateInitialSettings()
         {
 
         }
-        //private void CalculateConnectionCount(){}
+
+        // Возвращаем контактор в список, добавляем в него все УЗО контактора и создаём соединения
+        private void AddAndConnectContactorComponents()
+        {
+            if (!fuseBox.ModularContactor) { return; }
+            else
+            {
+                shieldModuleSet.Insert(fuseBox.Contactor.Id - 1, fuseBox.Contactor);                             // Возвращаем контактор в список
+                AddAndConnectContactorRCD();
+                ConnectComponentsToContactor();
+            }
+        }
+        private void AddAndConnectContactorRCD()
+        {
+            List<Connection> сableConnections = fuseBox.CableConnections;
+            var lastId = shieldModuleSet[^1].Id;
+            foreach (var rcd in contactorRCDs)                                                              // Создаём соединения между УЗО и контактором
+            {
+                rcd.Id = lastId + 1;                                                                        // Создаём ID для УЗО
+                lastId++;
+                shieldModuleSet.Add(rcd);                                                                   // Добавляем УЗО контактора в общий список
+
+                for (int i = 0; i < rcd.Ports.Count; i++)                                                   // Создаём соединение между УЗО и контактором
+                {
+                    var currentPort = rcd.Ports[i];
+                    Position connectionIds = new Position(fuseBox.Contactor.Id, rcd.Id);
+                    сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+                }
+            }
+        }
+        private void ConnectComponentsToContactor()
+        {
+            List<Connection> сableConnections = fuseBox.CableConnections;
+            for (int component = 0; component < shieldModuleSet.Count; component++)                          // Создаём соединения между контактором и Реле/Противопож Узо
+
+            {
+                if (shieldModuleSet[component].Name == "RCDFire")
+                {
+                    shieldModuleSet[component].Ports[7].portOut = "Zero";                                   // !!! С какого-то хуя после выхода с CreateConnection у fireUzo пропадает этот порт
+                    for (int port = 0; port < shieldModuleSet[component].Ports.Count; port++)
+                    {
+                        var currentPort = shieldModuleSet[component].Ports[port];
+                        if (currentPort.portOut == null)
+                            continue;
+
+                        Position connectionIds = new Position(shieldModuleSet[component].Id, fuseBox.Contactor.Id);
+                        сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+                    }
+                }
+                else if (shieldModuleSet[component].Name == "ThreePRelay" ||
+                         shieldModuleSet[component].Name == "VoltageRelay1" ||
+                         shieldModuleSet[component].Name == "VoltageRelay2" ||
+                         shieldModuleSet[component].Name == "VoltageRelay3")
+                {
+                    for (int port = 0; port < shieldModuleSet[component].Ports.Count; port++)
+                    {
+                        var currentPort = shieldModuleSet[component].Ports[port];
+                        if (currentPort.portOut == null || currentPort.PortIn == "Zero" || currentPort.portOut == "Zero")
+                            continue;
+
+                        Position connectionIds = new Position(shieldModuleSet[component].Id, fuseBox.Contactor.Id);
+                        сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+                    }
+                }
+            }
+        }
+        private void PreparationForCreateConnection(List<Connection> connectionList)
+        {
+            var rcdList = new List<Component>();
+            int crossBlockIndex = 0;
+
+            for (int i = 0; i < shieldModuleSet.Count; i++)
+            {
+                if (shieldModuleSet[i].Name == "ModularContactor")                                                                  //Находим контактор, удаляем из общего списка и сохраняем его в fuseBox.ContactorComponents
+                { 
+                    RemoveModularContactor(i);
+                    i--;
+                }                                              
+                else if (shieldModuleSet[i].Name == "CrossBlock") { crossBlockIndex = i; }                                          // Записываем индекс кроссблока в переменную
+                else if (shieldModuleSet[i].Name == "RCD") { rcdList.Add(shieldModuleSet[i]); }                                     // Копируем обычные УЗО в отдельный список                
+            }
+            ZEROConnectionsBtwRCDs(rcdList, connectionList, crossBlockIndex);
+        }
+        private void RemoveModularContactor(int index)
+        {
+            fuseBox.Contactor = shieldModuleSet[index] as Contactor;
+            shieldModuleSet.Remove(shieldModuleSet[index]);
+        }
+        private void ZEROConnectionsBtwRCDs(List<Component> rcdList, List<Connection> connectionList, int crossBlockIndex)
+        {
+            for (int i = 0; i < rcdList.Count; i++)                                                                                 // Вручную создаём соединения нуля между кроссблоком и УЗО
+            {
+                if (i == 0) continue;                                                                                               // Пропускаем первое УЗО (уже создано соединение)
+                Position connectionIds = new Position(shieldModuleSet[crossBlockIndex].Id, rcdList[i].Id);
+                connectionList.Add(new Connection(new Cable(ConnectorColour.Blue, 0), connectionIds));
+            }
+        }
     }
 }
 

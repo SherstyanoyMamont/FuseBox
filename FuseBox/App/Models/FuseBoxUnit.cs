@@ -51,20 +51,18 @@ namespace FuseBox
         public decimal Price { get; set; } // $
 
         // Список не отключаемых устройств
-        public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
+        public List<Component> CriticalLine { get; set; } = new();                          // Нужно добавить устройства с фронтэнд-части
 
         // Список подключенных к контактору устройств
-        public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
-        
-        // Это надо оптимизировать
-        public List<FuseBoxComponentGroup> Components { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<Consumer> ContactorConsumers { get; set; } = new();                     // Список потребителей подключенных к контактору (приходят с фронт-энд)
+        //public List<Component> ContactorComponents { get; set; } = new();                   // Список компонентов, который подключены к контактору                                                                    
+        public Contactor Contactor { get; set; }
+        public List<FuseBoxComponentGroup> Components { get; set; } = new()                 // Итоговый список компонентов щита. Создана первая строка для работы логики комплектования щитовой
         {
             new FuseBoxComponentGroup(),
         }; 
 
-        public List<Component> Electricals { get; set; } = new(); // Базовый список 
-
-        public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+        public List<Connection> CableConnections { get; set; } = new();                     // Лучше перенести это поле в Components
 
         // Связь с проектом
         public int ProjectId { get; set; }
