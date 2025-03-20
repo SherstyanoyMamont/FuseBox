@@ -55,7 +55,7 @@ namespace FuseBox.App.Models.DTO
         // Список подключенных к контактору устройств
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
-        public List<FuseBoxComponentGroupDTO> Components { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroupDTO> ComponentGroups { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
         {
             new FuseBoxComponentGroupDTO(),
         };
@@ -71,25 +71,6 @@ namespace FuseBox.App.Models.DTO
 
         public FuseBoxUnitDTO() { }
 
-        public FuseBoxUnitDTO(bool mainBreaker, bool main3PN, bool surgeProtection, bool loadSwitch2P,
-                       bool modularContactor, bool railMeter, bool fireUzo, bool voltageRelay,
-                       bool threePRelay, bool railSocket, bool nDiscLine, bool loadSwitch, bool crossModule)
-        {
 
-            MainBreaker = mainBreaker;
-            Main3PN = main3PN;
-            SurgeProtection = surgeProtection;
-            LoadSwitch2P = loadSwitch2P;
-            ModularContactor = modularContactor;
-            RailMeter = railMeter;
-            FireUZO = fireUzo;
-            VoltageRelay = voltageRelay;
-            ThreePRelay = threePRelay;
-            RailSocket = railSocket;
-            NDiscLine = nDiscLine;
-            LoadSwitch = loadSwitch;
-            CrossModule = crossModule;
-
-        }
     }
 }

@@ -10,7 +10,7 @@ namespace FuseBox.App.Models.DTO.ConfugurationDTO
         public string PortIn { get; set; }
 
 
-        public CableDTO cableType;
+        public CableDTO? cableType;
 
         public PortDTO(PortOutEnum connectorType, CableDTO cableType)
         {

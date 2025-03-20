@@ -9,11 +9,6 @@ namespace FuseBox.App.Models.DTO
 
         public PositionDTO() { }
 
-        public PositionDTO(int indexStart, int indexFinish)
-        {
-            IndexStart = indexStart;
-            IndexFinish = indexFinish;
-        }
 
 
         // public override string ToString() => $"List №{ListIndex}, Object №{ObjectIndex}";

@@ -11,6 +11,9 @@ using FuseBox.App.Models;
 using AutoMapper;
 using System;
 using FuseBox.App.Models.DTO.ConfugurationDTO;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Components;
+using FuseBox.App.Models.Shild_Comp;
 
 
 namespace FuseBox.Controllers
@@ -34,27 +37,23 @@ namespace FuseBox.Controllers
     {
         public ProjectProfile()
         {
-            //  DTO to Entity
+            // ==============================
+            //        DTO -> Entity
+            // ==============================
 
             CreateMap<ProjectDTO, Project>()
-                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore()) // Или маппишь, если надо
                 .ForMember(dest => dest.FuseBox, opt => opt.MapFrom(src => src.FuseBox))
                 .ForMember(dest => dest.FloorGrouping, opt => opt.MapFrom(src => src.FloorGrouping))
                 .ForMember(dest => dest.GlobalGrouping, opt => opt.MapFrom(src => src.GlobalGrouping))
                 .ForMember(dest => dest.Floors, opt => opt.MapFrom(src => src.Floors));
 
             CreateMap<FuseBoxUnitDTO, FuseBoxUnit>()
-                .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components))
+                .ForMember(dest => dest.ComponentGroups, opt => opt.MapFrom(src => src.ComponentGroups))
                 .ForMember(dest => dest.CableConnections, opt => opt.MapFrom(src => src.CableConnections));
 
             CreateMap<FuseBoxComponentGroupDTO, FuseBoxComponentGroup>()
                 .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components));
-
-            CreateMap<ConnectionDTO, Connection>();
-
-            CreateMap<InitialSettingsDTO, InitialSettings>();
-            CreateMap<FloorGroupingDTO, FloorGrouping>();
-            CreateMap<GlobalGroupingDTO, GlobalGrouping>();
 
             CreateMap<FloorDTO, Floor>()
                 .ForMember(dest => dest.Rooms, opt => opt.MapFrom(src => src.Rooms));
@@ -64,7 +63,16 @@ namespace FuseBox.Controllers
 
             CreateMap<ConsumerDTO, Consumer>();
 
-            // Entity to DTO
+            CreateMap<ConnectionDTO, Connection>();
+            CreateMap<InitialSettingsDTO, InitialSettings>();
+            CreateMap<FloorGroupingDTO, FloorGrouping>();
+            CreateMap<GlobalGroupingDTO, GlobalGrouping>();
+            CreateMap<PositionDTO, Position>();
+            CreateMap<CableDTO, Cable>();
+
+            // ==============================
+            //        Entity -> DTO
+            // ==============================
 
             CreateMap<Project, ProjectDTO>()
                 .ForMember(dest => dest.FuseBox, opt => opt.MapFrom(src => src.FuseBox))
@@ -73,17 +81,11 @@ namespace FuseBox.Controllers
                 .ForMember(dest => dest.Floors, opt => opt.MapFrom(src => src.Floors));
 
             CreateMap<FuseBoxUnit, FuseBoxUnitDTO>()
-                .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components))
+                .ForMember(dest => dest.ComponentGroups, opt => opt.MapFrom(src => src.ComponentGroups))
                 .ForMember(dest => dest.CableConnections, opt => opt.MapFrom(src => src.CableConnections));
 
             CreateMap<FuseBoxComponentGroup, FuseBoxComponentGroupDTO>()
                 .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components));
-
-            CreateMap<Connection, ConnectionDTO>();
-
-            CreateMap<InitialSettings, InitialSettingsDTO>();
-            CreateMap<FloorGrouping, FloorGroupingDTO>();
-            CreateMap<GlobalGrouping, GlobalGroupingDTO>();
 
             CreateMap<Floor, FloorDTO>()
                 .ForMember(dest => dest.Rooms, opt => opt.MapFrom(src => src.Rooms));
@@ -92,11 +94,41 @@ namespace FuseBox.Controllers
                 .ForMember(dest => dest.Consumer, opt => opt.MapFrom(src => src.Consumer));
 
             CreateMap<Consumer, ConsumerDTO>();
+
+            CreateMap<Connection, ConnectionDTO>();
+            CreateMap<InitialSettings, InitialSettingsDTO>();
+            CreateMap<FloorGrouping, FloorGroupingDTO>();
+            CreateMap<GlobalGrouping, GlobalGroupingDTO>();
+            CreateMap<Introductory, IntroductoryDTO>();
+            CreateMap<Position, PositionDTO>();
+            CreateMap<Cable, CableDTO>();
+            CreateMap<Port, PortDTO>();
+            CreateMap<PortDTO, Port>();
+
+
+            // ==============================
+            //       Component Hierarchy
+            // ==============================
+
+            CreateMap<Component, ComponentDTO>()
+                .Include<Fuse, FuseDTO>()
+                .Include<RCD, RCDDTO>()
+                .Include<RCDFire, RCDFireDTO>()
+                .Include<Introductory, IntroductoryDTO>()
+                .Include<EmptySlot, EmptySlotDTO>()
+                .Include<Contactor, ContactorDTO>();
+
+            CreateMap<Fuse, FuseDTO>();
+            CreateMap<RCD, RCDDTO>();
+            CreateMap<RCDFire, RCDFireDTO>();
+            CreateMap<Introductory, IntroductoryDTO>();
+            CreateMap<EmptySlot, EmptySlotDTO>();
+            CreateMap<Contactor, ContactorDTO>();
         }
     }
 
     [ApiController]
-    [Route("")]
+    [Microsoft.AspNetCore.Components.Route("")]
     public class FuseBoxUnitsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -168,13 +200,39 @@ namespace FuseBox.Controllers
                     project.FuseBox = existingFuseBox;
                 }
 
+                ConfigurationService configurationService = new ConfigurationService(project);
+
+                configurationService.GenerateConfiguration();
+
 
                 ///////////////////////////////////////////////////////////////////////////////////////////////////
                 /// Схранение в базу и отправка во Фронт-энд
+                
+                foreach (var entry in _context.ChangeTracker.Entries())
+                {
+                    Console.WriteLine($"Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
+                }
 
-                // Сохранение в базу данных используя Сущности
-                _context.Projects.Add(project);
-                _context.SaveChanges();
+                _context.Connections.AddRange(project.FuseBox.CableConnections);
+                _context.ComponentGroups.AddRange(project.FuseBox.ComponentGroups);
+                //_context.Component.AddRange(project.FuseBox.ComponentGroups)
+
+                //var project2 = new Project { Name = "Проект" };
+
+                //var fuseBox = new FuseBoxUnit { /* ... */ };
+                //project2.FuseBox = fuseBox;
+
+                //var group = new FuseBoxComponentGroup { /* ... */ };
+                //group.FuseBoxUnit = fuseBox;
+                //fuseBox.ComponentGroups.Add(group);
+
+                //var component = new Component { /* ... */ };
+                //component.FuseBoxComponentGroup = group;
+                //group.Components.Add(component);
+
+                //// Сохранение в базу данных используя Сущности
+                //_context.Projects.Add(project);
+                //_context.SaveChanges();
 
                 // Маппишь обратно в DTO после сохранения
                 var resultDto = _mapper.Map<ProjectDTO>(project);

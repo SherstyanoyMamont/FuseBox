@@ -21,8 +21,9 @@ namespace FuseBox.App.DataBase
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Cable> Cables { get; set; }
-        //public DbSet<Component> Components { get; set; }
+        public DbSet<Component> Component { get; set; }
         public DbSet<Port> Ports { get; set; }
+        public DbSet<FuseBoxComponentGroup> ComponentGroups { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
 
@@ -114,7 +115,7 @@ namespace FuseBox.App.DataBase
 
             // FuseBox → ComponentGroups (один ко многим)
             modelBuilder.Entity<FuseBoxUnit>()
-                .HasMany(fb => fb.Components)
+                .HasMany(fb => fb.ComponentGroups)
                 .WithOne(fb => fb.FuseBoxUnit)
                 .HasForeignKey(cg => cg.FuseBoxUnitId);
 
@@ -147,7 +148,7 @@ namespace FuseBox.App.DataBase
 
             ////////////////////////////////////////////////////////////////////
 
-            //ComponentGroup → BaseElectrical(один ко многим)
+            //ComponentGroup → Component(один ко многим)
             modelBuilder.Entity<Component>()
                 .HasOne(c => c.FuseBoxComponentGroup)
                 .WithMany(fbg => fbg.Components)
@@ -161,6 +162,12 @@ namespace FuseBox.App.DataBase
                 .HasForeignKey(p => p.ComponentId);
 
             ////////////////////////////////////////////////////////////////////
+
+            modelBuilder.Entity<FuseBoxComponentGroup>()
+                .HasOne(f => f.FuseBoxUnit)
+                .WithMany(u => u.ComponentGroups)
+                .HasForeignKey(f => f.FuseBoxUnitId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //modelBuilder.Entity<FuseBoxComponentGroup>()
             //    .HasMany(cg => cg.Components)

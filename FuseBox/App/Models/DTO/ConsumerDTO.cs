@@ -7,10 +7,6 @@ namespace FuseBox.App.Models.DTO
     {
 
         public ConsumerDTO() { }
-        public ConsumerDTO(string name, int maxLoad)        // Для тестов
-        {
-            Name = name;
-            Amper = maxLoad;
-        }
+
     }
 }

@@ -59,14 +59,15 @@ namespace FuseBox
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
         // Это надо оптимизировать
-        public List<FuseBoxComponentGroup> Components { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
         {
             new FuseBoxComponentGroup(),
         };
 
+
         //[NotMapped]
         //Список не отключаемых устройств
-        public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
+        //public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
         //public List<Component> Electricals { get; set; } = new(); // Базовый список 
 

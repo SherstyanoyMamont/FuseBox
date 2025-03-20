@@ -12,9 +12,5 @@ namespace FuseBox.App.Models.DTO
 
         public FloorDTO() { }
 
-        public FloorDTO(List<RoomDTO> rooms)
-        {
-            Rooms = rooms;
-        }
     }
 }

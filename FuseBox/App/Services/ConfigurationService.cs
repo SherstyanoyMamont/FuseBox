@@ -4,6 +4,7 @@ using FuseBox.App.Models.Shild_Comp;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms.Mapping;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -95,6 +96,8 @@ namespace FuseBox
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
                 if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25)); } // !!!
                 if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
+
+                
             }
         }
         
@@ -187,29 +190,29 @@ namespace FuseBox
             {
                 occupiedSlots += (int)shieldModuleSet[i].Slots;
 
-                if (occupiedSlots < shieldWidth) fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
+                if (occupiedSlots < shieldWidth) fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
 
                 else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
                 {
-                    fuseBox.Components[currentLevel].Components.Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
                     currentLevel++;
-                    fuseBox.Components.Add(new FuseBoxComponentGroup());
+                    fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
 
                     occupiedSlots = (int)shieldModuleSet[i].Slots;
-                    fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);
                 }
                 else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
                 {
-                    fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);
                     if (shieldModuleSet[i] != shieldModuleSet[^1])
                     {
-                        fuseBox.Components.Add(new FuseBoxComponentGroup());
+                        fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
                         currentLevel++;
                         occupiedSlots = 0;
                     }
                 }
                 if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])
-                    fuseBox.Components[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
             }
         }
         // Расчет сечения провода по мощности

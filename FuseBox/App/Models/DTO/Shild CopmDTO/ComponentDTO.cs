@@ -19,26 +19,6 @@ namespace FuseBox.App.Models.DTO
         [JsonProperty(Order = 5)]
         public int Slots { get; set; }
 
-        public ComponentDTO(string name, int amper, int slots, decimal price, List<PortDTO> ports)
-        {
-            Ports = ports;
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
-        }
-        public ComponentDTO(string name, int amper, int slots, decimal price)
-        {
-            Name = name;
-            Amper = amper;
-            Slots = slots;
-            Price = price;
-        }
-        public ComponentDTO(string name, int slot)     // Для тестов
-        {
-            Name = name;
-            Slots = slot;
-        }
         public ComponentDTO() { }      // Для тестов
     }
 }

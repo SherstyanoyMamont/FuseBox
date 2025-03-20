@@ -221,7 +221,7 @@ public class ConfigurationServiceTest
         config.ShieldByLevel();
 
         // Результат тестируемого метода - заполненый список fuseBox.Component
-        var resultList = testProject.FuseBox.Components;
+        var resultList = testProject.FuseBox.ComponentGroups;
         // Узнаем эталонное количество созданых уровней щита
         int minDINLevelCount = config.shieldModuleSet.Count / testProject.InitialSettings.ShieldWidth;
 

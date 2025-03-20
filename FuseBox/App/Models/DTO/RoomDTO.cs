@@ -10,9 +10,5 @@ namespace FuseBox.App.Models.DTO
 
         public RoomDTO() { }
 
-        public RoomDTO(List<ConsumerDTO> consumer)
-        {
-            Consumer = consumer;
-        }
     }
 }

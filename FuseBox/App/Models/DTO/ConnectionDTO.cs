@@ -5,17 +5,11 @@ namespace FuseBox.App.Models.DTO
 {
     public class ConnectionDTO : BaseEntity
     {
-        public CableDTO Cable { get; set; }
-        public PositionDTO CabelWay { get; set; }
-
-
-        public ConnectionDTO(CableDTO cable, PositionDTO cabelWay)
-        {
-            Cable = cable;
-            CabelWay = cabelWay;
-
-        }
+        public CableDTO? Cable { get; set; }
+        public PositionDTO? CabelWay { get; set; }
 
         public ConnectionDTO() { }
+
+
     }
 }
