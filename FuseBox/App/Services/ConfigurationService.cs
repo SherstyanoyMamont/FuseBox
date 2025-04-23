@@ -23,6 +23,7 @@ namespace FuseBox
         public List<Port> ports;
         public List<RCD> uzos = new();
         public List<RCD> contactorRCDs = new();
+        public Component appartmentEntryPoint;      // нулевой (абстрактный) элемент щита
 
         public Project project;
         public FuseBoxUnit fuseBox;
@@ -71,6 +72,7 @@ namespace FuseBox
 
             if (project.InitialSettings.PhasesCount == 1) // Входим в расчеты 1 фазы
             {
+                appartmentEntryPoint = new Component("AppartmentEntryPoint", 0, 0, 0, ports2);
                 if (fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory", project.InitialSettings.MainAmperage, 2, 35, ports2x2, "P1", Type3PN.P1)); }
                 if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2)); }
                 if (fuseBox.LoadSwitch2P) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
@@ -85,6 +87,7 @@ namespace FuseBox
             }
             else // Входим в расчеты 3 фазы
             {
+                appartmentEntryPoint = new Component("AppartmentEntryPoint", 0, 0, 0, ports2x2i);
                 if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
                 if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
                 if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
@@ -178,9 +181,12 @@ namespace FuseBox
         public void CreateConnections()
         {
             List<Connection> сableConnections = fuseBox.CableConnections;
+            
             // Добавляем ID ко всем компонентам
             for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].Id = i + 1; }
-            PreparationForCreateConnection(сableConnections);
+
+            shieldModuleSet.Insert(0, appartmentEntryPoint);                           // Добавляем нулевой элемент, от которого будут идти соединения
+            RemoveModularContactor();                                                  // Удаляем контактор из списка
 
             for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
             {
@@ -190,24 +196,16 @@ namespace FuseBox
                 {
                     Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
 
-                    if ((currentComp.Name == "VoltageRelay3" || currentComp.Name == "VoltageRelay") && currentPort.portOut == "Zero")
-                        currentPort.portOut = null;
+                    if ((currentComp.Name == "VoltageRelay3" || currentComp.Name == "VoltageRelay") 
+                        && currentPort.portOut == "Zero" 
+                        && shieldModuleSet[i + 1].Name != "RCD")
+                        continue;                                                      // Эти компоненты не должны передавать ноль последующим компонентам
 
                     if (currentPort.portOut == null) continue;                         // если порт не выходящий то пропускаем 
 
                     for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
                     {
                         Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
-                        if (currentComp.Name == nextModule.Name)                       // Ищем соединения между УЗО
-                        {
-                            if (currentPort.portOut == "Zero") { break; }              // УЗО не должны создавать соединение нуля с другими УЗО
-                            if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Создаём фазовые соединения
-                            {
-                                Position connectionIds = new Position(currentComp.Id, shieldModuleSet[n].Id);
-                                сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-                                break;
-                            }
-                        }
 
                         if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut))    // Если у компонента есть такой же тип выхода, то создаем подключение
                         {
@@ -289,37 +287,19 @@ namespace FuseBox
                 }
             }
         }
-        private void PreparationForCreateConnection(List<Connection> connectionList)
+        private void RemoveModularContactor()
         {
-            var rcdList = new List<Component>();
-            int crossBlockIndex = 0;
-
             for (int i = 0; i < shieldModuleSet.Count; i++)
             {
-                if (shieldModuleSet[i].Name == "ModularContactor")                                                                  //Находим контактор, удаляем из общего списка и сохраняем его в fuseBox.ContactorComponents
-                { 
-                    RemoveModularContactor(i);
-                    i--;
-                }                                              
-                else if (shieldModuleSet[i].Name == "CrossBlock") { crossBlockIndex = i; }                                          // Записываем индекс кроссблока в переменную
-                else if (shieldModuleSet[i].Name == "RCD") { rcdList.Add(shieldModuleSet[i]); }                                     // Копируем обычные УЗО в отдельный список                
-            }
-            ZEROConnectionsBtwRCDs(rcdList, connectionList, crossBlockIndex);
-        }
-        private void RemoveModularContactor(int index)
-        {
-            fuseBox.Contactor = shieldModuleSet[index] as Contactor;
-            shieldModuleSet.Remove(shieldModuleSet[index]);
-        }
-        private void ZEROConnectionsBtwRCDs(List<Component> rcdList, List<Connection> connectionList, int crossBlockIndex)
-        {
-            for (int i = 0; i < rcdList.Count; i++)                                                                                 // Вручную создаём соединения нуля между кроссблоком и УЗО
-            {
-                if (i == 0) continue;                                                                                               // Пропускаем первое УЗО (уже создано соединение)
-                Position connectionIds = new Position(shieldModuleSet[crossBlockIndex].Id, rcdList[i].Id);
-                connectionList.Add(new Connection(new Cable(ConnectorColour.Blue, 0), connectionIds));
+                if (shieldModuleSet[i].Name == "ModularContactor")
+                {
+                    fuseBox.Contactor = shieldModuleSet[i] as Contactor;
+                    shieldModuleSet.Remove(shieldModuleSet[i]);
+
+                }
             }
         }
+
     }
 }
 
