@@ -11,7 +11,7 @@ namespace FuseBox.App.Models
         // Связь с Connection
         public int ConnectionPositionId { get; set; }
         [JsonIgnore]
-        public Connection? Connection { get; set; }
+        public CableConnection Connection { get; set; }
 
         public Position() { }
 

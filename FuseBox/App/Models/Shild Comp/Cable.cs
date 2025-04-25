@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Interfaces;
 using FuseBox.App.Models.BaseAbstract;
 using Newtonsoft.Json.Converters;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace FuseBox.App.Models.Shild_Comp
@@ -20,9 +21,10 @@ namespace FuseBox.App.Models.Shild_Comp
         public string? Сolour { get; set; }
 
         // Связь с Connection
-        public int ConnectionCableId { get; set; }
+        public int? ConnectionCableId { get; set; }
         [JsonIgnore]
-        public Connection? Connection { get; set; }
+        [ForeignKey("ConnectionCableId")]
+        public CableConnection? Connection { get; set; }
 
         public Cable() { }
 

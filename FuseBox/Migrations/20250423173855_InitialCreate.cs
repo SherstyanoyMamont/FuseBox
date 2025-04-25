@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FuseBox.Migrations
 {
     /// <inheritdoc />
-    public partial class New : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -212,6 +212,29 @@ namespace FuseBox.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ComponentGroups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: false),
+                    FuseBoxComponentGroupId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComponentGroups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ComponentGroups_FuseBoxes_FuseBoxUnitId",
+                        column: x => x.FuseBoxUnitId,
+                        principalTable: "FuseBoxes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Connections",
                 columns: table => new
                 {
@@ -234,24 +257,47 @@ namespace FuseBox.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "FuseBoxComponentGroup",
+                name: "Component",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: false),
+                    SerialNumber = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    Slots = table.Column<int>(type: "int", nullable: false),
+                    FuseBoxComponentGroupId = table.Column<int>(type: "int", nullable: false),
+                    ContactorId = table.Column<int>(type: "int", nullable: true),
+                    Discriminator = table.Column<string>(type: "varchar(13)", maxLength: 13, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RCDId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Capacity = table.Column<int>(type: "int", nullable: true),
+                    TotalLoad = table.Column<double>(type: "double", nullable: true),
+                    RCDFire_Capacity = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Amper = table.Column<double>(type: "double", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FuseBoxComponentGroup", x => x.Id);
+                    table.PrimaryKey("PK_Component", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FuseBoxComponentGroup_FuseBoxes_FuseBoxUnitId",
-                        column: x => x.FuseBoxUnitId,
-                        principalTable: "FuseBoxes",
+                        name: "FK_Component_ComponentGroups_FuseBoxComponentGroupId",
+                        column: x => x.FuseBoxComponentGroupId,
+                        principalTable: "ComponentGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Component_Component_ContactorId",
+                        column: x => x.ContactorId,
+                        principalTable: "Component",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Component_Component_RCDId",
+                        column: x => x.RCDId,
+                        principalTable: "Component",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -306,64 +352,12 @@ namespace FuseBox.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Component",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    SerialNumber = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    Slots = table.Column<int>(type: "int", nullable: false),
-                    FuseBoxComponentGroupId = table.Column<int>(type: "int", nullable: false),
-                    ContactorId = table.Column<int>(type: "int", nullable: true),
-                    Discriminator = table.Column<string>(type: "varchar(13)", maxLength: 13, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: true),
-                    RCDId = table.Column<int>(type: "int", nullable: true),
-                    Type = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Capacity = table.Column<int>(type: "int", nullable: true),
-                    TotalLoad = table.Column<double>(type: "double", nullable: true),
-                    RCDFire_Capacity = table.Column<int>(type: "int", nullable: true),
-                    Name = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Amper = table.Column<double>(type: "double", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Component", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Component_Component_ContactorId",
-                        column: x => x.ContactorId,
-                        principalTable: "Component",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Component_Component_RCDId",
-                        column: x => x.RCDId,
-                        principalTable: "Component",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Component_FuseBoxComponentGroup_FuseBoxComponentGroupId",
-                        column: x => x.FuseBoxComponentGroupId,
-                        principalTable: "FuseBoxComponentGroup",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Component_FuseBoxes_FuseBoxUnitId",
-                        column: x => x.FuseBoxUnitId,
-                        principalTable: "FuseBoxes",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Consumer",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RoomId = table.Column<int>(type: "int", nullable: false),
-                    FuseBoxUnitId = table.Column<int>(type: "int", nullable: false),
                     FuseId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -377,12 +371,6 @@ namespace FuseBox.Migrations
                         column: x => x.FuseId,
                         principalTable: "Component",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Consumer_FuseBoxes_FuseBoxUnitId",
-                        column: x => x.FuseBoxUnitId,
-                        principalTable: "FuseBoxes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Consumer_Rooms_RoomId",
                         column: x => x.RoomId,
@@ -412,6 +400,12 @@ namespace FuseBox.Migrations
                 {
                     table.PrimaryKey("PK_Ports", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Ports_Cables_CableId",
+                        column: x => x.CableId,
+                        principalTable: "Cables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Ports_Component_ComponentId",
                         column: x => x.ComponentId,
                         principalTable: "Component",
@@ -437,23 +431,18 @@ namespace FuseBox.Migrations
                 column: "FuseBoxComponentGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Component_FuseBoxUnitId",
-                table: "Component",
-                column: "FuseBoxUnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Component_RCDId",
                 table: "Component",
                 column: "RCDId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Connections_FuseBoxUnitId",
-                table: "Connections",
+                name: "IX_ComponentGroups_FuseBoxUnitId",
+                table: "ComponentGroups",
                 column: "FuseBoxUnitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Consumer_FuseBoxUnitId",
-                table: "Consumer",
+                name: "IX_Connections_FuseBoxUnitId",
+                table: "Connections",
                 column: "FuseBoxUnitId");
 
             migrationBuilder.CreateIndex(
@@ -478,11 +467,6 @@ namespace FuseBox.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FuseBoxComponentGroup_FuseBoxUnitId",
-                table: "FuseBoxComponentGroup",
-                column: "FuseBoxUnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FuseBoxes_ProjectId",
                 table: "FuseBoxes",
                 column: "ProjectId",
@@ -499,6 +483,11 @@ namespace FuseBox.Migrations
                 table: "InitialSettings",
                 column: "ProjectId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ports_CableId",
+                table: "Ports",
+                column: "CableId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ports_ComponentId",
@@ -526,9 +515,6 @@ namespace FuseBox.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Cables");
-
-            migrationBuilder.DropTable(
                 name: "Consumer");
 
             migrationBuilder.DropTable(
@@ -550,16 +536,19 @@ namespace FuseBox.Migrations
                 name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "Component");
+                name: "Cables");
 
             migrationBuilder.DropTable(
-                name: "Connections");
+                name: "Component");
 
             migrationBuilder.DropTable(
                 name: "Floors");
 
             migrationBuilder.DropTable(
-                name: "FuseBoxComponentGroup");
+                name: "Connections");
+
+            migrationBuilder.DropTable(
+                name: "ComponentGroups");
 
             migrationBuilder.DropTable(
                 name: "FuseBoxes");

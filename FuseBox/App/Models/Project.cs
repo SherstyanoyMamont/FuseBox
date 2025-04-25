@@ -16,10 +16,11 @@ namespace FuseBox
         public List<Floor> Floors { get; set; } = new();
         public double TotalPower { get; set; } // A
 
+
         // Обратная связь с User
         public int UserId { get; set; }
         [JsonIgnore]
-        public User? User { get; set; }
+        public User User { get; set; }
 
         public Project()
         {

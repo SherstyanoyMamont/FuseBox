@@ -58,11 +58,9 @@ namespace FuseBox
         //// Список подключенных к контактору устройств
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
-        // Это надо оптимизировать
-        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new() // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
-        {
-            new FuseBoxComponentGroup(),
-        };
+        [ForeignKey("FuseBoxComponentGroupId")]
+        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new(); // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+
 
 
         //[NotMapped]
@@ -71,13 +69,13 @@ namespace FuseBox
 
         //public List<Component> Electricals { get; set; } = new(); // Базовый список 
 
-        public List<Connection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+        public List<CableConnection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
 
 
         // Связь с проектом
         public int ProjectId { get; set; }
         [JsonIgnore]
-        public Project? Project { get; set; }
+        public Project Project { get; set; }
 
 
         public FuseBoxUnit() { }

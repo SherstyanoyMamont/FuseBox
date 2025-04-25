@@ -35,21 +35,73 @@ namespace FuseBox
         }
 
         // Создаем/Модифицируем объект проекта
-        public void GenerateConfiguration() // Метод возвращает объект ProjectConfiguration
+        public void GenerateConfiguration()
         {
-            ValidateInitialSettings();      // Проверка первичных данных***
+            Console.WriteLine("▶ Начинаем GenerateConfiguration");
 
-            CalculateWireCrossSection();    // Расчет сечения провода по мощности
+            try
+            {
+                Console.WriteLine("🔍 Step 1: ValidateInitialSettings");
+                ValidateInitialSettings();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в ValidateInitialSettings", ex);
+            }
 
-            ConfigureShield();              // Входим в расчеты 1 или 3 фазы
+            try
+            {
+                Console.WriteLine("🔍 Step 2: CalculateWireCrossSection");
+                CalculateWireCrossSection();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в CalculateWireCrossSection", ex);
+            }
 
-            Distribute();                   // Логика распределения потребителей и УЗО от нагрузки
+            try
+            {
+                Console.WriteLine("🔍 Step 3: ConfigureShield");
+                ConfigureShield();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в ConfigureShield", ex);
+            }
 
-            CreateConnections();            // Создаем соединения
+            try
+            {
+                Console.WriteLine("🔍 Step 4: Distribute");
+                Distribute();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в Distribute", ex);
+            }
 
-            ShieldByLevel();                // Компонуем щит по уровням
+            try
+            {
+                Console.WriteLine("🔍 Step 5: CreateConnections");
+                CreateConnections();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в CreateConnections", ex);
+            }
 
+            try
+            {
+                Console.WriteLine("🔍 Step 6: ShieldByLevel");
+                ShieldByLevel();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Ошибка в ShieldByLevel", ex);
+            }
+
+            Console.WriteLine("✅ GenerateConfiguration завершён успешно.");
         }
+
         // Логика конфигурации устройств...
         public void ConfigureShield()
         {
@@ -73,6 +125,7 @@ namespace FuseBox
                 if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports2x2)); }
                 if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports2x2)); }
                 if (fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 40, ports2x2)); }
+
                 if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 2, 22, ports2)); }
                 if (fuseBox.NDiscLine) { shieldModuleSet.Add(new RCD("NDiscLine", 25, 2, 43, ports2, new List<Component>())); }
                 if (fuseBox.LoadSwitch) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
@@ -81,11 +134,11 @@ namespace FuseBox
             }
             else // Входим в расчеты 3 фазы
             {
-                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
-                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
+                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 3, 35, ports1_6, "P1", Type3PN.P3)); }
+                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3PN", project.InitialSettings.MainAmperage, 4, 35, ports1_8, "P1", Type3PN.P3_N)); }
                 if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
                 if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
-                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports1_8)); }
+                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 4, 75, ports1_8)); }
                 if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
                 {                                        
                     shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
@@ -102,7 +155,6 @@ namespace FuseBox
         }
         
         // Логика распределения модулей по уровням...
-        
         public void CalculateWireCrossSection()
         {
             // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
@@ -129,8 +181,8 @@ namespace FuseBox
             // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
             // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
         }
-        // Создаем соединение проводами
 
+        // Создаем соединение проводами
         public void Distribute()
         {
             DistributionService distributionService = new(project, uzos);
@@ -143,7 +195,7 @@ namespace FuseBox
 
         public void CreateConnections()
         {
-            List<Connection> сableConnections = fuseBox.CableConnections;
+            List<CableConnection> сableConnections = fuseBox.CableConnections;
 
             // Добавляем ID ко всем компонентам
             for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].SerialNumber = i + 1; }
@@ -170,7 +222,7 @@ namespace FuseBox
                             //AddConnection(сableConnections, module.Id, currentPort, n);
 
                             Position connectionIds = new Position(currentComp.SerialNumber, n + 1);
-                            сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
+                            сableConnections.Add(new CableConnection(currentPort.cableType, connectionIds));
 
                             //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
                             break;                               // Берем следующий выходной разьем
@@ -186,24 +238,55 @@ namespace FuseBox
             int currentLevel = 0;
             int shieldWidth = project.InitialSettings.ShieldWidth;
 
+            // Гарантируем наличие первого уровня
+            if (fuseBox.ComponentGroups == null || fuseBox.ComponentGroups.Count == 0)
+            {
+                fuseBox.ComponentGroups = new List<FuseBoxComponentGroup> { new FuseBoxComponentGroup() };
+            }
+
+
             for (int i = 0; i < shieldModuleSet.Count; i++)
             {
                 occupiedSlots += (int)shieldModuleSet[i].Slots;
 
-                if (occupiedSlots < shieldWidth) fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
+                // Если модуль помещается на уровне
+                //if (occupiedSlots < shieldWidth) fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
+                
+                if (occupiedSlots < shieldWidth)
+                {
+                    var component = shieldModuleSet[i];
 
+
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
+
+
+                    //component.FuseBoxComponentGroupId = fuseBox.ComponentGroups[currentLevel].Id; // Присваиваем группу
+
+                }
                 else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
                 {
                     fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
                     currentLevel++;
                     fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
 
+
                     occupiedSlots = (int)shieldModuleSet[i].Slots;
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);
+                    var component = shieldModuleSet[i];
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
+
+
+                    //component.FuseBoxComponentGroupId = fuseBox.ComponentGroups[currentLevel].Id; // Присваиваем группу
+
                 }
                 else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
                 {
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);
+                    var component = shieldModuleSet[i];
+                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
+
+
+                    //component.FuseBoxComponentGroupId = fuseBox.ComponentGroups[currentLevel].Id; // Присваиваем группу
+
+
                     if (shieldModuleSet[i] != shieldModuleSet[^1])
                     {
                         fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
@@ -211,10 +294,13 @@ namespace FuseBox
                         occupiedSlots = 0;
                     }
                 }
+
+                // Добавляем пустые слоты, если компоненты не поместились в конце
                 if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])
                     fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
             }
         }
+
         // Расчет сечения провода по мощности
         public void ValidateInitialSettings()
         {

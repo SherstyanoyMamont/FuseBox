@@ -33,12 +33,12 @@ namespace FuseBox
         // Связь с Cable
         public int CableId { get; set; }
         [JsonIgnore]
-        public Cable? cableType;
+        public Cable cableType { get; set; }
 
         // Связь с Component
         public int ComponentId { get; set; }
         [JsonIgnore]
-        public Component? Component { get; set; }
+        public Component Component { get; set; }
 
         public Port(PortOutEnum connectorType, Cable cableType)
         {

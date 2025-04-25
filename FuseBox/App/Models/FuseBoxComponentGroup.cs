@@ -11,7 +11,7 @@ namespace FuseBox
         // Связь с FuseBox
         public int FuseBoxUnitId { get; set; }
         [JsonIgnore]
-        public FuseBoxUnit? FuseBoxUnit { get; set; }
+        public FuseBoxUnit FuseBoxUnit { get; set; } = null!;
 
     }
 }

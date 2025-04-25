@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using FuseBox.App.Models;
 using AutoMapper;
 using System;
-using FuseBox.App.Models.DTO.ConfugurationDTO;
 using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
 using FuseBox.App.Models.Shild_Comp;
@@ -29,101 +28,6 @@ namespace FuseBox.Controllers
 
             // Маппинг из Entity в DTO
             CreateMap<FuseBoxUnit, FuseBoxUnitDTO>();
-        }
-    }
-
-
-    public class ProjectProfile : Profile
-    {
-        public ProjectProfile()
-        {
-            // ==============================
-            //        DTO -> Entity
-            // ==============================
-
-            CreateMap<ProjectDTO, Project>()
-                .ForMember(dest => dest.User, opt => opt.Ignore()) // Или маппишь, если надо
-                .ForMember(dest => dest.FuseBox, opt => opt.MapFrom(src => src.FuseBox))
-                .ForMember(dest => dest.FloorGrouping, opt => opt.MapFrom(src => src.FloorGrouping))
-                .ForMember(dest => dest.GlobalGrouping, opt => opt.MapFrom(src => src.GlobalGrouping))
-                .ForMember(dest => dest.Floors, opt => opt.MapFrom(src => src.Floors));
-
-            CreateMap<FuseBoxUnitDTO, FuseBoxUnit>()
-                .ForMember(dest => dest.ComponentGroups, opt => opt.MapFrom(src => src.ComponentGroups))
-                .ForMember(dest => dest.CableConnections, opt => opt.MapFrom(src => src.CableConnections));
-
-            CreateMap<FuseBoxComponentGroupDTO, FuseBoxComponentGroup>()
-                .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components));
-
-            CreateMap<FloorDTO, Floor>()
-                .ForMember(dest => dest.Rooms, opt => opt.MapFrom(src => src.Rooms));
-
-            CreateMap<RoomDTO, Room>()
-                .ForMember(dest => dest.Consumer, opt => opt.MapFrom(src => src.Consumer));
-
-            CreateMap<ConsumerDTO, Consumer>();
-
-            CreateMap<ConnectionDTO, Connection>();
-            CreateMap<InitialSettingsDTO, InitialSettings>();
-            CreateMap<FloorGroupingDTO, FloorGrouping>();
-            CreateMap<GlobalGroupingDTO, GlobalGrouping>();
-            CreateMap<PositionDTO, Position>();
-            CreateMap<CableDTO, Cable>();
-
-            // ==============================
-            //        Entity -> DTO
-            // ==============================
-
-            CreateMap<Project, ProjectDTO>()
-                .ForMember(dest => dest.FuseBox, opt => opt.MapFrom(src => src.FuseBox))
-                .ForMember(dest => dest.FloorGrouping, opt => opt.MapFrom(src => src.FloorGrouping))
-                .ForMember(dest => dest.GlobalGrouping, opt => opt.MapFrom(src => src.GlobalGrouping))
-                .ForMember(dest => dest.Floors, opt => opt.MapFrom(src => src.Floors));
-
-            CreateMap<FuseBoxUnit, FuseBoxUnitDTO>()
-                .ForMember(dest => dest.ComponentGroups, opt => opt.MapFrom(src => src.ComponentGroups))
-                .ForMember(dest => dest.CableConnections, opt => opt.MapFrom(src => src.CableConnections));
-
-            CreateMap<FuseBoxComponentGroup, FuseBoxComponentGroupDTO>()
-                .ForMember(dest => dest.Components, opt => opt.MapFrom(src => src.Components));
-
-            CreateMap<Floor, FloorDTO>()
-                .ForMember(dest => dest.Rooms, opt => opt.MapFrom(src => src.Rooms));
-
-            CreateMap<Room, RoomDTO>()
-                .ForMember(dest => dest.Consumer, opt => opt.MapFrom(src => src.Consumer));
-
-            CreateMap<Consumer, ConsumerDTO>();
-
-            CreateMap<Connection, ConnectionDTO>();
-            CreateMap<InitialSettings, InitialSettingsDTO>();
-            CreateMap<FloorGrouping, FloorGroupingDTO>();
-            CreateMap<GlobalGrouping, GlobalGroupingDTO>();
-            CreateMap<Introductory, IntroductoryDTO>();
-            CreateMap<Position, PositionDTO>();
-            CreateMap<Cable, CableDTO>();
-            CreateMap<Port, PortDTO>();
-            CreateMap<PortDTO, Port>();
-
-
-            // ==============================
-            //       Component Hierarchy
-            // ==============================
-
-            CreateMap<Component, ComponentDTO>()
-                .Include<Fuse, FuseDTO>()
-                .Include<RCD, RCDDTO>()
-                .Include<RCDFire, RCDFireDTO>()
-                .Include<Introductory, IntroductoryDTO>()
-                .Include<EmptySlot, EmptySlotDTO>()
-                .Include<Contactor, ContactorDTO>();
-
-            CreateMap<Fuse, FuseDTO>();
-            CreateMap<RCD, RCDDTO>();
-            CreateMap<RCDFire, RCDFireDTO>();
-            CreateMap<Introductory, IntroductoryDTO>();
-            CreateMap<EmptySlot, EmptySlotDTO>();
-            CreateMap<Contactor, ContactorDTO>();
         }
     }
 
@@ -158,9 +62,8 @@ namespace FuseBox.Controllers
 
             try
             {
-                // Находим или создаём пользователя
+                // 1. Получаем или создаем пользователя
                 var existingUser = _context.Users.FirstOrDefault(u => u.Email == "test@example.com");
-
                 if (existingUser == null)
                 {
                     existingUser = new User { Email = "test@example.com" };
@@ -168,97 +71,185 @@ namespace FuseBox.Controllers
                     _context.SaveChanges();
                 }
 
-                // Маппим проект
-                var project = _mapper.Map<Project>(dto);  // Используем AutoMapper для преобразования
-
-                // Привязываем пользователя
+                // 2. Маппим DTO → Entity
+                var project = _mapper.Map<Project>(dto);
                 project.User = existingUser;
 
-                project.InitialSettings = _mapper.Map<InitialSettings>(dto.InitialSettings);
-                project.InitialSettings.Project = project; // Связь руками при необходимости
+                
 
+                // Страховка, если AutoMapper обошел конструктор по умолчанию:
+                project.FuseBox ??= new FuseBoxUnit();
+                project.FloorGrouping ??= new FloorGrouping();
+                project.GlobalGrouping ??= new GlobalGrouping();
+                project.InitialSettings ??= new InitialSettings();
+                project.Floors ??= new List<Floor>();
 
-                ///////////////////////////////////////////////////////////////////////////////////////////////////
-                // Работа с БД: FuseBox
+                // 3. Устанавливаем связи вручную
+                if (project.InitialSettings != null)
+                    project.InitialSettings.Project = project;
 
-
-                // FuseBoxUnit
-                var existingFuseBox = _context.FuseBoxes
-                      .FirstOrDefault(fb => fb.Id == dto.FuseBox.Id);
-
-                if (existingFuseBox == null)
-                {
+                if (project.FuseBox != null)
                     project.FuseBox.Project = project;
-                    _context.FuseBoxes.Add(project.FuseBox);
+
+                // 4. Добавляем и сохраняем Project (вместе с InitialSettings и FuseBox)
+                _context.Projects.Add(project);
+                _context.SaveChanges(); // Project и FuseBox получают Id
+
+                // 5. Устанавливаем связи ComponentGroups → FuseBox
+                if (project.FuseBox?.ComponentGroups != null)
+                {
+                    foreach (var group in project.FuseBox.ComponentGroups)
+                    {
+                        group.FuseBoxUnitId = project.FuseBox.Id;
+                    }
+
+                    _context.ComponentGroups.AddRange(project.FuseBox.ComponentGroups);
+                    _context.SaveChanges(); // ComponentGroups получают Id
+                }
+
+                // 6. Генерация конфигурации (после сохранения всего выше)
+
+
+
+                try
+                {
+                    Console.WriteLine("⚙️ Генерация конфигурации начинается...");
+                    var configService = new ConfigurationService(project);
+                    configService.GenerateConfiguration();
+                    Console.WriteLine("✅ Генерация конфигурации завершена.");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("❌ Ошибка диапазона индекса:");
+                    Console.WriteLine(ex);
+                    return BadRequest("Ошибка индекса в GenerateConfiguration: " + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("❌ Общая ошибка в GenerateConfiguration:");
+                    Console.WriteLine(ex);
+                    return BadRequest("Ошибка генерации: " + ex.Message);
+                }
+
+                Console.WriteLine($"🚨 Floors count: {project.Floors?.Count ?? 0}");
+                foreach (var floor in project.Floors ?? new())
+                {
+                    Console.WriteLine($"🏠 Floor: {floor.Name}, Rooms: {floor.Rooms?.Count ?? 0}");
+                    foreach (var room in floor.Rooms ?? new())
+                    {
+                        Console.WriteLine($"🛏 Room: {room.Name}, Consumers: {room.Consumer?.Count ?? 0}");
+                    }
+                }
+
+
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                // Логирование количества сгенерированных соединений
+                Console.WriteLine($"📊 Connections generated: {project.FuseBox?.CableConnections?.Count ?? 0}");
+
+                var tempCables = new List<Cable>();
+                var ports = new List<Port>();
+
+                // 7. Обработка Connections и временное отсоединение кабелей
+                if (project.FuseBox?.CableConnections != null)
+                {
+                    foreach (var connection in project.FuseBox.CableConnections)
+                    {
+                        connection.FuseBoxUnit = project.FuseBox;
+
+                        if (connection.Cable != null)
+                        {
+                            tempCables.Add(connection.Cable);
+                            connection.Cable.Connection = null;
+
+                            var tempCable = connection.Cable;
+                            connection.Cable = null;
+
+                            var cableEntry = _context.Entry(tempCable);
+                            if (cableEntry.State != EntityState.Detached)
+                                cableEntry.State = EntityState.Detached;
+                        }
+                    }
+
+                    _context.Connections.AddRange(project.FuseBox.CableConnections);
+                }
+
+                // 8. Сбор портов
+                if (project.FuseBox?.ComponentGroups != null)
+                {
+                    foreach (var group in project.FuseBox.ComponentGroups)
+                    {
+                        foreach (var comp in group.Components ?? Enumerable.Empty<Component>())
+                        {
+                            ports.AddRange(comp.Ports ?? Enumerable.Empty<Port>());
+                        }
+                    }
+                }
+
+                if (ports.Any())
+                    _context.Ports.AddRange(ports);
+
+                // 9. Сохраняем Connections и Ports
+                Console.WriteLine("🧪 Состояние перед сохранением:");
+                foreach (var entry in _context.ChangeTracker.Entries())
+                {
+                    Console.WriteLine($"🔍 Entity: {entry.Entity?.GetType().Name ?? "NULL"}, State: {entry.State}");
+                }
+
+                _context.SaveChanges(); // Connections получают Id
+
+                // 10. Возврат кабелей с актуальными внешними ключами
+                var cablesToSave = new List<Cable>();
+                foreach (var conn in project.FuseBox.CableConnections)
+                {
+                    var matchingCable = tempCables.FirstOrDefault();
+                    if (matchingCable != null)
+                    {
+                        matchingCable.ConnectionCableId = conn.Id;
+                        matchingCable.Connection = conn;
+                        conn.Cable = matchingCable;
+
+                        cablesToSave.Add(matchingCable);
+                        tempCables.Remove(matchingCable);
+                    }
+                }
+
+                // 11. Сохраняем кабели
+                if (cablesToSave.Any())
+                {
+                    foreach (var c in cablesToSave)
+                    {
+                        if (c == null || c.ConnectionCableId == 0)
+                        {
+                            Console.WriteLine("❌ Cable с отсутствующим FK найден и пропущен.");
+                            continue;
+                        }
+                        Console.WriteLine($"📦 Сохраняем Cable: FK = {c.ConnectionCableId}");
+                    }
+
+                    _context.Cables.AddRange(cablesToSave.Where(c => c != null && c.ConnectionCableId > 0));
+                    _context.SaveChanges();
                 }
                 else
                 {
-                    _mapper.Map(dto.FuseBox, existingFuseBox);
-                    _context.Attach(existingFuseBox);
-                    _context.Entry(existingFuseBox).State = EntityState.Modified;
-
-                    project.FuseBox = existingFuseBox;
+                    Console.WriteLine("⚠️ Нет кабелей для сохранения.");
                 }
 
-                ConfigurationService configurationService = new ConfigurationService(project);
-
-                configurationService.GenerateConfiguration();
-
-
-                ///////////////////////////////////////////////////////////////////////////////////////////////////
-                /// Схранение в базу и отправка во Фронт-энд
-                
-                foreach (var entry in _context.ChangeTracker.Entries())
-                {
-                    Console.WriteLine($"Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
-                }
-
-                _context.Connections.AddRange(project.FuseBox.CableConnections);
-                _context.ComponentGroups.AddRange(project.FuseBox.ComponentGroups);
-                //_context.Component.AddRange(project.FuseBox.ComponentGroups)
-
-                //var project2 = new Project { Name = "Проект" };
-
-                //var fuseBox = new FuseBoxUnit { /* ... */ };
-                //project2.FuseBox = fuseBox;
-
-                //var group = new FuseBoxComponentGroup { /* ... */ };
-                //group.FuseBoxUnit = fuseBox;
-                //fuseBox.ComponentGroups.Add(group);
-
-                //var component = new Component { /* ... */ };
-                //component.FuseBoxComponentGroup = group;
-                //group.Components.Add(component);
-
-                //// Сохранение в базу данных используя Сущности
-                //_context.Projects.Add(project);
-                //_context.SaveChanges();
-
-                // Маппишь обратно в DTO после сохранения
+                // 12. Возврат результата
                 var resultDto = _mapper.Map<ProjectDTO>(project);
-
-                // Логируем данные после сохранения
-                Console.WriteLine("Project saved successfully.");
-
-                var settings = new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                };
-
-                // Возвращаем результат во Фронт-энд
                 var data = JsonConvert.SerializeObject(resultDto, Formatting.Indented);
+
+                Console.WriteLine("✅ Project and all components saved successfully!");
                 return Content(data, "application/json");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error during project processing: " + ex.Message);
-                // Логируем полное исключение
-                //Console.WriteLine("Full exception: " + JsonConvert.SerializeObject(ex, Formatting.Indented));
-
-                var fullError = GetFullError(ex);
-                Console.WriteLine(fullError); // В логи
-                return BadRequest($"Deserializ error: {fullError}");
+                var error = GetFullError(ex);
+                Console.WriteLine("❌ Ошибка при сохранении:");
+                Console.WriteLine(error);
+                return BadRequest($"Deserializ error: {error}");
             }
+
         }
 
 

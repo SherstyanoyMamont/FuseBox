@@ -12,7 +12,7 @@ namespace FuseBox
         // Связь с этажом
         public int FloorId { get; set; }
         [JsonIgnore]
-        public Floor? Floor { get; set; }
+        public Floor Floor { get; set; }
 
         public Room() { }
 

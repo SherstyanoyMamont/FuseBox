@@ -7,6 +7,8 @@ using Mysqlx.Crud;
 
 namespace FuseBox.App.DataBase
 {
+    // Класс в котором храниться контекст базы данных
+    // Тут мы указываем что за таблицы у нас будут в базе данных и их связи
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
@@ -18,7 +20,7 @@ namespace FuseBox.App.DataBase
         public DbSet<Floor> Floors { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Consumer> Consumer { get; set; }
-        public DbSet<Connection> Connections { get; set; }
+        public DbSet<CableConnection> Connections { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Cable> Cables { get; set; }
         public DbSet<Component> Component { get; set; }
@@ -39,6 +41,8 @@ namespace FuseBox.App.DataBase
 
             //Наследование класа Component элементов щита
             //На выходе получаем одну таблицу Components со всеми компонентами в ней
+
+
             modelBuilder.Entity<Component>()
                 .HasDiscriminator<string>("Discriminator")
                 .HasValue<Component>("Component")
@@ -51,34 +55,34 @@ namespace FuseBox.App.DataBase
 
             /////////////////////////////////////////////////////////////////////
 
-            // User → Projects (один ко многим)
+            // User → Projects 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Projects)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Или другой DeleteBehavior, если нужно
+                .OnDelete(DeleteBehavior.Cascade);
 
             /////////////////////////////////////////////////////////////////////
 
-            // Project → FloorGrouping (один к одному)
+            // Project → FloorGrouping 
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.FloorGrouping)
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<FloorGrouping>(fb => fb.ProjectId);
 
-            // Project → GlobalGrouping (один к одному)
+            // Project → GlobalGrouping 
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.GlobalGrouping)
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<GlobalGrouping>(fb => fb.ProjectId);
 
-            // Project → InitialSettings (один к одному)
+            // Project → InitialSettings
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.InitialSettings)
                 .WithOne(fb => fb.Project)
                 .HasForeignKey<InitialSettings>(fb => fb.ProjectId);
 
-            //Project → FuseBoxUnit(один к одному)
+            //Project → FuseBoxUnit
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.FuseBox)
                 .WithOne(fb => fb.Project)
@@ -86,7 +90,7 @@ namespace FuseBox.App.DataBase
 
             /////////////////////////////////////////////////////////////////////
 
-            // Project → Floors (один ко многим)
+            // Project → Floors
             modelBuilder.Entity<Project>() 
                 .HasMany(p => p.Floors)
                 .WithOne(p => p.Project)
@@ -135,16 +139,17 @@ namespace FuseBox.App.DataBase
             ////////////////////////////////////////////////////////////////////
 
             // CableConnections → Connections (один ко одному)
-            modelBuilder.Entity<Connection>()
+            modelBuilder.Entity<CableConnection>()
                 .HasOne(p => p.CabelWay)
                 .WithOne(fb => fb.Connection)
                 .HasForeignKey<Position>(fb => fb.ConnectionPositionId);
 
             // CableConnections → Cable (один ко одному)
-            modelBuilder.Entity<Connection>()
+            modelBuilder.Entity<CableConnection>()
                 .HasOne(p => p.Cable)
                 .WithOne(fb => fb.Connection)
-                .HasForeignKey<Cable>(fb => fb.ConnectionCableId);
+                .HasForeignKey<Cable>(fb => fb.ConnectionCableId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             ////////////////////////////////////////////////////////////////////
 
@@ -164,15 +169,9 @@ namespace FuseBox.App.DataBase
             ////////////////////////////////////////////////////////////////////
 
             modelBuilder.Entity<FuseBoxComponentGroup>()
-                .HasOne(f => f.FuseBoxUnit)
-                .WithMany(u => u.ComponentGroups)
-                .HasForeignKey(f => f.FuseBoxUnitId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<FuseBoxComponentGroup>()
-            //    .HasMany(cg => cg.Components)
-            //    .WithOne(cg => cg.FuseBoxComponentGroup)
-            //    .HasForeignKey(c => c.FuseBoxComponentGroupId);
+                .HasMany(cg => cg.Components)
+                .WithOne(cg => cg.FuseBoxComponentGroup)
+                .HasForeignKey(c => c.FuseBoxComponentGroupId);
 
             //// FuseBox → Electricals (один ко многим)
             //modelBuilder.Entity<FuseBoxUnit>()

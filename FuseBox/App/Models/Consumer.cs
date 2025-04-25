@@ -9,7 +9,7 @@ namespace FuseBox
         // Связь с комнатой
         public int RoomId { get; set; }
         [JsonIgnore]
-        public Room? Room { get; set; }
+        public Room Room { get; set; }
 
         //// Связь с FuseBoxUnit
         //public int FuseBoxUnitId { get; set; }

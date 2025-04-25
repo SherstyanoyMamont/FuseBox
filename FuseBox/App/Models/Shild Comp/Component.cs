@@ -11,19 +11,20 @@ namespace FuseBox
         public decimal Price { get; set; }
 
         // !!! Скрытые списки разьемов
-        [JsonIgnore]
-        [JsonProperty(Order = 8)]
+        //[JsonIgnore]
+        //[JsonProperty(Order = 8)]
 
-        public List<Port>? Ports = new List<Port>();
+        public List<Port> Ports { get; set; } = new();
 
-        [JsonProperty(Order = 5)]
         public int Slots { get; set; }
 
 
         //Связь с группой компонентов
         public int FuseBoxComponentGroupId { get; set; }
         [JsonIgnore]
-        public FuseBoxComponentGroup? FuseBoxComponentGroup { get; set; }
+        public FuseBoxComponentGroup? FuseBoxComponentGroup { get; set; } = null!;
+
+
 
         public Component(string name, int amper, int slots, decimal price, List<Port> ports)
         {

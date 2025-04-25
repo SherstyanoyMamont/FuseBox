@@ -12,7 +12,7 @@ namespace FuseBox
         // Связь с проектом
         public int ProjectId { get; set; }
         [JsonIgnore]
-        public Project? Project { get; set; }
+        public Project Project { get; set; }
 
         public Floor() { }
 
