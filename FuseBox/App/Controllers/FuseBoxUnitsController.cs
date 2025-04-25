@@ -51,12 +51,12 @@ namespace FuseBox.Controllers
 
         //works with adequate input data, but somthing wrong with actual calculations or logic
         [HttpPost("calculation")]// POST request for    http://localhost:5133/calculation
-        public IActionResult CalculateFuseBox([FromBody] ProjectDTO dto)
+        public async Task<IActionResult> CalculateFuseBox([FromBody] ProjectDTO dto)
         {
 
             // Проверка входных данных
             if (dto == null) return BadRequest("Проект не передан вообще.");
-            if (dto.FuseBox == null) return BadRequest("FuseBox пустой.");
+            if (dto.FuseBox == null) return BadRequest("FuseBox пустой.");  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (dto.Floors == null || !dto.Floors.Any()) return BadRequest("Нет этажей.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -71,11 +71,11 @@ namespace FuseBox.Controllers
                     _context.SaveChanges();
                 }
 
-                // 2. Маппим DTO → Entity
+                // DTO
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // DTO → Entity
                 var project = _mapper.Map<Project>(dto);
                 project.User = existingUser;
-
-                
 
                 // Страховка, если AutoMapper обошел конструктор по умолчанию:
                 project.FuseBox ??= new FuseBoxUnit();
@@ -91,31 +91,19 @@ namespace FuseBox.Controllers
                 if (project.FuseBox != null)
                     project.FuseBox.Project = project;
 
-                // 4. Добавляем и сохраняем Project (вместе с InitialSettings и FuseBox)
-                _context.Projects.Add(project);
-                _context.SaveChanges(); // Project и FuseBox получают Id
+   
 
-                // 5. Устанавливаем связи ComponentGroups → FuseBox
-                if (project.FuseBox?.ComponentGroups != null)
-                {
-                    foreach (var group in project.FuseBox.ComponentGroups)
-                    {
-                        group.FuseBoxUnitId = project.FuseBox.Id;
-                    }
 
-                    _context.ComponentGroups.AddRange(project.FuseBox.ComponentGroups);
-                    _context.SaveChanges(); // ComponentGroups получают Id
-                }
-
-                // 6. Генерация конфигурации (после сохранения всего выше)
-
+                // 5. Генерация конфигурации (после сохранения всего выше)
 
 
                 try
                 {
                     Console.WriteLine("⚙️ Генерация конфигурации начинается...");
+
                     var configService = new ConfigurationService(project);
                     configService.GenerateConfiguration();
+
                     Console.WriteLine("✅ Генерация конфигурации завершена.");
                 }
                 catch (ArgumentOutOfRangeException ex)
@@ -141,101 +129,175 @@ namespace FuseBox.Controllers
                     }
                 }
 
-
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                // Логирование количества сгенерированных соединений
-                Console.WriteLine($"📊 Connections generated: {project.FuseBox?.CableConnections?.Count ?? 0}");
-
-                var tempCables = new List<Cable>();
-                var ports = new List<Port>();
-
-                // 7. Обработка Connections и временное отсоединение кабелей
-                if (project.FuseBox?.CableConnections != null)
+                Console.WriteLine("📦 Проверка ComponentGroups перед сохранением компонентов:");
+                foreach (var group in project.FuseBox.ComponentGroups)
                 {
-                    foreach (var connection in project.FuseBox.CableConnections)
+                    var entry = _context.Entry(group);
+                    Console.WriteLine($"🔍 Group Id: {group.Id}, EF State: {entry.State}");
+
+                    foreach (var component in group.Components ?? new())
                     {
-                        connection.FuseBoxUnit = project.FuseBox;
-
-                        if (connection.Cable != null)
-                        {
-                            tempCables.Add(connection.Cable);
-                            connection.Cable.Connection = null;
-
-                            var tempCable = connection.Cable;
-                            connection.Cable = null;
-
-                            var cableEntry = _context.Entry(tempCable);
-                            if (cableEntry.State != EntityState.Detached)
-                                cableEntry.State = EntityState.Detached;
-                        }
-                    }
-
-                    _context.Connections.AddRange(project.FuseBox.CableConnections);
-                }
-
-                // 8. Сбор портов
-                if (project.FuseBox?.ComponentGroups != null)
-                {
-                    foreach (var group in project.FuseBox.ComponentGroups)
-                    {
-                        foreach (var comp in group.Components ?? Enumerable.Empty<Component>())
-                        {
-                            ports.AddRange(comp.Ports ?? Enumerable.Empty<Port>());
-                        }
+                        Console.WriteLine($"   🧩 Component: {component.Name}, GroupId: {group.Id}, FK = {component.FuseBoxComponentGroupId}");
                     }
                 }
+                Console.WriteLine($"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-                if (ports.Any())
-                    _context.Ports.AddRange(ports);
+                // 4. Добавляем и сохраняем Project (вместе с InitialSettings и FuseBox)
 
-                // 9. Сохраняем Connections и Ports
-                Console.WriteLine("🧪 Состояние перед сохранением:");
-                foreach (var entry in _context.ChangeTracker.Entries())
+                _context.Projects.Add(project);
+
+
+                var entries = _context.ChangeTracker.Entries()
+                    .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                    .ToList();
+
+                foreach (var entry in entries)
                 {
-                    Console.WriteLine($"🔍 Entity: {entry.Entity?.GetType().Name ?? "NULL"}, State: {entry.State}");
+                    Console.WriteLine($"!!!!!!!!Entity: {entry.Entity.GetType().Name}, State: {entry.State}");
                 }
 
-                _context.SaveChanges(); // Connections получают Id
+                Console.WriteLine($"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
-                // 10. Возврат кабелей с актуальными внешними ключами
-                var cablesToSave = new List<Cable>();
-                foreach (var conn in project.FuseBox.CableConnections)
-                {
-                    var matchingCable = tempCables.FirstOrDefault();
-                    if (matchingCable != null)
-                    {
-                        matchingCable.ConnectionCableId = conn.Id;
-                        matchingCable.Connection = conn;
-                        conn.Cable = matchingCable;
 
-                        cablesToSave.Add(matchingCable);
-                        tempCables.Remove(matchingCable);
-                    }
-                }
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                ///
+                // 1. Project и User (если User не привязан через внешний ключ к Project — иначе поменяй порядок)
 
-                // 11. Сохраняем кабели
-                if (cablesToSave.Any())
-                {
-                    foreach (var c in cablesToSave)
-                    {
-                        if (c == null || c.ConnectionCableId == 0)
-                        {
-                            Console.WriteLine("❌ Cable с отсутствующим FK найден и пропущен.");
-                            continue;
-                        }
-                        Console.WriteLine($"📦 Сохраняем Cable: FK = {c.ConnectionCableId}");
-                    }
 
-                    _context.Cables.AddRange(cablesToSave.Where(c => c != null && c.ConnectionCableId > 0));
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    Console.WriteLine("⚠️ Нет кабелей для сохранения.");
-                }
+                project.User = existingUser;  // если нужен
+                _context.Projects.Add(project);
 
-                // 12. Возврат результата
+                // Теперь — только вручную сохраняем кусочки:
+
+                _context.SaveChanges();
+
+                /// 
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
+
+
+
+                //// 8. Сохраняем ComponentGroups
+
+                ////_context.ComponentGroups.AddRange(project.FuseBox.ComponentGroups);
+                ////_context.SaveChanges();
+                //// Логирование количества сгенерированных соединений
+                //Console.WriteLine($"📊 Connections generated: {project.FuseBox?.CableConnections?.Count ?? 0}");
+
+                //var tempCables = new List<Cable>();
+                //var ports = new List<Port>();
+
+
+                //// 6. Назначаем каждому компоненту ссылку на его группу (теперь с реальным Id)
+
+                //var componentsToSave = new List<Component>();
+
+                //foreach (var group in project.FuseBox.ComponentGroups)
+                //{
+                //    foreach (var component in group.Components ?? new List<Component>())
+                //    {
+                //        component.FuseBoxComponentGroupId = group.Id;
+                //        component.FuseBoxComponentGroup = null; // чтоб не дублировалось через навигацию
+                //        componentsToSave.Add(component);
+                //    }
+                //}
+
+
+                //// 7. Сохраняем компоненты
+
+                //foreach (var comp in componentsToSave)
+                //{
+                //    Console.WriteLine($"🧩 Component: {comp.Name}, GroupId = {comp.FuseBoxComponentGroupId}");
+                //}
+
+                //_context.Component.AddRange(componentsToSave); // Или Components, если твоя таблица называется так
+                //_context.SaveChanges();
+
+                //// 9. Обработка Connections и временное отсоединение кабелей
+                //if (project.FuseBox?.CableConnections != null)
+                //{
+                //    foreach (var connection in project.FuseBox.CableConnections)
+                //    {
+                //        connection.FuseBoxUnit = project.FuseBox;
+
+                //        if (connection.Cable != null)
+                //        {
+                //            tempCables.Add(connection.Cable);
+                //            connection.Cable.Connection = null;
+
+                //            var tempCable = connection.Cable;
+                //            connection.Cable = null;
+
+                //            var cableEntry = _context.Entry(tempCable);
+                //            if (cableEntry.State != EntityState.Detached)
+                //                cableEntry.State = EntityState.Detached;
+                //        }
+                //    }
+
+                //    _context.Connections.AddRange(project.FuseBox.CableConnections);
+                //}
+
+                //// 10. Сбор портов
+                //if (project.FuseBox?.ComponentGroups != null)
+                //{
+                //    foreach (var group in project.FuseBox.ComponentGroups)
+                //    {
+                //        foreach (var comp in group.Components ?? Enumerable.Empty<Component>())
+                //        {
+                //            ports.AddRange(comp.Ports ?? Enumerable.Empty<Port>());
+                //        }
+                //    }
+                //}
+
+                //if (ports.Any())
+                //    _context.Ports.AddRange(ports);
+
+                //// 11. Сохраняем Connections и Ports
+                //Console.WriteLine("🧪 Состояние перед сохранением:");
+                //foreach (var entry in _context.ChangeTracker.Entries())
+                //{
+                //    Console.WriteLine($"🔍 Entity: {entry.Entity?.GetType().Name ?? "NULL"}, State: {entry.State}");
+                //}
+
+                //_context.SaveChanges(); // Connections получают Id
+
+                //// 12. Возврат кабелей с актуальными внешними ключами
+                //var cablesToSave = new List<Cable>();
+                //foreach (var conn in project.FuseBox.CableConnections)
+                //{
+                //    var matchingCable = tempCables.FirstOrDefault();
+                //    if (matchingCable != null)
+                //    {
+                //        matchingCable.ConnectionCableId = conn.Id;
+                //        matchingCable.Connection = conn;
+                //        conn.Cable = matchingCable;
+
+                //        cablesToSave.Add(matchingCable);
+                //        tempCables.Remove(matchingCable);
+                //    }
+                //}
+
+                //// 13. Сохраняем кабели
+                //if (cablesToSave.Any())
+                //{
+                //    foreach (var c in cablesToSave)
+                //    {
+                //        if (c == null || c.ConnectionCableId == 0)
+                //        {
+                //            Console.WriteLine("❌ Cable с отсутствующим FK найден и пропущен.");
+                //            continue;
+                //        }
+                //        Console.WriteLine($"📦 Сохраняем Cable: FK = {c.ConnectionCableId}");
+                //    }
+
+                //    _context.Cables.AddRange(cablesToSave.Where(c => c != null && c.ConnectionCableId > 0));
+                //    _context.SaveChanges();
+                //}
+                //else
+                //{
+                //    Console.WriteLine("⚠️ Нет кабелей для сохранения.");
+                //}
+
+                // 14. Возврат результата
                 var resultDto = _mapper.Map<ProjectDTO>(project);
                 var data = JsonConvert.SerializeObject(resultDto, Formatting.Indented);
 
@@ -251,6 +313,8 @@ namespace FuseBox.Controllers
             }
 
         }
+
+
 
 
 

@@ -21,8 +21,7 @@ namespace FuseBox
 
         //Связь с группой компонентов
         public int FuseBoxComponentGroupId { get; set; }
-        [JsonIgnore]
-        public FuseBoxComponentGroup? FuseBoxComponentGroup { get; set; } = null!;
+        public FuseBoxComponentGroup FuseBoxComponentGroup { get; set; }
 
 
 

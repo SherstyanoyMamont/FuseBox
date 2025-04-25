@@ -59,7 +59,7 @@ namespace FuseBox
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
         [ForeignKey("FuseBoxComponentGroupId")]
-        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new(); // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
 
 
 
