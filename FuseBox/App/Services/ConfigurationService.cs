@@ -260,9 +260,9 @@ namespace FuseBox
                     fuseBox.ComponentGroups[currentLevel].Components.Add(component);
 
 
-                    var group = fuseBox.ComponentGroups[currentLevel];
-                    component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    group.Components.Add(component); // Присваиваем группу
+                    //var group = fuseBox.ComponentGroups[currentLevel];
+                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
+                    //group.Components.Add(component); // Присваиваем группу
 
                 }
                 else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
@@ -277,9 +277,9 @@ namespace FuseBox
                     fuseBox.ComponentGroups[currentLevel].Components.Add(component);
 
 
-                    var group = fuseBox.ComponentGroups[currentLevel];
-                    component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    group.Components.Add(component); // Присваиваем группу
+                    //var group = fuseBox.ComponentGroups[currentLevel];
+                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
+                    //group.Components.Add(component); // Присваиваем группу
 
                 }
                 else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
@@ -288,9 +288,9 @@ namespace FuseBox
                     fuseBox.ComponentGroups[currentLevel].Components.Add(component);
 
 
-                    var group = fuseBox.ComponentGroups[currentLevel];
-                    component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    group.Components.Add(component); // Присваиваем группу
+                    //var group = fuseBox.ComponentGroups[currentLevel];
+                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
+                    //group.Components.Add(component); // Присваиваем группу
 
 
                     if (shieldModuleSet[i] != shieldModuleSet[^1])
