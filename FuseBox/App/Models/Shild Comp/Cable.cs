@@ -17,8 +17,8 @@ namespace FuseBox.App.Models.Shild_Comp
     public class Cable : BaseEntity
     {
         public decimal Length { get; set; } // m
-        public decimal Section { get; set; } // mm^2
-        public string? Сolour { get; set; }
+        public decimal? Section { get; set; } // mm^2
+        public string Сolour { get; set; }
 
         // Связь с Connection
         public int? ConnectionCableId { get; set; }
@@ -28,9 +28,16 @@ namespace FuseBox.App.Models.Shild_Comp
 
         public Cable() { }
 
-        public Cable(ConnectorColour colour, decimal section) 
+        public Cable(ConnectorColour colour, decimal? section) 
         {
             Сolour = Convert.ToString(colour);
+            Section = section;
+            //this.colour = Convert.ToString(Colour);
+        }
+
+        public Cable(string colour, decimal? section)
+        {
+            Сolour = colour;
             Section = section;
             //this.colour = Convert.ToString(Colour);
         }

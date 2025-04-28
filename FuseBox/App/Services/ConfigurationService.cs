@@ -134,10 +134,10 @@ namespace FuseBox
             }
             else // Входим в расчеты 3 фазы
             {
-                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 3, 35, ports1_6, "P1", Type3PN.P3)); }
-                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3PN", project.InitialSettings.MainAmperage, 4, 35, ports1_8, "P1", Type3PN.P3_N)); }
-                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
-                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
+                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory3p", project.InitialSettings.MainAmperage, 3, 35, ports1_6, "P1", Type3PN.P3)); }
+                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory3pn", project.InitialSettings.MainAmperage, 4, 35, ports1_8, "P1", Type3PN.P3_N)); }
+                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD3", 100, 4, 65, ports2x2i)); }
+                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter3p", 63, 6, 145, ports1_8)); }
                 if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 4, 75, ports1_8)); }
                 if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
                 {                                        
@@ -146,7 +146,7 @@ namespace FuseBox
                     shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));                   
                 }
                 if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
-                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
+                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 2, 22)); }
                 if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25)); } // !!!
                 if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
 
@@ -154,7 +154,7 @@ namespace FuseBox
             }
         }
         
-        // Логика распределения модулей по уровням...
+        
         public void CalculateWireCrossSection()
         {
             // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
@@ -181,8 +181,7 @@ namespace FuseBox
             // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
             // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
         }
-
-        // Создаем соединение проводами
+        // Логика распределения модулей по уровням...
         public void Distribute()
         {
             DistributionService distributionService = new(project, uzos);
@@ -193,11 +192,12 @@ namespace FuseBox
             shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
         }
 
+        // Создаем соединение проводами
         public void CreateConnections()
         {
             List<CableConnection> сableConnections = fuseBox.CableConnections;
 
-            // Добавляем ID ко всем компонентам
+            // Добавляем SerialNumber ко всем компонентам
             for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].SerialNumber = i + 1; }
 
             for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
@@ -221,8 +221,10 @@ namespace FuseBox
                         {
                             //AddConnection(сableConnections, module.Id, currentPort, n);
 
-                            Position connectionIds = new Position(currentComp.SerialNumber, n + 1);
-                            сableConnections.Add(new CableConnection(currentPort.cableType, connectionIds));
+                            Position position = new Position(currentComp.SerialNumber, n + 1);
+                            Cable cable = new Cable(currentPort.connectorColour, 10); //        !!!!!! Временная замена на 10
+
+                            сableConnections.Add(new CableConnection(cable, position));
 
                             //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
                             break;                               // Берем следующий выходной разьем
@@ -306,10 +308,15 @@ namespace FuseBox
                     fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
             }
 
+            //int serialNumber = 1; // начинаем с 1 для каждой группы
+
             foreach (var group in fuseBox.ComponentGroups)
             {
+                
+
                 foreach (var component in group.Components)
                 {
+                    //component.SerialNumber = serialNumber++;
                     component.FuseBoxComponentGroup = group;
                 }
             }
@@ -331,357 +338,159 @@ namespace FuseBox
 
 /*
 
-{
-  "floorGrouping": {
-    "FloorGroupingP": true,
-    "separateUZO": true,
-    "ProjectId": 1
-  },
-  "globalGrouping": {
-    "Sockets": 1,
-    "Lighting": 1,
-    "Conditioners": 1,
-    "ProjectId": 1
-  },
-  "initialSettings": {
-    "PhasesCount": 1,
-    "MainAmperage": 25,
-    "ShieldWidth": 16,
-    "VoltageStandard": 220,
-    "PowerCoefficient": 1,
-    "ProjectId": 1
-  },
-  "FuseBox": {
-    "MainBreaker": true,
-    "Main3PN": false,
-    "SurgeProtection": true,
-    "LoadSwitch2P": true,
-    "ModularContactor": true,
-    "RailMeter": true,
-    "FireUZO": true,
-    "VoltageRelay": true,
-    "RailSocket": true,
-    "NDisconnectableLine": true,
-    "LoadSwitch": true,
-    "CrossModule": true,
-    "DINLines": 1,
-    "Price": 1000,
-    "ProjectId": 1
-  },
-  "floors": [
-    {
-      "Id": 1,
-      "Name": "Ground Floor",
-      "ProjectId": 1,
-      "rooms": [
-        {
-          "Name": "Living Room",
-          "FloorId": 1,
-          "Consumer": [
-            {
-              "Id": 1,
-              "RoomId": 1,
-              "name": "TV",
-              "Amper": 1
-            },
-            {
-              "Id": 2,
-              "RoomId": 1,
-              "name": "Air Conditioner",
-              "Amper": 8
-            },
-            {
-              "Id": 3,
-              "RoomId": 1,
-              "name": "Lighting",
-              "Amper": 1
-            }
-          ],
-          "tPower": 10
-        },
-        {
-          "name": "Kitchen",
-          "FloorId": 1,
-          "Consumer": [
-            {
-              "Id": 4,
-              "RoomId": 2,
-              "name": "Refrigerator",
-              "Amper": 3
-            },
-            {
-              "Id": 5,
-              "RoomId": 2,
-              "name": "Microwave",
-              "Amper": 5
-            },
-            {
-              "Id": 6,
-              "RoomId": 2,
-              "name": "Oven",
-              "Amper": 7
-            }
-          ],
-          "tPower": 15
-        }
-      ]
-    },
-    {
-      "Id": 2,
-      "Name": "First Floor",
-      "ProjectId": 2,
-      "rooms": [
-        {
-          "name": "Bedroom 1",
-          "FloorId": 2,
-          "Consumer": [
-            {
-              "Id": 7,
-              "RoomId": 3,
-              "name": "Heater",
-              "Amper": 13
-            },
-            {
-              "Id": 8,
-              "RoomId": 3,
-              "name": "Fan",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        },
-        {
-          "name": "Bathroom",
-          "FloorId": 2,
-          "Consumer": [
-            {
-              "Id": 9,
-              "RoomId": 4,
-              "name": "Water Heater",
-              "Amper": 13
-            },
-            {
-              "Id": 10,
-              "RoomId": 4,
-              "name": "Hair Dryer",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        }
-      ]
-    },
-    {
-      "Id": 3,
-      "Name": "Second Floor",
-      "ProjectId": 3,
-      "rooms": [
-        {
-          "name": "Office",
-          "FloorId": 3,
-          "Consumer": [
-            {
-              "Id": 11,
-              "RoomId": 5,
-              "name": "Computer",
-              "Amper": 2
-            },
-            {
-              "Id": 12,
-              "RoomId": 5,
-              "name": "Printer",
-              "Amper": 1
-            },
-            {
-              "Id": 13,
-              "RoomId": 5,
-              "name": "Lighting",
-              "Amper": 2
-            },
-            {
-              "Id": 14,
-              "RoomId": 5,
-              "name": "Air Conditioner",
-              "Amper": 2
-            },
-            {
-              "Id": 15,
-              "RoomId": 5,
-              "name": "Air Conditioner",
-              "Amper": 1
-            },
-            {
-              "Id": 16,
-              "RoomId": 5,
-              "name": "Lighting",
-              "Amper": 2
-            },
-            {
-              "Id": 17,
-              "RoomId": 5,
-              "name": "Lighting",
-              "Amper": 2
-            }
-          ],
-          "tPower": 12
-        }
-      ]
-    }
-  ]
-}
 
 
-
-
-{
+ {
     "floorGrouping": {
-        "FloorGroupingP": true,
-    "separateUZO": true
+      "FloorGroupingP": true,
+      "separateUZO": true
     },
-  "globalGrouping": {
-        "Sockets": 1,
-    "Lighting": 1,
-    "Conditioners": 1
-  },
-  "initialSettings": {
-        "PhasesCount": 1,
-    "MainAmperage": 25,
-    "ShieldWidth": 16,
-    "VoltageStandard": 220,
-    "PowerCoefficient": 1
-  },
-  "FuseBox": {
-        "MainBreaker": true,
-    "Main3PN": false,
-    "SurgeProtection": true,
-    "LoadSwitch2P": true,
-    "ModularContactor": true,
-    "RailMeter": true,
-    "FireUZO": true,
-    "VoltageRelay": true,
-    "RailSocket": true,
-    "NDisconnectableLine": true,
-    "LoadSwitch": true,
-    "CrossModule": true,
-    "DINLines": 1,
-    "Price": 1000
-  },
-  "floors": [
-    {
+    "globalGrouping": {
+      "Sockets": 1,
+      "Lighting": 1,
+      "Conditioners": 1
+    },
+    "initialSettings": {
+      "PhasesCount": 3,
+      "MainAmperage": 25,
+      "ShieldWidth": 16,
+      "VoltageStandard": 220,
+      "PowerCoefficient": 1
+    },
+    "FuseBox": {
+      "MainBreaker": true,
+      "Main3PN": false,
+      "SurgeProtection": true,
+      "LoadSwitch2P": true,
+      "ModularContactor": true,
+      "RailMeter": true,
+      "FireUZO": true,
+      "VoltageRelay": true,
+      "RailSocket": true,
+      "NDisconnectableLine": true,
+      "LoadSwitch": true,
+      "CrossModule": true,
+      "DINLines": 1,
+      "Price": 1000
+      
+    },
+    "floors": [
+      {
         "Name": "Ground Floor",
-      "rooms": [
-        {
+        "rooms": [
+          {
             "Name": "Living Room",
-          "Consumer": [
-            {
-                "name": "TV",
-              "Amper": 1
-            },
-            {
-                "name": "Air Conditioner",
-              "Amper": 8
-            },
-            {
-                "name": "Lighting",
-              "Amper": 1
-            }
-          ],
-          "tPower": 10
-        },
-        {
+            "Consumer": [
+              {
+                "Name": "TV",
+                "Amper": 1
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 8
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 1
+              }
+            ],
+            "tPower": 10
+          },
+          {
             "Name": "Kitchen",
-          "Consumer": [
-            {
-                "name": "Refrigerator",
-              "Amper": 3
-            },
-            {
-                "name": "Microwave",
-              "Amper": 5
-            },
-            {
-                "name": "Oven",
-              "Amper": 7
-            }
-          ],
-          "tPower": 15
-        }
-      ]
-    },
-    {
+            "Consumer": [
+              {
+                "Name": "Refrigerator",
+                "Amper": 3
+              },
+              {
+                "Name": "Microwave",
+                "Amper": 5
+              },
+              {
+                "Name": "Oven",
+                "Amper": 7
+              }
+            ],
+            "tPower": 15
+          }
+        ]
+      },
+      {
         "Name": "First Floor",
-      "rooms": [
-        {
+        "rooms": [
+          {
             "Name": "Bedroom 1",
-          "Consumer": [
-            {
-                "name": "Heater",
-              "Amper": 13
-            },
-            {
-                "name": "Fan",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        },
-        {
+            "Consumer": [
+              {
+                "Name": "Heater",
+                "Amper": 13
+              },
+              {
+                "Name": "Fan",
+                "Amper": 7
+              }
+            ],
+            "tPower": 20
+          },
+          {
             "Name": "Bathroom",
-          "Consumer": [
-            {
-                "name": "Water Heater",
-              "Amper": 13
-            },
-            {
-                "name": "Hair Dryer",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        }
-      ]
-    },
-    {
+            "Consumer": [
+              {
+                "Name": "Water Heater",
+                "Amper": 13
+              },
+              {
+                "Name": "Hair Dryer",
+                "Amper": 7
+              }
+            ],
+            "tPower": 20
+          }
+        ]
+      },
+      {
         "Name": "Second Floor",
-      "rooms": [
-        {
+        "rooms": [
+          {
             "Name": "Office",
-          "Consumer": [
-            {
-                "name": "Computer",
-              "Amper": 2
-            },
-            {
-                "name": "Printer",
-              "Amper": 1
-            },
-            {
-                "name": "Lighting",
-              "Amper": 2
-            },
-            {
-                "name": "Air Conditioner",
-              "Amper": 2
-            },
-            {
-                "name": "Air Conditioner",
-              "Amper": 1
-            },
-            {
-                "name": "Lighting",
-              "Amper": 2
-            },
-            {
-                "name": "Lighting",
-              "Amper": 2
-            }
-          ],
-          "tPower": 12
-        }
-      ]
-    }
-  ]
-}
+            "Consumer": [
+              {
+                "Name": "Computer",
+                "Amper": 2
+              },
+              {
+                "Name": "Printer",
+                "Amper": 1
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 2
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 1
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              }
+            ],
+            "tPower": 12
+          }
+        ]
+      }
+    ]
+  }
+
 
 
 */

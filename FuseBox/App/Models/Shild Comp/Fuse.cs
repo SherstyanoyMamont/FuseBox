@@ -13,7 +13,7 @@ namespace FuseBox
         public Fuse(string name,  int amper, int slots, decimal price, List<Consumer> electricals) : base(name, amper, slots, price)
         {
             // В список разьемов добавляем разьем с входом для АВ и кабелем красного цвета
-            Ports = new List<Port> { new Port(PortInEnum.AV, new Cable(ConnectorColour.Red, (decimal)1.5)) }; 
+            Ports = new List<Port> { new Port(PortInEnum.AV, ConnectorColour.Red) }; 
             Electricals = electricals;
             //TotalLoad = totalLoad;
         }

@@ -7,8 +7,8 @@ namespace FuseBox.App.Models
 {
     public class CableConnection : BaseEntity
     {
-        public Cable? Cable { get; set; }
-        public Position? CabelWay { get; set; }
+        public Cable Cable { get; set; }
+        public Position CabelWay { get; set; }
 
         public int FuseBoxUnitId { get; set; }
         [JsonIgnore]

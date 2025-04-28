@@ -30,6 +30,18 @@ namespace FuseBox
                 // создание нового экземпляра билдера веб-приложения
                 var builder = WebApplication.CreateBuilder(args);
 
+                // Add services to the container.
+
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowFrontend", policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000") // Разрешаем только твой фронтенд
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+                });
+
                 //builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
                 //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
 
@@ -69,8 +81,16 @@ namespace FuseBox
                 // Добавляет поддержку Swagger
                 builder.Services.AddSwaggerGen();
 
+
+                
+
+
                 // Билдер создает новый экземпляр веб-приложения на основе указанных настроек
                 var app = builder.Build();
+
+
+                // Подключаем CORS
+                app.UseCors("AllowFrontend");
 
                 // Configure the HTTP request pipeline.
                 if (app.Environment.IsDevelopment())

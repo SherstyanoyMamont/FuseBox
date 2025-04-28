@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json.Converters;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace FuseBox
@@ -30,6 +31,9 @@ namespace FuseBox
         public string? portOut { get; set; }
         public string? PortIn { get; set; }
 
+        [NotMapped]
+        public string? connectorColour { get; set; } // Цвет разьема
+
         // Связь с Cable
         public int CableId { get; set; }
         [JsonIgnore]
@@ -40,16 +44,16 @@ namespace FuseBox
         [JsonIgnore]
         public Component Component { get; set; }
 
-        public Port(PortOutEnum connectorType, Cable cableType)
+        public Port(PortOutEnum connectorType, ConnectorColour cableColour)
         {
             this.portOut = Convert.ToString(connectorType);
-            this.cableType = cableType;
+            this.connectorColour = Convert.ToString(cableColour);
         }
 
-        public Port(PortInEnum portIn, Cable cableType)
+        public Port(PortInEnum portIn, ConnectorColour cableColour)
         {
             this.PortIn = Convert.ToString(portIn);
-            this.cableType = cableType;
+            this.connectorColour = Convert.ToString(cableColour);
         }
 
         public Port() { }
@@ -70,9 +74,9 @@ namespace FuseBox
 
             foreach (var (portIn, portOut, colour) in portPairs)
             {
-                var cable = new Cable(colour, wireSection);
-                ports.Add(new Port(portIn, cable));
-                ports.Add(new Port(portOut, cable));
+                //var cable = new Cable(colour, wireSection); // Зачем нам куча ненужных кабелей?
+                ports.Add(new Port(portIn, colour));
+                ports.Add(new Port(portOut, colour));
             }
 
             return ports;

@@ -228,12 +228,12 @@ namespace FuseBox
                 else if (phaseIndex == 1)
                 {
                     uzos[i].Ports[0].portOut = "Phase2";
-                    uzos[i].Ports[0].cableType.Сolour = "Orange";
+                    uzos[i].Ports[0].connectorColour = "Orange";
                 }
                 else
                 {
                     uzos[i].Ports[0].portOut = "Phase3";
-                    uzos[i].Ports[0].cableType.Сolour = "Grey";
+                    uzos[i].Ports[0].connectorColour = "Grey";
                 }
                 // Добавим нагрузку к фазе с минимальной нагрузкой
                 phases[phaseIndex] = phases[phaseIndex] + Convert.ToInt32(uzos[i].TotalLoad);

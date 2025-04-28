@@ -25,8 +25,8 @@ namespace FuseBox
             // В список разьемов добавляем разьемы с выходом для АВ - красного цвета и фазой с нолем на вход
             Ports = new List<Port> 
             {
-                new Port(PortOutEnum.Phase1, new Cable (ConnectorColour.Red, (decimal)10.00)), 
-                new Port(PortOutEnum.Zero,   new Cable (ConnectorColour.Blue,(decimal)10.00)), 
+                new Port(PortOutEnum.Phase1, ConnectorColour.Red), 
+                new Port(PortOutEnum.Zero,   ConnectorColour.Blue), 
                 //new Port(PortOut.AV,     new Cable (ConnectorColour.Red, (decimal)1.5  )) 
             };
             Capacity = 30;

@@ -14,10 +14,8 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
 using FuseBox.App.Models.Shild_Comp;
 
-
 namespace FuseBox.Controllers
 {
-
     public class FuseBoxUnitProfile : Profile
     {
         public FuseBoxUnitProfile()
@@ -33,8 +31,7 @@ namespace FuseBox.Controllers
 
     [ApiController]
     [Microsoft.AspNetCore.Components.Route("")]
-    public class FuseBoxUnitsController : ControllerBase
-    {
+    public class FuseBoxUnitsController : ControllerBase{
         private readonly IMapper _mapper;
         private readonly AppDbContext _context;
         public FuseBoxUnitsController(AppDbContext context)
@@ -72,14 +69,11 @@ namespace FuseBox.Controllers
                 }
 
                 // DTO → Entity
-
                 var project = _mapper.Map<Project>(dto);
                 project.User = existingUser;
 
 
-
-                // Генерация конфигурации (после сохранения всего выше)
-
+                // Генерация конфигурации
                 try
                 {
                     Console.WriteLine("⚙️ Генерация конфигурации начинается...");
@@ -106,11 +100,20 @@ namespace FuseBox.Controllers
                 _context.Projects.Add(project);
                 _context.SaveChanges();
 
+                // DTO → Entity
+                var resultDto = _mapper.Map<ProjectDTO>(project);
+
+
+                // Выбираем только нужные поля
+                var reducedResult = new
+                {
+                    resultDto.Id
+
+                };
+
+                var data = JsonConvert.SerializeObject(reducedResult, Formatting.Indented);
 
                 // Возврат результата
-                var resultDto = _mapper.Map<ProjectDTO>(project);
-                var data = JsonConvert.SerializeObject(resultDto, Formatting.Indented);
-
                 Console.WriteLine("✅ Project and all components saved successfully!");
                 return Content(data, "application/json");
 
@@ -122,11 +125,7 @@ namespace FuseBox.Controllers
                 Console.WriteLine(error);
                 return BadRequest($"Deserializ error: {error}");
             }
-
         }
-
-
-
 
 
         private string GetFullError(Exception ex)
@@ -140,13 +139,110 @@ namespace FuseBox.Controllers
             return string.Join(" --> ", messages);
         }
 
-        //just to test get request      http://localhost:5133/test
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-            string name = System.Environment.UserName;
 
-            return Ok($"Hello, {name};)");
+
+        [HttpGet("project/{id}")]
+        public async Task<IActionResult> GetProject(int id)
+        {
+            var componentIdCounter = 1; // начинаем с 1
+
+            var project = await _context.Projects
+                .Include(p => p.FuseBox.ComponentGroups)
+                    .ThenInclude(g => g.Components)
+                .Include(p => p.FuseBox.CableConnections)
+                    .ThenInclude(c => c.Cable)
+                .Include(p => p.FuseBox.CableConnections)
+                    .ThenInclude(c => c.CabelWay)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+
+            if (project?.FuseBox?.ComponentGroups != null)
+            {
+                foreach (var group in project.FuseBox.ComponentGroups)
+                {
+                    group.Components = group.Components
+                        .OrderBy(c => c.SerialNumber) // <-- здесь сортировка по нужному полю
+                        .ToList();
+                }
+            }
+
+            foreach (var group in project.FuseBox.ComponentGroups)
+            {
+                var nonEmptySlots = group.Components.Where(c => c.Name != "Empty Slot").ToList();
+                var emptySlots = group.Components.Where(c => c.Name == "Empty Slot").ToList();
+
+                group.Components = nonEmptySlots.Concat(emptySlots).ToList(); // Перезаписали новый порядок
+            }
+
+            if (project == null)
+                return NotFound();
+
+            var result = new
+            {
+                ComponentGroups = project.FuseBox.ComponentGroups
+                    .Select(group => new
+                    {
+                        Components = group.Components.SelectMany(c =>
+                        {
+                            var list = new List<object>();
+
+                            list.Add(new
+                            {
+                                //Id = componentIdCounter++,
+                                Id = c.SerialNumber,
+                                Name = c.Name?.Replace(" ", ""),
+                                Slots = c.Slots,
+                                Amper = c.Amper
+                            });
+
+                            //// Проверка через название
+                            //if (c.Name == "RCD")
+                            //{
+                            //    // Теперь Electricals нужно доставать вручную,
+                            //    // например через какое-то специальное поле или отдельный способ
+                            //    var rcdWithElectricals = project.FuseBox.ComponentGroups
+                            //        .SelectMany(g => g.Components)
+                            //        .FirstOrDefault(x => x.Id == c.Id);
+
+
+                            //    foreach (var electrical in )
+                            //    {
+                            //        list.Add(new
+                            //        {
+                            //            Id = componentIdCounter++,
+                            //            Name = electrical.Name?.Replace(" ", "") ?? "Unknown",
+                            //            Slots = 0,
+                            //            Amper = electrical.Amper
+                            //        });
+                            //    }
+
+                            //}
+
+
+                            return list;
+
+                        }).ToList()
+                    }).ToList(),
+
+                CableConnections = project.FuseBox.CableConnections
+                    .Select(conn => new
+                    {
+                        Cable = conn.Cable == null ? null : new
+                        {
+                            Colour = conn.Cable.Сolour,
+                        },
+                        CabelWay = conn.CabelWay == null ? null : new
+                        {
+                            IndexStart = conn.CabelWay.IndexStart,
+                            IndexFinish = conn.CabelWay.IndexFinish,
+                        },
+
+                    }).ToList()
+            };
+
+            var data = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+            return Content(data, "application/json");
         }
     }
 }
