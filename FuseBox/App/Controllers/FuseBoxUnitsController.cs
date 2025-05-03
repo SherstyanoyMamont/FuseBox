@@ -13,6 +13,9 @@ using System;
 using System.ComponentModel;
 using Microsoft.AspNetCore.Components;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.App.Factorys;
+using FuseBox.App.Interfaces;
+using FuseBox.App.Services.Providers;
 
 namespace FuseBox.Controllers
 {
@@ -78,7 +81,13 @@ namespace FuseBox.Controllers
                 {
                     Console.WriteLine("⚙️ Генерация конфигурации начинается...");
 
-                    var configService = new ConfigurationService(project);
+                    // Создаём адаптер, который вытянет нужные настройки из проекта
+                    IProjectSettings settingsProvider = new ProjectSettings(project); // передаем проект в адаптер
+
+                    // Создаём фабрику компонентов
+                    IComponentFactory componentFactory = new ComponentFactory();
+
+                    var configService = new ConfigurationService(project, settingsProvider, componentFactory);
                     configService.GenerateConfiguration();
 
                     Console.WriteLine("✅ Генерация конфигурации завершена.");

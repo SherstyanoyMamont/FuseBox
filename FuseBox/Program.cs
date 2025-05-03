@@ -15,6 +15,9 @@ using System.Configuration;
 using Microsoft.Extensions.Options;
 using FuseBox.Controllers;
 using AutoMapper;
+using FuseBox.App.Factorys;
+using FuseBox.App.Interfaces;
+using FuseBox.App.Services.Providers;
 
 
 namespace FuseBox
@@ -24,7 +27,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (true)
+            if (false)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -309,7 +312,14 @@ namespace FuseBox
 
                 Project? project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
 
-                ConfigurationService configurationService = new(project);     // создание экземпляра сервиса конфигурации
+                // Создаём адаптер, который вытянет нужные настройки из проекта
+                IProjectSettings settingsProvider = new ProjectSettings(project); // передаем проект в адаптер
+
+                // Создаём фабрику компонентов
+                IComponentFactory componentFactory = new ComponentFactory();
+
+                // создание экземпляра сервиса конфигурации
+                ConfigurationService configurationService = new(project, settingsProvider, componentFactory);     
 
                 var validationResults = ValidationHelper.Validate(project);
 
@@ -331,7 +341,7 @@ namespace FuseBox
 
 
                 //var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings);           // сериализация данных
-                var newFuseBox = JsonConvert.SerializeObject(configurationService.project, settings);           // сериализация данных
+                var newFuseBox = JsonConvert.SerializeObject(configurationService.project, settings);     // сериализация данных
 
                 //var configurationS = JsonConvert.SerializeObject(configurationService.ports, settings); // сериализация данных
 

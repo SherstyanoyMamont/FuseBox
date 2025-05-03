@@ -1,4 +1,5 @@
-﻿using FuseBox.App.Models;
+﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Microsoft.AspNetCore.Components;
@@ -18,6 +19,9 @@ namespace FuseBox
     // Сервисный класс, который содержит логику для работы с объектами конфигурации
     public class ConfigurationService
     {
+        private readonly IProjectSettings settingsProvider;
+        private readonly IComponentFactory componentFactory;
+
         public List<Component> shieldModuleSet = new();
         public List<Port> ports;
         public List<RCD> uzos = new();
@@ -26,12 +30,15 @@ namespace FuseBox
         public FuseBoxUnit fuseBox;
 
         public decimal WireSection;
-        
-        public ConfigurationService(Project Project) 
+
+        public ConfigurationService(Project Project, IProjectSettings settingsProvider, IComponentFactory componentFactory)
         {
-            project = Project;
-            fuseBox = project.FuseBox;
-            ports = Port.CreateStandardPorts(WireSection);
+            this.settingsProvider = settingsProvider;
+            this.componentFactory = componentFactory;
+
+            this.project = Project;
+            this.fuseBox = project.FuseBox;
+            this.ports = Port.CreateStandardPorts(WireSection);
         }
 
         // Создаем/Модифицируем объект проекта
@@ -105,56 +112,44 @@ namespace FuseBox
         // Логика конфигурации устройств...
         public void ConfigureShield()
         {
-            List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
 
-            var ports2x2 = SelectPorts(0, 1, 6, 7);
-            var ports2   = SelectPorts(1, 7);
-            var ports2x2i= SelectPorts(1, 3, 5, 7);
-            var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
-            var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
-            var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
-            var ports017 = SelectPorts(0, 1, 7);
-            var ports237 = SelectPorts(2, 3, 7);
-            var ports457 = SelectPorts(4, 5, 7);
-
-            if (project.InitialSettings.PhasesCount == 1) // Входим в расчеты 1 фазы
+            if (settingsProvider.GetPhasesCount() == 1) // Входим в расчеты 1 фазы
             {
-                if (fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory", project.InitialSettings.MainAmperage, 2, 35, ports2x2, "P1", Type3PN.P1)); }
-                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2)); }
-                if (fuseBox.LoadSwitch2P) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
-                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports2x2)); }
-                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports2x2)); }
-                if (fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 40, ports2x2)); }
+                if (settingsProvider.IsIntroductoryEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductoryModule()); }
+                if (settingsProvider.IsSurgeProtectionEnabled()) { shieldModuleSet.Add(componentFactory.CreateSurgeProtectionModule()); }
+                if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
+                if (settingsProvider.IsRailMeterEnabled()) { shieldModuleSet.Add(componentFactory.CreateDinRailMeter3pModule()); } //!!!
+                if (settingsProvider.IsFireUZOEnabled()) { shieldModuleSet.Add(componentFactory.CreateFireUZOModule()); }
+                if (settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
 
-                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 2, 22, ports2)); }
-                if (fuseBox.NDiscLine) { shieldModuleSet.Add(new RCD("NDiscLine", 25, 2, 43, ports2, new List<Component>())); }
-                if (fuseBox.LoadSwitch) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
-                if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, ports2)); } // !!!
-                if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports2x2)); }
+                if (settingsProvider.IsRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
+                if (settingsProvider.IsNDiscLineEnabled()) { shieldModuleSet.Add(componentFactory.CreateNDiscLineModule()); }
+                if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
+                if (settingsProvider.IsModularContactorEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); }
+                if (settingsProvider.IsCrossModuleEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }
             }
-            else // Входим в расчеты 3 фазы
+            else if (settingsProvider.GetPhasesCount() == 3) // Входим в расчеты 3 фазы
             {
-                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory3p", project.InitialSettings.MainAmperage, 3, 35, ports1_6, "P1", Type3PN.P3)); }
-                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory3pn", project.InitialSettings.MainAmperage, 4, 35, ports1_8, "P1", Type3PN.P3_N)); }
-                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD3", 100, 4, 65, ports2x2i)); }
-                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter3p", 63, 6, 145, ports1_8)); }
-                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 4, 75, ports1_8)); }
-                if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
-                {                                        
-                    shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
-                    shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
-                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));                   
+                if (settingsProvider.IsIntroductoryEnabled() && !settingsProvider.IsIntroductory3pnEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductory3pModule()); }
+                if (settingsProvider.IsIntroductory3pnEnabled() && !settingsProvider.IsIntroductoryEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductory3pnModule()); }
+                if (settingsProvider.IsSPD3Enabled()) { shieldModuleSet.Add(componentFactory.CreateSPD3Module()); }
+                if (settingsProvider.IsDinRailMeter3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateDinRailMeter3pModule()); }
+                if (settingsProvider.IsRCDFireEnabled()) { shieldModuleSet.Add(componentFactory.CreateRCDFire3pModule()); }
+                if (settingsProvider.IsVoltageRelayEnabled() && !settingsProvider.IsVoltageRelay3Enabled())
+                {
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule());
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelay2Module());
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelay3Module());
                 }
-                if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
-                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 2, 22)); }
-                if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25)); } // !!!
-                if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
-
-                
+                if (settingsProvider.IsVoltageRelay3Enabled() && !settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
+                if (settingsProvider.IsDinRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
+                if (settingsProvider.IsModularContactor3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); } // !!!
+                if (settingsProvider.IsCrossBlockEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }       // CrossModule? 4 slots?
             }
+            else new Exception("Unexpected phase type!");
         }
-        
-        
+
+
         public void CalculateWireCrossSection()
         {
             // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
@@ -169,7 +164,7 @@ namespace FuseBox
                 if (project.CalculateTotalPower() <= wire.Value)
                     WireSection = (decimal)wire.Key;
 
-                    //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
+                //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
             }
 
             // Если ток выше максимального в таблице — требуется индивидуальный расчёт
@@ -253,7 +248,7 @@ namespace FuseBox
 
                 // Если модуль помещается на уровне
                 //if (occupiedSlots < shieldWidth) fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
-                
+
                 if (occupiedSlots < shieldWidth)
                 {
                     var component = shieldModuleSet[i];
@@ -312,7 +307,7 @@ namespace FuseBox
 
             foreach (var group in fuseBox.ComponentGroups)
             {
-                
+
 
                 foreach (var component in group.Components)
                 {
@@ -491,6 +486,50 @@ namespace FuseBox
     ]
   }
 
+
+            //List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
+
+            //var ports2x2 = SelectPorts(0, 1, 6, 7);
+            //var ports2 = SelectPorts(1, 7);
+            //var ports2x2i = SelectPorts(1, 3, 5, 7);
+            //var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
+            //var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
+            //var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
+            //var ports017 = SelectPorts(0, 1, 7);
+            //var ports237 = SelectPorts(2, 3, 7);
+            //var ports457 = SelectPorts(4, 5, 7);
+
+
+            //Dictionary<string, Component> phaseOne = new Dictionary<string, Component>
+            //{
+            //    { "Introductory",     new Introductory(  "Introductory",      settingsProvider.GetMainAmperage(), 2, 35, ports2x2, "P1", Type3PN.P1)},
+            //    { "SPD",              new Component(     "SPD",               100, 2, 65,   ports2  )},
+            //    { "LoadSwitch",       new Component(     "LoadSwitch",        63, 2, 35,    ports2x2)},
+            //    { "DinRailMeter",     new Component(     "DinRailMeter",      63, 6, 145,   ports2x2)},
+            //    { "RCDFire",          new RCDFire  (     "RCDFire",           63, 2, 75,    ports2x2)},
+            //    { "VoltageRelay",     new Component(     "VoltageRelay",      16, 2, 40,    ports2x2)},                                                                        
+            //    { "DinRailSocket",    new Component(     "DinRailSocket",     16, 2, 22,    ports2  )},
+            //    { "NDiscLine",        new RCD      (     "NDiscLine",         25, 2, 43,    ports2, new List<Component>()) },
+            //    { "LoadSwitch",       new Component(     "LoadSwitch",        63, 2, 35,    ports2x2)},
+            //    { "ModularContactor", new Contactor(     "ModularContactor",  100, 4, 25,   ports2  )}, // !!!
+            //    { "CrossBlock",       new Component(     "CrossBlock",        100, 4, 25,   ports2x2)},
+            //};
+
+            //Dictionary<string, Component> phaseThree = new Dictionary<string, Component>
+            //{
+            //    { "Introductory3p",   new Introductory(  "Introductory3p",    settingsProvider.GetMainAmperage(), 3, 35,    ports1_6, "P1", Type3PN.P3)},
+            //    { "Introductory3pn",  new Introductory(  "Introductory3pn",   settingsProvider.GetMainAmperage(), 4, 35,    ports1_8, "P1", Type3PN.P3_N)},
+            //    { "SPD3",             new Component(     "SPD3",                                             100, 4, 65,    ports2x2i)},
+            //    { "DinRailMeter3p",   new Component(     "DinRailMeter3p",                                   63,  6, 145,   ports1_8 )},
+            //    { "RCDFire",          new RCDFire  (     "RCDFire",                                          63,  4, 75,    ports1_8 )},
+            //    { "VoltageRelay1",    new Component(     "VoltageRelay1",                                    16,  2, 40,    ports017 )},
+            //    { "VoltageRelay2",    new Component(     "VoltageRelay2",                                    16,  2, 40,    ports237 )},
+            //    { "VoltageRelay3",    new Component(     "VoltageRelay3",                                    16,  2, 40,    ports457 )},
+            //    { "VoltageRelay",     new Component(     "VoltageRelay",                                     16,  2, 60,    ports1_7 )},
+            //    { "DinRailSocket",    new Component(     "DinRailSocket",                                    16,  2, 22              )},
+            //    { "ModularContactor", new Contactor(     "ModularContactor",                                 100, 4, 25              )},
+            //    { "CrossBlock",       new Component(     "CrossBlock",                                       100, 4, 25,    ports1_8 )},
+            //};
 
 
 */
