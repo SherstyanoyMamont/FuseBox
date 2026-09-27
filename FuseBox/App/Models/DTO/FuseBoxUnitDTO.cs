@@ -55,7 +55,7 @@ namespace FuseBox.App.Models.DTO
         // Список подключенных к контактору устройств
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
-        public List<FuseBoxComponentGroupDTO>? ComponentGroups { get; set; } // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroupDTO>? ComponentGroups { get; set; } = new(); // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
 
 
         //[NotMapped]

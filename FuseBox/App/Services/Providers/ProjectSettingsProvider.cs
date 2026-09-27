@@ -2,11 +2,11 @@
 
 namespace FuseBox.App.Services.Providers
 {
-    public class ProjectSettings : IProjectSettings
+    public class ProjectSettingsProvider : IProjectSettings
     {
         private readonly Project project;
 
-        public ProjectSettings(Project project)
+        public ProjectSettingsProvider(Project project)
         {
             this.project = project;
         }
@@ -44,5 +44,10 @@ namespace FuseBox.App.Services.Providers
         public bool IsDinRailSocketEnabled() => project.FuseBox.RailSocket;
         public bool IsModularContactor3pEnabled() => project.FuseBox.ModularContactor;
         public bool IsCrossBlockEnabled() => project.FuseBox.CrossModule;
+
+        public double GetTotalPover()
+        {
+            return project.CalculateTotalPower();
+        }
     }
 }

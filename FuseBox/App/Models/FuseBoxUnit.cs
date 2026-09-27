@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models.DTO;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -54,12 +55,22 @@ namespace FuseBox
         public decimal Price { get; set; } // $
 
 
+        public void BindComponentsToGroups()
+        {
+            foreach (var group in ComponentGroups)
+            {
+                foreach (var component in group.Components)
+                {
+                    component.FuseBoxComponentGroup = group;
+                }
+            }
+        }
 
         //// Список подключенных к контактору устройств
         //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
 
         [ForeignKey("FuseBoxComponentGroupId")]
-        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new(); // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
 
 
 

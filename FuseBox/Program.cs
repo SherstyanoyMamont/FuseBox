@@ -27,7 +27,7 @@ namespace FuseBox
         static void Main(string[] args)
         {
             // testing switch
-            if (false)
+            if (true)
             {
 
                 // создание нового экземпляра билдера веб-приложения
@@ -313,13 +313,41 @@ namespace FuseBox
                 Project? project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
 
                 // Создаём адаптер, который вытянет нужные настройки из проекта
-                IProjectSettings settingsProvider = new ProjectSettings(project); // передаем проект в адаптер
+                IProjectSettings settingsProvider = new ProjectSettingsProvider(project); // передаем проект в адаптер
 
                 // Создаём фабрику компонентов
                 IComponentFactory componentFactory = new ComponentFactory();
 
+                // Создаём фабрику соединений
+                IConnectionFactory cableConnectionFactory = new ConnectionFactory();
+
+                // Создаём сервис конфигурации
+                IFuseBoxManager fuseBoxManager = new FuseBoxCableConnectionManager(project.FuseBox);
+
+                // Создаём провайдер для группировки компонентов
+                IProjectGrouping projectGrouping = new ProjectGroupingProvider(project);
+
+                // Создаём провайдер для подключения потребителей
+                IConsumerProvider consumerProvider = new ConsumerProvider(project);
+
+                // Создаём провайдер для UZO
+                IDistributionService distributionService = new DistributionService(settingsProvider, projectGrouping, consumerProvider, componentFactory);
+
+                var singlePhaseRules = new List<IShieldConfigurationRule>
+                    {
+                        new IntroductoryModuleRule(),
+                        // и т.д.
+                    };
+
+                var threePhaseRules = new List<IShieldConfigurationRule>
+                {
+
+                    // ...
+                };
+
                 // создание экземпляра сервиса конфигурации
-                ConfigurationService configurationService = new(project, settingsProvider, componentFactory);     
+                ConfigurationService configurationService = new ConfigurationService(settingsProvider, componentFactory, fuseBoxManager,
+                        cableConnectionFactory, projectGrouping, consumerProvider, singlePhaseRules, threePhaseRules, distributionService);
 
                 var validationResults = ValidationHelper.Validate(project);
 
@@ -341,7 +369,7 @@ namespace FuseBox
 
 
                 //var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings);           // сериализация данных
-                var newFuseBox = JsonConvert.SerializeObject(configurationService.project, settings);     // сериализация данных
+                var newFuseBox = JsonConvert.SerializeObject(project, settings);     // сериализация данных
 
                 //var configurationS = JsonConvert.SerializeObject(configurationService.ports, settings); // сериализация данных
 

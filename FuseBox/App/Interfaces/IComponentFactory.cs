@@ -12,6 +12,7 @@
         Component CreateVoltageRelayModule();
         Component CreateRailSocketModule();
         Component CreateNDiscLineModule();
+        Component CreateStartPoint();
 
         //Component CreateLoadSwitchModule();
         Component CreateModularContactorModule();
@@ -30,11 +31,20 @@
         Component CreateVoltageRelay3Module();
         Component CreateVoltageRelay3PModule();
 
+        Component CreateStartPoint3p();
+
         //Component CreateDinRailSocketModule();
 
         //Component CreateModularContactorModule();
 
         //Component CreateCrossBlock3pModule();
-            
+
+        // General
+        
+        
+        RCD GetRCDModule(int amper, List<Fuse> AVFuses);
+        Fuse GetAVModule(List<Consumer> consumers);
+        EmptySlot CreateEmptySlotModule(int slots);
+
     }
 }

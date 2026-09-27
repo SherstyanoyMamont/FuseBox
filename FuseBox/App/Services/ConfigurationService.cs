@@ -1,13 +1,16 @@
-﻿using FuseBox.App.Interfaces;
+﻿using FuseBox.App.Factorys;
+using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.App.Services.Providers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms.Mapping;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -19,52 +22,47 @@ namespace FuseBox
     // Сервисный класс, который содержит логику для работы с объектами конфигурации
     public class ConfigurationService
     {
+        private readonly IEnumerable<IShieldConfigurationRule> singlePhaseRules;
+        private readonly IEnumerable<IShieldConfigurationRule> threePhaseRules;
         private readonly IProjectSettings settingsProvider;
         private readonly IComponentFactory componentFactory;
+        private readonly IFuseBoxManager fuseBoxManager;
+        private readonly IConnectionFactory connectionFactory;
+        private readonly IProjectGrouping projectGrouping;
+        private readonly IConsumerProvider consumerProvider;
+        private readonly IDistributionService distributionService;
 
         public List<Component> shieldModuleSet = new();
-        public List<Port> ports;
-        public List<RCD> uzos = new();
 
-        public Project project;
-        public FuseBoxUnit fuseBox;
-
-        public decimal WireSection;
-
-        public ConfigurationService(Project Project, IProjectSettings settingsProvider, IComponentFactory componentFactory)
+        public ConfigurationService(IProjectSettings settingsProvider, IComponentFactory componentFactory, IFuseBoxManager fuseBoxManager,
+            IConnectionFactory connectionFactory, IProjectGrouping projectGrouping, IConsumerProvider consumerProvider,
+            IEnumerable<IShieldConfigurationRule> singlePhaseRules, IEnumerable<IShieldConfigurationRule> threePhaseRules, IDistributionService distributionService)
         {
+            this.singlePhaseRules = singlePhaseRules;
+            this.threePhaseRules = threePhaseRules;
             this.settingsProvider = settingsProvider;
             this.componentFactory = componentFactory;
+            this.fuseBoxManager = fuseBoxManager;
+            this.connectionFactory = connectionFactory;
+            this.projectGrouping = projectGrouping;
+            this.consumerProvider = consumerProvider;
+            this.distributionService = distributionService;
+        }
 
-            this.project = Project;
-            this.fuseBox = project.FuseBox;
-            this.ports = Port.CreateStandardPorts(WireSection);
+        public void AddShieldingCable(Cable cable, Position position)
+        {
+            fuseBoxManager.AddConnection(cable, position);
+        }
+
+        public void AddComponentOnLevel(int currentLevel, Component component)
+        {
+            fuseBoxManager.AddComponentOnLevel(currentLevel, component);
         }
 
         // Создаем/Модифицируем объект проекта
         public void GenerateConfiguration()
         {
             Console.WriteLine("▶ Начинаем GenerateConfiguration");
-
-            try
-            {
-                Console.WriteLine("🔍 Step 1: ValidateInitialSettings");
-                ValidateInitialSettings();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Ошибка в ValidateInitialSettings", ex);
-            }
-
-            try
-            {
-                Console.WriteLine("🔍 Step 2: CalculateWireCrossSection");
-                CalculateWireCrossSection();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Ошибка в CalculateWireCrossSection", ex);
-            }
 
             try
             {
@@ -112,13 +110,29 @@ namespace FuseBox
         // Логика конфигурации устройств...
         public void ConfigureShield()
         {
+            //var rules = settingsProvider.GetPhasesCount() == 1
+            //? singlePhaseRules
+            //: threePhaseRules;
 
-            if (settingsProvider.GetPhasesCount() == 1) // Входим в расчеты 1 фазы
+            //foreach (var rule in rules)
+            //{
+            //    if (rule.ShouldApply(settingsProvider))
+            //    {
+            //        shieldModuleSet.Add(rule.CreateComponent(componentFactory));
+            //    }
+            //}
+
+
+
+            if (settingsProvider.GetPhasesCount() == 1)
             {
+                shieldModuleSet.Add(componentFactory.CreateStartPoint());
+
                 if (settingsProvider.IsIntroductoryEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductoryModule()); }
+
                 if (settingsProvider.IsSurgeProtectionEnabled()) { shieldModuleSet.Add(componentFactory.CreateSurgeProtectionModule()); }
                 if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
-                if (settingsProvider.IsRailMeterEnabled()) { shieldModuleSet.Add(componentFactory.CreateDinRailMeter3pModule()); } //!!!
+                if (settingsProvider.IsRailMeterEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailMeterModule()); } //!!!
                 if (settingsProvider.IsFireUZOEnabled()) { shieldModuleSet.Add(componentFactory.CreateFireUZOModule()); }
                 if (settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
 
@@ -130,8 +144,21 @@ namespace FuseBox
             }
             else if (settingsProvider.GetPhasesCount() == 3) // Входим в расчеты 3 фазы
             {
-                if (settingsProvider.IsIntroductoryEnabled() && !settingsProvider.IsIntroductory3pnEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductory3pModule()); }
-                if (settingsProvider.IsIntroductory3pnEnabled() && !settingsProvider.IsIntroductoryEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductory3pnModule()); }
+                shieldModuleSet.Add(componentFactory.CreateStartPoint3p());
+
+                if (settingsProvider.IsIntroductoryEnabled())
+                {
+                    if (settingsProvider.IsIntroductory3pnEnabled())
+                    {
+                        shieldModuleSet.Add(
+                            componentFactory.CreateIntroductory3pnModule());
+                    }
+                    else
+                    {
+                        shieldModuleSet.Add(
+                            componentFactory.CreateIntroductory3pModule());
+                    }
+                }
                 if (settingsProvider.IsSPD3Enabled()) { shieldModuleSet.Add(componentFactory.CreateSPD3Module()); }
                 if (settingsProvider.IsDinRailMeter3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateDinRailMeter3pModule()); }
                 if (settingsProvider.IsRCDFireEnabled()) { shieldModuleSet.Add(componentFactory.CreateRCDFire3pModule()); }
@@ -149,181 +176,468 @@ namespace FuseBox
             else new Exception("Unexpected phase type!");
         }
 
-
-        public void CalculateWireCrossSection()
-        {
-            // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
-            var copperWireTable = new Dictionary<double, double>
-            {
-                { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 }, { 16, 80 }
-            };
-
-            // Поиск минимального сечения, подходящего под заданный ток
-            foreach (var wire in copperWireTable)
-            {
-                if (project.CalculateTotalPower() <= wire.Value)
-                    WireSection = (decimal)wire.Key;
-
-                //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
-            }
-
-            // Если ток выше максимального в таблице — требуется индивидуальный расчёт
-            //throw new ArgumentException("Требуется кабель большего сечения, рассчитайте вручную.");
-
-            // Сечения медного кабеля для прокладки проводки по дому/ квартире:
-            // автомат C10, сечение кабеля 1,5 мм2 для освещения
-            // автомат C16, сечение кабеля 2,5 мм2 для розеток
-            // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
-            // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
-        }
         // Логика распределения модулей по уровням...
         public void Distribute()
         {
-            DistributionService distributionService = new(project, uzos);
-
             distributionService.DistributeOfConsumers(); // Логика распределения потребителей
             distributionService.DistributeRCDFromLoad(); // Логика распределения УЗО от нагрузки
 
-            shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
+            List<Component> RSDplusAV = new List<Component>(); // Список входных модулей и УЗО
+            List<RCD> RSD = distributionService.GetDistributedRCDModules();
+
+            foreach (var rcd in RSD)
+            {
+                RSDplusAV.Add(rcd); // Добавляем УЗО в список
+                if (rcd.Electricals != null)
+                {
+                    foreach (var av in rcd.Electricals)
+                    {
+                        RSDplusAV.Add(av); // Добавляем АВ в список
+                    }
+                }
+            }
+
+            shieldModuleSet.AddRange(RSDplusAV); // Соеденяем список входных модулей и УЗО
+
+            //shieldModuleSet.AddRange(distributionService.GetDistributedRCDModules());
         }
 
         // Создаем соединение проводами
         public void CreateConnections()
         {
-            List<CableConnection> сableConnections = fuseBox.CableConnections;
+            if (shieldModuleSet.Count == 0)
+                throw new InvalidOperationException("Список устройств пуст.");
 
-            // Добавляем SerialNumber ко всем компонентам
-            for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].SerialNumber = i + 1; }
-
-            for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
+            if (shieldModuleSet.Distinct().Count() != shieldModuleSet.Count)
             {
-                Component currentComp = shieldModuleSet[i];                            // module - текущий компонент
+                throw new InvalidOperationException(
+                    "Один экземпляр компонента добавлен в схему несколько раз.");
+            }
 
-                for (int port = 0; port < currentComp.Ports.Count; port++)             // Берем каждый разьем компонента
+            for (int i = 0; i < shieldModuleSet.Count; i++)
+            {
+                shieldModuleSet[i].SerialNumber = i + 1;
+            }
+
+            string NormalizeName(Component component)
+            {
+                return (component.Name ?? "")
+                    .Replace(" ", "")
+                    .ToLowerInvariant();
+            }
+
+            bool IsStartPoint(Component component)
+            {
+                string name = NormalizeName(component);
+
+                return name == "startpoint" ||
+                       name == "startpoint3p";
+            }
+
+            bool IsSupplyChannel(string? channel)
+            {
+                return channel == "Phase1" ||
+                       channel == "Phase2" ||
+                       channel == "Phase3" ||
+                       channel == "Zero";
+            }
+
+            string ColourFor(string channel)
+            {
+                return channel switch
                 {
-                    Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
+                    "Phase1" => "Red",
+                    "Phase2" => "Orange",
+                    "Phase3" => "Grey",
+                    "Zero" => "Blue",
+                    _ => throw new InvalidOperationException(
+                        $"Неизвестный канал: {channel}")
+                };
+            }
 
-                    if (currentPort.portOut == null)                                   // если порт не выходящий то пропускаем 
-                        continue;
+            // В текущей модели эти устройства являются ответвлениями:
+            // они получают питание, но не становятся источником общей магистрали.
+            bool IsBranch(Component component)
+            {
+                string name = NormalizeName(component);
 
-                    for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
+                return name == "dinrailsocket" ||
+                       name == "ndiscline";
+            }
+
+            var planned = new List<(
+                int Start,
+                int Finish,
+                string Colour)>();
+
+            var unique = new HashSet<(
+                int Start,
+                int Finish,
+                string Colour)>();
+
+            void AddConnection(Component start, Component finish, string channel)
+            {
+                if (ReferenceEquals(start, finish))
+                {
+                    throw new InvalidOperationException(
+                        "Нельзя подключить компонент к самому себе.");
+                }
+
+                var connection = (
+                    Start: start.SerialNumber,
+                    Finish: finish.SerialNumber,
+                    Colour: ColourFor(channel));
+
+                if (unique.Add(connection))
+                {
+                    planned.Add(connection);
+                }
+            }
+
+            var supply = new Dictionary<string, Component>();
+
+            Component GetSupply(string channel, Component target)
+            {
+                if (!supply.TryGetValue(channel, out var source))
+                {
+                    throw new InvalidOperationException(
+                        $"Для {target.Name} №{target.SerialNumber} " +
+                        $"не найден источник {channel}.");
+                }
+
+                return source;
+            }
+
+            var incoming = shieldModuleSet
+                .Where(component =>
+                    component is not RCD &&
+                    component is not Fuse &&
+                    component is not EmptySlot)
+                .ToList();
+
+            if (incoming.Count(component => IsStartPoint(component)) != 1 ||
+                !IsStartPoint(incoming[0]))
+            {
+                throw new InvalidOperationException(
+                    "Общая часть схемы должна начинаться с одного StartPoint.");
+            }
+
+            foreach (var component in incoming)
+            {
+                var outputs = component.Ports
+                    .Select(port => port.portOut)
+                    .Where(IsSupplyChannel)
+                    .Select(channel => channel!)
+                    .Distinct()
+                    .ToList();
+
+                if (IsStartPoint(component))
+                {
+                    foreach (var channel in outputs)
                     {
-                        Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
+                        supply[channel] = component;
+                    }
 
+                    continue;
+                }
 
-                        // Если у компонента есть такой же тип выхода, то создаем подключение
-                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut)) // Есть ли хотя бы один порт у nextModule с таким же типом выхода как у currentPort?
-                        {
-                            //AddConnection(сableConnections, module.Id, currentPort, n);
+                // В существующих пресетах часть питаемых устройств имеет
+                // только portOut. Пока учитываем обе записи как описание каналов.
+                var channels = component.Ports
+                    .SelectMany(port => new[] { port.PortIn, port.portOut })
+                    .Where(IsSupplyChannel)
+                    .Select(channel => channel!)
+                    .Distinct()
+                    .ToList();
 
-                            Position position = new Position(currentComp.SerialNumber, n + 1);
-                            Cable cable = new Cable(currentPort.connectorColour, 10); //        !!!!!! Временная замена на 10
+                if (channels.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        $"У {component.Name} отсутствует описание каналов питания.");
+                }
 
-                            сableConnections.Add(new CableConnection(cable, position));
+                foreach (var channel in channels)
+                {
+                    AddConnection(
+                        GetSupply(channel, component),
+                        component,
+                        channel);
+                }
 
-                            //currentPort.connectionsCount++;    // Добавляем информацию про колличетво соединений в разьем
-                            break;                               // Берем следующий выходной разьем
-                        }
+                if (!IsBranch(component))
+                {
+                    foreach (var channel in outputs)
+                    {
+                        supply[channel] = component;
                     }
                 }
+            }
+
+            var owners = new Dictionary<Fuse, RCD>();
+
+            foreach (var rcd in shieldModuleSet.OfType<RCD>())
+            {
+                var phaseChannels = rcd.Ports
+                    .Select(port => port.portOut)
+                    .Where(channel =>
+                        channel == "Phase1" ||
+                        channel == "Phase2" ||
+                        channel == "Phase3")
+                    .Distinct()
+                    .ToList();
+
+                if (phaseChannels.Count != 1)
+                {
+                    throw new InvalidOperationException(
+                        $"У RCD №{rcd.SerialNumber} должна быть одна назначенная фаза.");
+                }
+
+                string phase = phaseChannels[0]!;
+
+                if (settingsProvider.GetPhasesCount() == 1 &&
+                    phase != "Phase1")
+                {
+                    throw new InvalidOperationException(
+                        "Однофазному RCD назначена фаза L2 или L3.");
+                }
+
+                // Питание RCD берётся из общей части щита.
+                AddConnection(GetSupply(phase, rcd), rcd, phase);
+                AddConnection(GetSupply("Zero", rcd), rcd, "Zero");
+
+                if (rcd.Electricals.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        $"RCD №{rcd.SerialNumber} не содержит автоматов.");
+                }
+
+                foreach (var child in rcd.Electricals)
+                {
+                    if (child is not Fuse breaker)
+                    {
+                        throw new InvalidOperationException(
+                            $"RCD №{rcd.SerialNumber} содержит компонент, " +
+                            "который не является автоматом.");
+                    }
+
+                    if (!shieldModuleSet.Contains(breaker))
+                    {
+                        throw new InvalidOperationException(
+                            "Автомат RCD отсутствует в общем списке схемы.");
+                    }
+
+                    if (!owners.TryAdd(breaker, rcd))
+                    {
+                        throw new InvalidOperationException(
+                            $"Автомат №{breaker.SerialNumber} назначен нескольким RCD.");
+                    }
+
+                    if (breaker.Electricals.Any(consumer =>
+                        consumer.RcdMilliAmps != rcd.Capacity))
+                    {
+                        throw new InvalidOperationException(
+                            $"Параметры защиты автомата №{breaker.SerialNumber} " +
+                            "не соответствуют его RCD.");
+                    }
+
+                    // Автомат получает фазу своего RCD.
+                    AddConnection(rcd, breaker, phase);
+                }
+            }
+
+            foreach (var breaker in shieldModuleSet.OfType<Fuse>())
+            {
+                if (!owners.ContainsKey(breaker))
+                {
+                    throw new InvalidOperationException(
+                        $"Автомат №{breaker.SerialNumber} не назначен ни одному RCD.");
+                }
+            }
+
+            // Записываем результат только после проверки всей структуры.
+            fuseBoxManager.ClearConnections();
+
+            foreach (var connection in planned)
+            {
+                var position = connectionFactory.CreatePositionModule(
+                    connection.Start,
+                    connection.Finish);
+
+                // Сечение 10 сохранено из текущей реализации.
+                // Это заглушка приложения, а не результат подбора кабеля.
+                var cable = connectionFactory.CreateCableModule(
+                    connection.Colour,
+                    10);
+
+                AddShieldingCable(cable, position);
             }
         }
 
         public void ShieldByLevel()
         {
-            int occupiedSlots = 0;
-            int currentLevel = 0;
-            int shieldWidth = project.InitialSettings.ShieldWidth;
+            int shieldWidth = settingsProvider.GetShieldWidth();
 
-            // Гарантируем наличие первого уровня
-            if (fuseBox.ComponentGroups == null || fuseBox.ComponentGroups.Count == 0)
+            if (shieldWidth <= 0)
+                throw new ArgumentException("Ширина щита должна быть положительной.");
+
+            var groups = fuseBoxManager.GetComponentGroups();
+
+            // Здесь размещается заново рассчитанный, ещё не сохранённый проект.
+            groups.Clear();
+
+            var blocks = new List<List<Component>>();
+            var assigned = new HashSet<Component>();
+
+            foreach (var component in shieldModuleSet)
             {
-                fuseBox.ComponentGroups = new List<FuseBoxComponentGroup> { new FuseBoxComponentGroup() };
-            }
+                if (component is EmptySlot)
+                    continue;
 
+                if (component is Fuse)
+                    continue;
 
-            for (int i = 0; i < shieldModuleSet.Count; i++)
-            {
-                occupiedSlots += (int)shieldModuleSet[i].Slots;
+                var block = new List<Component> { component };
 
-                // Если модуль помещается на уровне
-                //if (occupiedSlots < shieldWidth) fuseBox.ComponentGroups[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
-
-                if (occupiedSlots < shieldWidth)
+                if (!assigned.Add(component))
                 {
-                    var component = shieldModuleSet[i];
-
-
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
-
-
-                    //var group = fuseBox.ComponentGroups[currentLevel];
-                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    //group.Components.Add(component); // Присваиваем группу
-
+                    throw new InvalidOperationException(
+                        "Повтор компонента при размещении.");
                 }
-                else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
+
+                if (component is RCD rcd)
                 {
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
-                    currentLevel++;
-                    fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
-
-
-                    occupiedSlots = (int)shieldModuleSet[i].Slots;
-                    var component = shieldModuleSet[i];
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
-
-
-                    //var group = fuseBox.ComponentGroups[currentLevel];
-                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    //group.Components.Add(component); // Присваиваем группу
-
-                }
-                else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
-                {
-                    var component = shieldModuleSet[i];
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(component);
-
-
-                    //var group = fuseBox.ComponentGroups[currentLevel];
-                    //component.FuseBoxComponentGroup = group; // 🔁 или .FuseBoxComponentGroupId = group.Id, если хочешь вручную
-                    //group.Components.Add(component); // Присваиваем группу
-
-
-                    if (shieldModuleSet[i] != shieldModuleSet[^1])
+                    foreach (var child in rcd.Electricals)
                     {
-                        fuseBox.ComponentGroups.Add(new FuseBoxComponentGroup());
-                        currentLevel++;
-                        occupiedSlots = 0;
+                        if (child is not Fuse ||
+                            !shieldModuleSet.Contains(child) ||
+                            !assigned.Add(child))
+                        {
+                            throw new InvalidOperationException(
+                                "Неверная принадлежность автоматов при размещении.");
+                        }
+
+                        block.Add(child);
                     }
                 }
 
-                // Добавляем пустые слоты, если компоненты не поместились в конце
-                if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])
-                    fuseBox.ComponentGroups[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
+                blocks.Add(block);
             }
 
-            //int serialNumber = 1; // начинаем с 1 для каждой группы
-
-            foreach (var group in fuseBox.ComponentGroups)
+            if (shieldModuleSet
+                .Where(component => component is not EmptySlot)
+                .Any(component => !assigned.Contains(component)))
             {
+                throw new InvalidOperationException(
+                    "Часть устройств не попала в блоки размещения.");
+            }
 
+            int currentLevel = -1;
+            int occupiedSlots = 0;
 
-                foreach (var component in group.Components)
+            void StartRow()
+            {
+                fuseBoxManager.AddComponentGroup();
+                currentLevel++;
+                occupiedSlots = 0;
+            }
+
+            void FillRemainingSpace()
+            {
+                int freeSlots = shieldWidth - occupiedSlots;
+
+                if (freeSlots > 0)
                 {
-                    //component.SerialNumber = serialNumber++;
-                    component.FuseBoxComponentGroup = group;
+                    AddComponentOnLevel(
+                        currentLevel,
+                        componentFactory.CreateEmptySlotModule(freeSlots));
                 }
             }
 
+            foreach (var block in blocks)
+            {
+                foreach (var component in block)
+                {
+                    bool startPoint =
+                        component.Name == "StartPoint" ||
+                        component.Name == "StartPoint3p";
+
+                    if (component.Slots < 0 ||
+                        (!startPoint && component.Slots == 0))
+                    {
+                        throw new InvalidOperationException(
+                            $"Некорректная ширина устройства {component.Name}.");
+                    }
+                }
+
+                int blockWidth = block.Sum(component => component.Slots);
+
+                if (blockWidth > shieldWidth)
+                {
+                    throw new ArgumentException(
+                        $"Группа {block[0].Name} занимает {blockWidth} слотов, " +
+                        $"но ширина ряда — {shieldWidth}. Увеличьте ширину щита.");
+                }
+
+                if (currentLevel < 0)
+                {
+                    StartRow();
+                }
+
+                if (occupiedSlots + blockWidth > shieldWidth)
+                {
+                    FillRemainingSpace();
+                    StartRow();
+                }
+
+                foreach (var component in block)
+                {
+                    AddComponentOnLevel(currentLevel, component);
+                }
+
+                occupiedSlots += blockWidth;
+            }
+
+            if (currentLevel >= 0)
+            {
+                FillRemainingSpace();
+            }
+
+            if (groups.Any(group => group.Components.Count == 0))
+            {
+                throw new InvalidOperationException(
+                    "После размещения остался пустой ряд.");
+            }
+
+            fuseBoxManager.BindComponentsToGroups();
         }
 
-        // Расчет сечения провода по мощности
-        public void ValidateInitialSettings()
-        {
+        //public void ReturnAVToMainList()
+        //{
+        //    // Возвращаем все АВ в общий список
+        //    foreach (var group in fuseBoxManager.GetComponentGroups())
+        //    {
+        //        foreach (var component in group.Components)
+        //        {
+        //            if (component is RCD)
+        //            {
+        //                // Добавляем обратно в общий список
+        //                shieldModuleSet.Add(component);
+        //            }
+        //        }
+        //    }
 
-        }
-        //private void CalculateConnectionCount(){}
+        //    var flatList = new List<Component>();
+
+        //    foreach (var rcd in fuseBoxManager.GetComponentGroups())
+        //    {
+        //        flatList.Add(rcd); // сначала сам RCD
+        //        if (rcd.Electrical != null)
+        //        {
+        //            flatList.AddRange(rcd.Electrical); // затем все его AV-компоненты
+        //        }
+        //    }
+
+        //}
     }
 }
 

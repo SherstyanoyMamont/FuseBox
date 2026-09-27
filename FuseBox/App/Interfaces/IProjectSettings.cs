@@ -34,5 +34,9 @@
         bool IsDinRailSocketEnabled();
         bool IsModularContactor3pEnabled();
         bool IsCrossBlockEnabled();
+
+        
+        double GetTotalPover();
+        
     }
 }

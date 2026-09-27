@@ -27,7 +27,7 @@ namespace FuseBox.App.DataBase
         public DbSet<Port> Ports { get; set; }
         public DbSet<FuseBoxComponentGroup> ComponentGroups { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -91,7 +91,7 @@ namespace FuseBox.App.DataBase
             /////////////////////////////////////////////////////////////////////
 
             // Project → Floors
-            modelBuilder.Entity<Project>() 
+            modelBuilder.Entity<Project>()
                 .HasMany(p => p.Floors)
                 .WithOne(p => p.Project)
                 .HasForeignKey(f => f.ProjectId);
@@ -185,6 +185,16 @@ namespace FuseBox.App.DataBase
             //    .WithMany(fb => fb.Contactor)
             //    .HasForeignKey(c => c.FuseBoxUnitId)
             //    .OnDelete(DeleteBehavior.Cascade);
+
+            ////////////////////////////////////////////////////////////////////
+
+            modelBuilder.Entity<Consumer>()
+                .Property(consumer => consumer.BreakerAmperage)
+                .HasDefaultValue(16);
+
+            modelBuilder.Entity<Consumer>()
+                .Property(consumer => consumer.RcdMilliAmps)
+                .HasDefaultValue(30);
         }
     }
 }

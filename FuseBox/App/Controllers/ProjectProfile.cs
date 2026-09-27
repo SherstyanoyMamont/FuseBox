@@ -36,7 +36,9 @@ namespace FuseBox.Controllers
             CreateMap<RoomDTO, Room>()
                 .ForMember(dest => dest.Consumer, opt => opt.MapFrom(src => src.Consumer));
 
-            CreateMap<ConsumerDTO, Consumer>();
+            CreateMap<ConsumerDTO, Consumer>()
+    .ForMember(destination => destination.Amper,
+        options => options.Ignore());
             CreateMap<ConnectionDTO, CableConnection>();
             CreateMap<InitialSettingsDTO, InitialSettings>();
             CreateMap<FloorGroupingDTO, FloorGrouping>();
