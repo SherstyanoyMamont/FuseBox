@@ -1,18 +1,15 @@
-﻿using FuseBox.App.Models;
-using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models;
 using FuseBox.App.Models.Shild_Comp;
 using FuseBox.FuseBox;
 using Microsoft.EntityFrameworkCore;
-using Mysqlx.Crud;
 
 namespace FuseBox.App.DataBase
 {
-    // Класс в котором храниться контекст базы данных
-    // Тут мы указываем что за таблицы у нас будут в базе данных и их связи
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<FloorGrouping> FloorGroupings { get; set; }
         public DbSet<GlobalGrouping> GlobalGroupings { get; set; }
         public DbSet<InitialSettings> InitialSettings { get; set; }
@@ -27,21 +24,16 @@ namespace FuseBox.App.DataBase
         public DbSet<Port> Ports { get; set; }
         public DbSet<FuseBoxComponentGroup> ComponentGroups { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Пример игнорирования какого-то поля
-            //modelBuilder.Ignore<BaseElectrical>();
-
             modelBuilder.Entity<FuseBoxUnit>().ToTable("FuseBoxes");
-
-
-            //Наследование класа Component элементов щита
-            //На выходе получаем одну таблицу Components со всеми компонентами в ней
-
 
             modelBuilder.Entity<Component>()
                 .HasDiscriminator<string>("Discriminator")
@@ -53,140 +45,142 @@ namespace FuseBox.App.DataBase
                 .HasValue<EmptySlot>("EmptySlot")
                 .HasValue<Contactor>("Contactor");
 
-            /////////////////////////////////////////////////////////////////////
+            // User account data.
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(user => user.Email)
+                    .IsRequired()
+                    .HasMaxLength(254);
 
-            // User → Projects 
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Projects)
-                .WithOne(p => p.User)
-                .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(user => user.NormalizedEmail)
+                    .IsRequired()
+                    .HasMaxLength(254);
 
-            /////////////////////////////////////////////////////////////////////
+                entity.HasIndex(user => user.NormalizedEmail)
+                    .IsUnique();
 
-            // Project → FloorGrouping 
+                entity.Property(user => user.PasswordHash)
+                    .HasMaxLength(512);
+
+                entity.Property(user => user.SecurityStamp)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasMany(user => user.Projects)
+                    .WithOne(project => project.User)
+                    .HasForeignKey(project => project.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(user => user.PasswordResetTokens)
+                    .WithOne(token => token.User)
+                    .HasForeignKey(token => token.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PasswordResetToken>(entity =>
+            {
+                entity.Property(token => token.TokenHash)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasIndex(token => token.TokenHash)
+                    .IsUnique();
+
+                entity.HasIndex(token => new
+                {
+                    token.UserId,
+                    token.ExpiresAtUtc
+                });
+            });
+
+            modelBuilder.Entity<Project>(entity =>
+            {
+                // Name is inherited from BaseEntity but project names have a
+                // stricter database contract than generic entity names.
+                entity.Property(project => project.Name)
+                    .IsRequired()
+                    .HasMaxLength(120);
+            });
+
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.FloorGrouping)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<FloorGrouping>(fb => fb.ProjectId);
+                .HasOne(project => project.FloorGrouping)
+                .WithOne(grouping => grouping.Project)
+                .HasForeignKey<FloorGrouping>(grouping => grouping.ProjectId);
 
-            // Project → GlobalGrouping 
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.GlobalGrouping)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<GlobalGrouping>(fb => fb.ProjectId);
+                .HasOne(project => project.GlobalGrouping)
+                .WithOne(grouping => grouping.Project)
+                .HasForeignKey<GlobalGrouping>(grouping => grouping.ProjectId);
 
-            // Project → InitialSettings
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.InitialSettings)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<InitialSettings>(fb => fb.ProjectId);
+                .HasOne(project => project.InitialSettings)
+                .WithOne(settings => settings.Project)
+                .HasForeignKey<InitialSettings>(settings => settings.ProjectId);
 
-            //Project → FuseBoxUnit
             modelBuilder.Entity<Project>()
-                .HasOne(p => p.FuseBox)
-                .WithOne(fb => fb.Project)
-                .HasForeignKey<FuseBoxUnit>(fb => fb.ProjectId);
+                .HasOne(project => project.FuseBox)
+                .WithOne(fuseBox => fuseBox.Project)
+                .HasForeignKey<FuseBoxUnit>(fuseBox => fuseBox.ProjectId);
 
-            /////////////////////////////////////////////////////////////////////
-
-            // Project → Floors
             modelBuilder.Entity<Project>()
-                .HasMany(p => p.Floors)
-                .WithOne(p => p.Project)
-                .HasForeignKey(f => f.ProjectId);
+                .HasMany(project => project.Floors)
+                .WithOne(floor => floor.Project)
+                .HasForeignKey(floor => floor.ProjectId);
 
-            // Floor → Rooms (один ко многим)
             modelBuilder.Entity<Floor>()
-                .HasMany(p => p.Rooms)
-                .WithOne(p => p.Floor)
-                .HasForeignKey(f => f.FloorId);
+                .HasMany(floor => floor.Rooms)
+                .WithOne(room => room.Floor)
+                .HasForeignKey(room => room.FloorId);
 
-            // Room → Consumers (один ко многим)
             modelBuilder.Entity<Room>()
-                .HasMany(p => p.Consumer)
-                .WithOne(p => p.Room)
-                .HasForeignKey(f => f.RoomId);
+                .HasMany(room => room.Consumer)
+                .WithOne(consumer => consumer.Room)
+                .HasForeignKey(consumer => consumer.RoomId);
 
-            ///////////////////////////////////////////////////////////////////
-
-            ////FuseBox → Consumer(один ко многим)
-            //modelBuilder.Entity<Consumer>()
-            //    .HasOne(c => c.FuseBoxUnit)
-            //    .WithMany(fb => fb.Contactor)
-            //    .HasForeignKey(c => c.FuseBoxUnitId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            // FuseBox → ComponentGroups (один ко многим)
             modelBuilder.Entity<FuseBoxUnit>()
-                .HasMany(fb => fb.ComponentGroups)
-                .WithOne(fb => fb.FuseBoxUnit)
-                .HasForeignKey(cg => cg.FuseBoxUnitId);
+                .HasMany(fuseBox => fuseBox.ComponentGroups)
+                .WithOne(group => group.FuseBoxUnit)
+                .HasForeignKey(group => group.FuseBoxUnitId);
 
-            // Component → FuseBoxUnit (для Electricals)
-            //modelBuilder.Entity<Component>()
-            //    .HasOne(c => c.FuseBoxUnit)
-            //    .WithMany(fb => fb.Electricals)
-            //    .HasForeignKey(c => c.FuseBoxUnitId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //FuseBox → CableConnections(один ко многим)
             modelBuilder.Entity<FuseBoxUnit>()
-                .HasMany(p => p.CableConnections)
-                .WithOne(p => p.FuseBoxUnit)
-                .HasForeignKey(f => f.FuseBoxUnitId);
+                .HasMany(fuseBox => fuseBox.CableConnections)
+                .WithOne(connection => connection.FuseBoxUnit)
+                .HasForeignKey(connection => connection.FuseBoxUnitId);
 
-            ////////////////////////////////////////////////////////////////////
-
-            // CableConnections → Connections (один ко одному)
             modelBuilder.Entity<CableConnection>()
-                .HasOne(p => p.CabelWay)
-                .WithOne(fb => fb.Connection)
-                .HasForeignKey<Position>(fb => fb.ConnectionPositionId);
+                .HasOne(connection => connection.CabelWay)
+                .WithOne(position => position.Connection)
+                .HasForeignKey<Position>(position => position.ConnectionPositionId);
 
-            // CableConnections → Cable (один ко одному)
             modelBuilder.Entity<CableConnection>()
-                .HasOne(p => p.Cable)
-                .WithOne(fb => fb.Connection)
-                .HasForeignKey<Cable>(fb => fb.ConnectionCableId)
+                .HasOne(connection => connection.Cable)
+                .WithOne(cable => cable.Connection)
+                .HasForeignKey<Cable>(cable => cable.ConnectionCableId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            ////////////////////////////////////////////////////////////////////
-
-            //ComponentGroup → Component(один ко многим)
             modelBuilder.Entity<Component>()
-                .HasOne(c => c.FuseBoxComponentGroup)
-                .WithMany(fbg => fbg.Components)
-                .HasForeignKey(c => c.FuseBoxComponentGroupId)
+                .HasOne(component => component.FuseBoxComponentGroup)
+                .WithMany(group => group.Components)
+                .HasForeignKey(component => component.FuseBoxComponentGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Component → Port(один ко м11ногим)
             modelBuilder.Entity<Component>()
-                .HasMany(c => c.Ports)
-                .WithOne(c => c.Component)
-                .HasForeignKey(p => p.ComponentId);
-
-            ////////////////////////////////////////////////////////////////////
+                .HasMany(component => component.Ports)
+                .WithOne(port => port.Component)
+                .HasForeignKey(port => port.ComponentId);
 
             modelBuilder.Entity<FuseBoxComponentGroup>()
-                .HasMany(cg => cg.Components)
-                .WithOne(cg => cg.FuseBoxComponentGroup)
-                .HasForeignKey(c => c.FuseBoxComponentGroupId);
+                .HasMany(group => group.Components)
+                .WithOne(component => component.FuseBoxComponentGroup)
+                .HasForeignKey(component => component.FuseBoxComponentGroupId);
 
-            //// FuseBox → Electricals (один ко многим)
-            //modelBuilder.Entity<FuseBoxUnit>()
-            //    .HasMany(fb => fb.Electricals)
-            //    .WithOne()
-            //    .HasForeignKey(cg => cg.FuseBoxUnitId);
+            modelBuilder.Entity<Consumer>()
+                .Property(consumer => consumer.CatalogTypeId)
+                .HasMaxLength(64);
 
-            //// Component → FuseBoxUnit (для Contactor)
-            //modelBuilder.Entity<Consumer>()
-            //    .HasOne(c => c.FuseBoxUnit)
-            //    .WithMany(fb => fb.Contactor)
-            //    .HasForeignKey(c => c.FuseBoxUnitId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            ////////////////////////////////////////////////////////////////////
+            modelBuilder.Entity<Consumer>()
+                .Property(consumer => consumer.PowerSource)
+                .HasMaxLength(16);
 
             modelBuilder.Entity<Consumer>()
                 .Property(consumer => consumer.BreakerAmperage)

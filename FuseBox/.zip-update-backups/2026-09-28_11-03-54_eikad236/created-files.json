@@ -1,0 +1,12 @@
+[
+  "New\\20260928100500_AddAccountsAndPasswordReset.cs",
+  "New\\20260928100500_AddAccountsAndPasswordReset.Designer.cs",
+  "New\\AuthController.cs",
+  "New\\AuthCookieEvents.cs",
+  "New\\DevelopmentPasswordResetSender.cs",
+  "New\\EmailNormalizer.cs",
+  "New\\IPasswordResetSender.cs",
+  "New\\PasswordResetToken.cs",
+  "New\\PasswordResetTokens.cs",
+  "New\\SmtpPasswordResetSender.cs"
+]

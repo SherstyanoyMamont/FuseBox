@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Interfaces;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using System.Collections.Generic;
@@ -124,57 +124,140 @@ namespace FuseBox
         }
 
         public void AutomatPerCons(
-    int groupingParam,
-    List<Consumer> consumers,
-    string? name)
+            int groupingParam,
+            List<Consumer> consumers,
+            string? name)
         {
             if (consumers.Count == 0)
                 return;
 
             if (groupingParam < 0)
-                throw new ArgumentException("Недопустимый параметр группировки.");
+                throw new ArgumentException("Invalid grouping parameter.");
 
             if (groupingParam == 0)
             {
-                // По комнатам. Используем объект комнаты:
-                // новые RoomId ещё не назначены базой.
+                // Group by room first, then automatically split an overloaded
+                // room into as many circuit breakers as necessary.
                 if (consumers.Any(c => c.Room == null))
                 {
                     throw new ArgumentException(
-                        "Для группировки потребителю должна быть назначена комната.");
+                        "A consumer must be assigned to a room before grouping.");
                 }
 
                 foreach (var roomGroup in consumers.GroupBy(c => c.Room))
                 {
-                    AVFuses.Add(
-                        componentFactory.GetAVModule(roomGroup.ToList()));
+                    AddAutoSizedBreakerGroups(
+                        roomGroup.ToList(),
+                        minimumGroupCount: 1,
+                        categoryName: name);
                 }
 
                 return;
             }
 
-            // Сохраняем смысл существующей настройки:
-            // положительное значение — количество групп данной категории.
-            int groupCount = Math.Min(groupingParam, consumers.Count);
+            // A positive setting is now the minimum desired number of groups.
+            // If that is not enough for the selected breaker rating, the backend
+            // automatically increases the number of groups until every group fits.
+            AddAutoSizedBreakerGroups(
+                consumers,
+                minimumGroupCount: groupingParam,
+                categoryName: name);
+        }
 
-            var buckets = Enumerable.Range(0, groupCount)
-                .Select(_ => new List<Consumer>())
-                .ToList();
+        private void AddAutoSizedBreakerGroups(
+            List<Consumer> consumers,
+            int minimumGroupCount,
+            string? categoryName)
+        {
+            if (consumers.Count == 0)
+                return;
 
-            foreach (var consumer in consumers.OrderByDescending(c => c.Amper))
+            int nominal = consumers[0].BreakerAmperage;
+            int sensitivity = consumers[0].RcdMilliAmps;
+
+            if (consumers.Any(c =>
+                c.BreakerAmperage != nominal ||
+                c.RcdMilliAmps != sensitivity))
             {
-                var bucket = buckets
-                    .OrderBy(group => group.Sum(c => c.Amper))
-                    .ThenBy(group => group.Count)
-                    .First();
-
-                bucket.Add(consumer);
+                throw new ArgumentException(
+                    $"{categoryName ?? "The consumer group"} contains consumers " +
+                    "with different protection settings.");
             }
 
-            foreach (var bucket in buckets.Where(group => group.Count > 0))
+            var impossibleConsumer = consumers.FirstOrDefault(c => c.Amper > nominal);
+
+            if (impossibleConsumer != null)
             {
-                AVFuses.Add(componentFactory.GetAVModule(bucket));
+                throw new ArgumentException(
+                    $"{impossibleConsumer.Name} draws {impossibleConsumer.Amper:F2} A, " +
+                    $"which exceeds its C{nominal} circuit breaker.");
             }
+
+            double totalCurrent = consumers.Sum(c => c.Amper);
+
+            // Start with the user's requested minimum, but skip directly to the
+            // theoretical minimum when the total current already requires more.
+            int requiredByTotal = nominal > 0
+                ? (int)Math.Ceiling(totalCurrent / nominal)
+                : consumers.Count;
+
+            int groupCount = Math.Clamp(
+                Math.Max(Math.Max(minimumGroupCount, 1), requiredByTotal),
+                1,
+                consumers.Count);
+
+            while (groupCount <= consumers.Count)
+            {
+                var buckets = Enumerable.Range(0, groupCount)
+                    .Select(_ => new List<Consumer>())
+                    .ToList();
+
+                bool packed = true;
+
+                // Largest loads first. Prefer the currently least-loaded bucket
+                // that can still accept the consumer without exceeding the breaker.
+                foreach (var consumer in consumers.OrderByDescending(c => c.Amper))
+                {
+                    var bucket = buckets
+                        .Select(group => new
+                        {
+                            Group = group,
+                            Load = group.Sum(c => c.Amper)
+                        })
+                        .Where(candidate =>
+                            candidate.Load + consumer.Amper <= nominal + 0.000001)
+                        .OrderBy(candidate => candidate.Load)
+                        .ThenBy(candidate => candidate.Group.Count)
+                        .Select(candidate => candidate.Group)
+                        .FirstOrDefault();
+
+                    if (bucket == null)
+                    {
+                        packed = false;
+                        break;
+                    }
+
+                    bucket.Add(consumer);
+                }
+
+                if (packed)
+                {
+                    foreach (var bucket in buckets.Where(group => group.Count > 0))
+                    {
+                        AVFuses.Add(componentFactory.GetAVModule(bucket));
+                    }
+
+                    return;
+                }
+
+                groupCount++;
+            }
+
+            // In practice this can only be reached when the input data is invalid,
+            // because one consumer per breaker must always fit after the check above.
+            throw new InvalidOperationException(
+                $"{categoryName ?? "The consumer group"} could not be distributed " +
+                "across circuit breakers.");
         }
         public void DistributeRCDFromLoad()
         {
@@ -189,7 +272,7 @@ namespace FuseBox
             int limit = (int)RCD.LimitOfConnectedFuses;
 
             if (limit <= 0)
-                throw new InvalidOperationException("Неверный лимит автоматов на RCD.");
+                throw new InvalidOperationException("Invalid circuit-breaker limit for the RCD.");
 
             // На этом этапе сохраняем используемый в проекте номинал RCD 63 А.
             // Чувствительность 10/30 мА — отдельный параметр Capacity.
@@ -200,7 +283,7 @@ namespace FuseBox
                 if (breaker.Electricals.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        "Обнаружен автомат без потребителей.");
+                        "A circuit breaker without consumers was detected.");
                 }
 
                 int sensitivity = breaker.Electricals[0].RcdMilliAmps;
@@ -209,7 +292,7 @@ namespace FuseBox
                     c.RcdMilliAmps != sensitivity))
                 {
                     throw new InvalidOperationException(
-                        "У потребителей одного автомата разные требования RCD.");
+                        "Consumers on the same circuit breaker have different RCD requirements.");
                 }
 
                 double load = breaker.GetTotalLoad();
@@ -217,7 +300,7 @@ namespace FuseBox
                 if (!double.IsFinite(load) || load < 0 || load > rcdNominal)
                 {
                     throw new ArgumentException(
-                        "Нагрузка автомата не подходит для текущей модели RCD.");
+                        "The circuit-breaker load is not supported by the current RCD model.");
                 }
 
                 var target = uzos
@@ -276,7 +359,7 @@ namespace FuseBox
                 if (phasePort == null)
                 {
                     throw new InvalidOperationException(
-                        "У RCD отсутствует фазный порт.");
+                        "The RCD does not have a phase port.");
                 }
 
                 phasePort.portOut = $"Phase{phaseIndex + 1}";
@@ -354,7 +437,7 @@ namespace FuseBox
                 if (phasePort == null)
                 {
                     throw new InvalidOperationException(
-                        "У RCD отсутствует фазный порт.");
+                        "The RCD does not have a phase port.");
                 }
 
                 phasePort.portOut = $"Phase{phaseIndex + 1}";
@@ -419,6 +502,8 @@ namespace FuseBox
 
 //double TotoalPower = project.TotalPower;
 //decimal WireSection = Convert.ToDecimal(CalculateWireCrossSection(TotoalPower));
+
+
 
 
 

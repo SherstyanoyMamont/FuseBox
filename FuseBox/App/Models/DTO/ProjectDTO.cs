@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.DTO.ConfugurationDTO;
 using FuseBox.FuseBox;
 
@@ -11,23 +11,44 @@ namespace FuseBox.App.Models.DTO
         public InitialSettingsDTO? InitialSettings { get; set; }
         public FuseBoxUnitDTO? FuseBox { get; set; }
         public List<FloorDTO> Floors { get; set; } = new();
-        public double TotalPower { get; set; } // A
 
-        public ProjectDTO()
-        {
+        // Persisted project total is power in watts.
+        public double TotalPower { get; set; }
 
-        }
-
-
-        public double CalculateTotalPower() // Calculates the total power of the entire object
+        public double CalculateTotalCurrentAmps()
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
                 .SelectMany(room => room.Consumer)
-                .Sum(equipment => equipment.Amper);
+                .Sum(consumer => consumer.Amper);
         }
 
-        public int GetTotalNumberOfRooms() // Returns the total number of rooms in the project
+        public double? CalculateTotalPowerWatts()
+        {
+            var consumers = Floors
+                .SelectMany(floor => floor.Rooms)
+                .SelectMany(room => room.Consumer)
+                .ToList();
+
+            if (consumers.Any(consumer =>
+                    !consumer.PowerWatts.HasValue))
+            {
+                return null;
+            }
+
+            return consumers.Sum(consumer =>
+                consumer.PowerWatts!.Value);
+        }
+
+        [Obsolete(
+            "CalculateTotalPower historically returned current in amps. " +
+            "Use CalculateTotalCurrentAmps or CalculateTotalPowerWatts.")]
+        public double CalculateTotalPower()
+        {
+            return CalculateTotalCurrentAmps();
+        }
+
+        public int GetTotalNumberOfRooms()
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)

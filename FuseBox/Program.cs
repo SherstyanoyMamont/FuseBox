@@ -1,387 +1,210 @@
-﻿
-using System;
-using Newtonsoft.Json;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using FuseBox;
+using System.Threading.RateLimiting;
 using FuseBox.App.Controllers;
-using Microsoft.EntityFrameworkCore;
 using FuseBox.App.DataBase;
-using System.Configuration;
-using Microsoft.Extensions.Options;
+using FuseBox.App.Models;
+using FuseBox.App.Services.Auth;
+using FuseBox.App.Services.Projects;
 using FuseBox.Controllers;
-using AutoMapper;
-using FuseBox.App.Factorys;
-using FuseBox.App.Interfaces;
-using FuseBox.App.Services.Providers;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace FuseBox
 {
-    internal class Program
+    public partial class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // testing switch
-            if (true)
+            var builder = WebApplication.CreateBuilder(args);
+
+            var frontendOrigins = builder.Configuration
+                .GetSection("Frontend:AllowedOrigins")
+                .Get<string[]>()?
+                .Where(origin => !string.IsNullOrWhiteSpace(origin))
+                .Select(origin => origin.TrimEnd('/'))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            if (frontendOrigins == null || frontendOrigins.Length == 0)
             {
+                frontendOrigins = new[] { "http://localhost:3000" };
+            }
 
-                // создание нового экземпляра билдера веб-приложения
-                var builder = WebApplication.CreateBuilder(args);
-
-                // Add services to the container.
-
-                builder.Services.AddCors(options =>
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
                 {
-                    options.AddPolicy("AllowFrontend", policy =>
-                    {
-                        policy.WithOrigins("http://localhost:3000") // Разрешаем только твой фронтенд
-                              .AllowAnyHeader()
-                              .AllowAnyMethod();
-                    });
+                    policy
+                        .WithOrigins(frontendOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
+            });
 
-                //builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
+            builder.Services.AddControllersWithViews();
 
-                //Конфигурации сервисов
-                builder.Services.AddControllers()
-                    .AddJsonOptions(options =>
-                    {
-                        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-                    });
+            // Controllers return one stable validation envelope themselves.
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
-                // Добавляем AutoMapper
-                //CreateHostBuilder(args).Build().Run();
-                builder.Services.AddAutoMapper(typeof(FuseBoxUnitProfile).Assembly);
+            builder.Services.AddAutoMapper(
+                typeof(FuseBoxUnitProfile).Assembly);
 
-                
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseMySql(
+                    builder.Configuration.GetConnectionString(
+                        "DefaultConnection"),
+                    new MySqlServerVersion(new Version(8, 0, 41)));
 
-
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(
-                        builder.Configuration.GetConnectionString("DefaultConnection"),
-                        new MySqlServerVersion(new Version(8, 0, 41))
-                    )
-                    .EnableSensitiveDataLogging() // <<< добавляем эту строку!
-                    .EnableDetailedErrors() // подробные ошибки EF Core
-                    .LogTo(Console.WriteLine, LogLevel.Information)
-                );
-
-
-                // Добавляет поддержку контроллеров к фукнционалу веб-приложения
-                // Контроллеры - это классы, которые отвечают за обработку входящих HTTP запросов
-                // Контроллеры обрабатывают запросы и возвращают ответы
-                //builder.Services.AddControllers();
-
-
-                // Добавляет поддержку генерации документации по API
-                builder.Services.AddEndpointsApiExplorer();
-                // Добавляет поддержку Swagger
-                builder.Services.AddSwaggerGen();
-
-
-                
-
-
-                // Билдер создает новый экземпляр веб-приложения на основе указанных настроек
-                var app = builder.Build();
-
-
-                // Подключаем CORS
-                app.UseCors("AllowFrontend");
-
-                // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment())
+                if (builder.Environment.IsDevelopment())
                 {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
+                    options
+                        .EnableSensitiveDataLogging()
+                        .EnableDetailedErrors()
+                        .LogTo(
+                            Console.WriteLine,
+                            LogLevel.Information);
                 }
+            });
 
-                // Перенаправляет HTTP запросы на HTTPS
-                app.UseHttpsRedirection();
+            builder.Services.AddScoped<
+                IPasswordHasher<User>,
+                PasswordHasher<User>>();
 
-                app.UseAuthorization();
+            builder.Services.AddScoped<AuthCookieEvents>();
 
+            // Stage 6: all project persistence and ownership checks are
+            // centralized here. Controllers never accept an owner from JSON.
+            builder.Services.AddScoped<ProjectService>();
 
-                // Добавляет контроллеры к обработке запросов
-                app.MapControllers();
-
-                app.Run();
-
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddScoped<
+                    IPasswordResetSender,
+                    DevelopmentPasswordResetSender>();
             }
             else
             {
-                Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
-                
-
-                //var options = new JsonSerializerOptions
-                //{
-                //    WriteIndented = true,
-                //    Converters = { new JsonStringEnumConverter() }
-                //};
-
-                var settings = new JsonSerializerSettings
-                {
-                    Formatting = Formatting.Indented,  // Для красивого форматирования
-                };
-
-                // JSON-строка с данными о проекте
-                string? inputJsonData = @"
-                {
-                  ""floorGrouping"": {
-                    ""FloorGroupingP"": true,
-                    ""separateUZO"": true
-                    },
-                  ""globalGrouping"": {
-                    ""Sockets"": 1,
-                    ""Lighting"": 1,
-                    ""Conditioners"": 1
-                  },
-                  ""initialSettings"": {
-                    ""PhasesCount"": 3,
-                    ""MainAmperage"": 25,
-                    ""ShieldWidth"": 16,
-                    ""VoltageStandard"": 220,
-                    ""PowerCoefficient"": 1
-                  },
-                  ""FuseBox"": {
-                    ""MainBreaker"": true,
-                    ""Main3PN"": false,
-                    ""SurgeProtection"": true,
-                    ""LoadSwitch2P"": true,
-                    ""ModularContactor"": false,
-                    ""RailMeter"": true,
-                    ""FireUZO"": true,
-                    ""VoltageRelay"": true,
-                    ""ThreePRelay"": false,
-                    ""RailSocket"": true,
-                    ""NDisconnectableLine"": true,
-                    ""LoadSwitch"": true,
-                    ""CrossModule"": true,
-                    ""DINLines"": 1,
-                    ""Price"": 1000,
-                    ""Contactor"": [
-                      {
-                        ""id"": 1,
-                        ""name"": ""TV"",
-                        ""Amper"": 25,
-                      }
-                    ],
-                  },
-                    ""floors"": [
-                      {
-                      ""Id"": 1,
-                      ""Name"": ""Ground Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Living Room"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 1,
-                              ""name"": ""TV"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 2,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 8,
-                            },
-                            {
-                              ""id"": 3,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 1,
-                            }
-                          ],
-                          ""tPower"": 10
-                        },
-                        {
-                          ""name"": ""Kitchen"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 4,
-                              ""name"": ""Refrigerator"",
-                              ""Amper"": 3,
-                            },
-                            {
-                              ""id"": 5,
-                              ""name"": ""Microwave"",
-                              ""Amper"": 5,
-                            },
-                            {
-                              ""id"": 6,
-                              ""name"": ""Oven"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 15
-                        }
-                      ]
-                    },
-                    {
-                      ""Id"": 2,
-                      ""Name"": ""First Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Bedroom 1"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 7,
-                              ""name"": ""Heater"",
-                              ""Amper"": 13,
-                            },
-                            {
-                              ""id"": 8,
-                              ""name"": ""Fan"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 20
-                        },
-                        {
-                          ""name"": ""Bathroom"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 9,
-                              ""name"": ""Water Heater"",
-                              ""Amper"": 13,
-                            },
-                            {
-                              ""id"": 10,
-                              ""name"": ""Hair Dryer"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 20
-                        }
-                      ]
-                    },
-                    {
-                      ""Id"": 3,      
-                      ""Name"": ""Second Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Office"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 11,
-                              ""name"": ""Computer"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 12,
-                              ""name"": ""Printer"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 13,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 14,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 15,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 16,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 17,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 3,
-                            }
-                          ],
-                          ""tPower"": 12
-                        }
-                      ]
-                    }
-                  ]
-                }";
-
-                Project? project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
-
-                // Создаём адаптер, который вытянет нужные настройки из проекта
-                IProjectSettings settingsProvider = new ProjectSettingsProvider(project); // передаем проект в адаптер
-
-                // Создаём фабрику компонентов
-                IComponentFactory componentFactory = new ComponentFactory();
-
-                // Создаём фабрику соединений
-                IConnectionFactory cableConnectionFactory = new ConnectionFactory();
-
-                // Создаём сервис конфигурации
-                IFuseBoxManager fuseBoxManager = new FuseBoxCableConnectionManager(project.FuseBox);
-
-                // Создаём провайдер для группировки компонентов
-                IProjectGrouping projectGrouping = new ProjectGroupingProvider(project);
-
-                // Создаём провайдер для подключения потребителей
-                IConsumerProvider consumerProvider = new ConsumerProvider(project);
-
-                // Создаём провайдер для UZO
-                IDistributionService distributionService = new DistributionService(settingsProvider, projectGrouping, consumerProvider, componentFactory);
-
-                var singlePhaseRules = new List<IShieldConfigurationRule>
-                    {
-                        new IntroductoryModuleRule(),
-                        // и т.д.
-                    };
-
-                var threePhaseRules = new List<IShieldConfigurationRule>
-                {
-
-                    // ...
-                };
-
-                // создание экземпляра сервиса конфигурации
-                ConfigurationService configurationService = new ConfigurationService(settingsProvider, componentFactory, fuseBoxManager,
-                        cableConnectionFactory, projectGrouping, consumerProvider, singlePhaseRules, threePhaseRules, distributionService);
-
-                var validationResults = ValidationHelper.Validate(project);
-
-                if (validationResults.Count == 0)
-                {
-                    Console.WriteLine("Validation was successful!");
-                    //Console.WriteLine($"Id: {user.Id}, Name: {user.Name}, Age: {user.Age}");
-                }
-                else
-                {
-                    Console.WriteLine("Validation error:");
-                    foreach (var validationResult in validationResults)
-                    {
-                        Console.WriteLine($" - {validationResult.ErrorMessage}");
-                    }
-                }
-
-                configurationService.GenerateConfiguration();         // генерация конфигурации
-
-
-                //var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings);           // сериализация данных
-                var newFuseBox = JsonConvert.SerializeObject(project, settings);     // сериализация данных
-
-                //var configurationS = JsonConvert.SerializeObject(configurationService.ports, settings); // сериализация данных
-
-                // Сериализация с использованием настроек
-                // var newProjectSerialized = System.Text.Json.JsonSerializer.Serialize(newProject, options);
-
-                Console.Write(newFuseBox);
-                Console.WriteLine("\nРазъемы были скрыты в классе Component!\n");
-
-                //Console.Write(configurationS); // вывод данных о разъемах
-
+                builder.Services.AddScoped<
+                    IPasswordResetSender,
+                    SmtpPasswordResetSender>();
             }
+
+            builder.Services
+                .AddAuthentication(
+                    CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "FuseBox.Auth";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+
+                    options.Cookie.SecurePolicy =
+                        builder.Environment.IsDevelopment()
+                            ? CookieSecurePolicy.SameAsRequest
+                            : CookieSecurePolicy.Always;
+
+                    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                    options.SlidingExpiration = true;
+                    options.EventsType = typeof(AuthCookieEvents);
+                });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+                options.Cookie.Name = "FuseBox.Csrf";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+
+                options.Cookie.SecurePolicy =
+                    builder.Environment.IsDevelopment()
+                        ? CookieSecurePolicy.SameAsRequest
+                        : CookieSecurePolicy.Always;
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode =
+                    StatusCodes.Status429TooManyRequests;
+
+                options.AddPolicy(
+                    "password-reset",
+                    httpContext =>
+                    {
+                        var partitionKey =
+                            httpContext.Connection.RemoteIpAddress?
+                                .ToString() ?? "unknown";
+
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            partitionKey,
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = 5,
+                                Window = TimeSpan.FromMinutes(15),
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    });
+            });
+
+            builder.Services.AddEndpointsApiExplorer();
+
+            // builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("CSRF", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = "X-CSRF-TOKEN",
+                    In = ParameterLocation.Header,
+                    Description = "Paste the token returned by GET /api/auth/csrf"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "CSRF"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+            var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseCors("AllowFrontend");
+            app.UseRateLimiter();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapControllers();
+            app.Run();
         }
     }
 }

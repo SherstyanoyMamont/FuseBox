@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Factorys;
+using FuseBox.App.Factorys;
 using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
@@ -62,7 +62,7 @@ namespace FuseBox
         // Создаем/Модифицируем объект проекта
         public void GenerateConfiguration()
         {
-            Console.WriteLine("▶ Начинаем GenerateConfiguration");
+            Console.WriteLine("Starting GenerateConfiguration.");
 
             try
             {
@@ -71,7 +71,7 @@ namespace FuseBox
             }
             catch (Exception ex)
             {
-                throw new Exception("Ошибка в ConfigureShield", ex);
+                throw new Exception("ConfigureShield failed.", ex);
             }
 
             try
@@ -81,7 +81,7 @@ namespace FuseBox
             }
             catch (Exception ex)
             {
-                throw new Exception("Ошибка в Distribute", ex);
+                throw new Exception("Distribute failed.", ex);
             }
 
             try
@@ -91,7 +91,7 @@ namespace FuseBox
             }
             catch (Exception ex)
             {
-                throw new Exception("Ошибка в CreateConnections", ex);
+                throw new Exception("CreateConnections failed.", ex);
             }
 
             try
@@ -101,10 +101,10 @@ namespace FuseBox
             }
             catch (Exception ex)
             {
-                throw new Exception("Ошибка в ShieldByLevel", ex);
+                throw new Exception("ShieldByLevel failed.", ex);
             }
 
-            Console.WriteLine("✅ GenerateConfiguration завершён успешно.");
+            Console.WriteLine("GenerateConfiguration completed successfully.");
         }
 
         // Логика конфигурации устройств...
@@ -136,11 +136,11 @@ namespace FuseBox
                 if (settingsProvider.IsFireUZOEnabled()) { shieldModuleSet.Add(componentFactory.CreateFireUZOModule()); }
                 if (settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
 
-                if (settingsProvider.IsRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
                 if (settingsProvider.IsNDiscLineEnabled()) { shieldModuleSet.Add(componentFactory.CreateNDiscLineModule()); }
                 if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
                 if (settingsProvider.IsModularContactorEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); }
                 if (settingsProvider.IsCrossModuleEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }
+                if (settingsProvider.IsRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
             }
             else if (settingsProvider.GetPhasesCount() == 3) // Входим в расчеты 3 фазы
             {
@@ -169,9 +169,9 @@ namespace FuseBox
                     shieldModuleSet.Add(componentFactory.CreateVoltageRelay3Module());
                 }
                 if (settingsProvider.IsVoltageRelay3Enabled() && !settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
-                if (settingsProvider.IsDinRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
                 if (settingsProvider.IsModularContactor3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); } // !!!
                 if (settingsProvider.IsCrossBlockEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }       // CrossModule? 4 slots?
+                if (settingsProvider.IsDinRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
             }
             else new Exception("Unexpected phase type!");
         }
@@ -206,12 +206,12 @@ namespace FuseBox
         public void CreateConnections()
         {
             if (shieldModuleSet.Count == 0)
-                throw new InvalidOperationException("Список устройств пуст.");
+                throw new InvalidOperationException("The device list is empty.");
 
             if (shieldModuleSet.Distinct().Count() != shieldModuleSet.Count)
             {
                 throw new InvalidOperationException(
-                    "Один экземпляр компонента добавлен в схему несколько раз.");
+                    "The same component instance was added to the schema more than once.");
             }
 
             for (int i = 0; i < shieldModuleSet.Count; i++)
@@ -251,7 +251,7 @@ namespace FuseBox
                     "Phase3" => "Grey",
                     "Zero" => "Blue",
                     _ => throw new InvalidOperationException(
-                        $"Неизвестный канал: {channel}")
+                        $"Unknown channel: {channel}")
                 };
             }
 
@@ -280,7 +280,7 @@ namespace FuseBox
                 if (ReferenceEquals(start, finish))
                 {
                     throw new InvalidOperationException(
-                        "Нельзя подключить компонент к самому себе.");
+                        "A component cannot be connected to itself.");
                 }
 
                 var connection = (
@@ -301,8 +301,7 @@ namespace FuseBox
                 if (!supply.TryGetValue(channel, out var source))
                 {
                     throw new InvalidOperationException(
-                        $"Для {target.Name} №{target.SerialNumber} " +
-                        $"не найден источник {channel}.");
+                        $"No {channel} source was found for {target.Name} #{target.SerialNumber}.");
                 }
 
                 return source;
@@ -319,7 +318,7 @@ namespace FuseBox
                 !IsStartPoint(incoming[0]))
             {
                 throw new InvalidOperationException(
-                    "Общая часть схемы должна начинаться с одного StartPoint.");
+                    "The common part of the schema must start with exactly one StartPoint.");
             }
 
             foreach (var component in incoming)
@@ -353,7 +352,7 @@ namespace FuseBox
                 if (channels.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        $"У {component.Name} отсутствует описание каналов питания.");
+                        $"Power-channel metadata is missing for {component.Name}.");
                 }
 
                 foreach (var channel in channels)
@@ -389,7 +388,7 @@ namespace FuseBox
                 if (phaseChannels.Count != 1)
                 {
                     throw new InvalidOperationException(
-                        $"У RCD №{rcd.SerialNumber} должна быть одна назначенная фаза.");
+                        $"RCD #{rcd.SerialNumber} must have exactly one assigned phase.");
                 }
 
                 string phase = phaseChannels[0]!;
@@ -398,7 +397,7 @@ namespace FuseBox
                     phase != "Phase1")
                 {
                     throw new InvalidOperationException(
-                        "Однофазному RCD назначена фаза L2 или L3.");
+                        "A single-phase RCD was assigned phase L2 or L3.");
                 }
 
                 // Питание RCD берётся из общей части щита.
@@ -408,7 +407,7 @@ namespace FuseBox
                 if (rcd.Electricals.Count == 0)
                 {
                     throw new InvalidOperationException(
-                        $"RCD №{rcd.SerialNumber} не содержит автоматов.");
+                        $"RCD #{rcd.SerialNumber} does not contain any circuit breakers.");
                 }
 
                 foreach (var child in rcd.Electricals)
@@ -416,28 +415,26 @@ namespace FuseBox
                     if (child is not Fuse breaker)
                     {
                         throw new InvalidOperationException(
-                            $"RCD №{rcd.SerialNumber} содержит компонент, " +
-                            "который не является автоматом.");
+                            $"RCD #{rcd.SerialNumber} contains a component that is not a circuit breaker.");
                     }
 
                     if (!shieldModuleSet.Contains(breaker))
                     {
                         throw new InvalidOperationException(
-                            "Автомат RCD отсутствует в общем списке схемы.");
+                            "An RCD circuit breaker is missing from the schema device list.");
                     }
 
                     if (!owners.TryAdd(breaker, rcd))
                     {
                         throw new InvalidOperationException(
-                            $"Автомат №{breaker.SerialNumber} назначен нескольким RCD.");
+                            $"Circuit breaker #{breaker.SerialNumber} is assigned to multiple RCDs.");
                     }
 
                     if (breaker.Electricals.Any(consumer =>
                         consumer.RcdMilliAmps != rcd.Capacity))
                     {
                         throw new InvalidOperationException(
-                            $"Параметры защиты автомата №{breaker.SerialNumber} " +
-                            "не соответствуют его RCD.");
+                            $"Protection settings for circuit breaker #{breaker.SerialNumber} do not match its RCD.");
                     }
 
                     // Автомат получает фазу своего RCD.
@@ -450,7 +447,7 @@ namespace FuseBox
                 if (!owners.ContainsKey(breaker))
                 {
                     throw new InvalidOperationException(
-                        $"Автомат №{breaker.SerialNumber} не назначен ни одному RCD.");
+                        $"Circuit breaker #{breaker.SerialNumber} is not assigned to an RCD.");
                 }
             }
 
@@ -478,7 +475,7 @@ namespace FuseBox
             int shieldWidth = settingsProvider.GetShieldWidth();
 
             if (shieldWidth <= 0)
-                throw new ArgumentException("Ширина щита должна быть положительной.");
+                throw new ArgumentException("Panel width must be greater than zero.");
 
             var groups = fuseBoxManager.GetComponentGroups();
 
@@ -501,7 +498,7 @@ namespace FuseBox
                 if (!assigned.Add(component))
                 {
                     throw new InvalidOperationException(
-                        "Повтор компонента при размещении.");
+                        "A component was placed more than once.");
                 }
 
                 if (component is RCD rcd)
@@ -513,7 +510,7 @@ namespace FuseBox
                             !assigned.Add(child))
                         {
                             throw new InvalidOperationException(
-                                "Неверная принадлежность автоматов при размещении.");
+                                "Circuit-breaker ownership is inconsistent during placement.");
                         }
 
                         block.Add(child);
@@ -528,7 +525,7 @@ namespace FuseBox
                 .Any(component => !assigned.Contains(component)))
             {
                 throw new InvalidOperationException(
-                    "Часть устройств не попала в блоки размещения.");
+                    "Some devices were not assigned to placement blocks.");
             }
 
             int currentLevel = -1;
@@ -565,7 +562,7 @@ namespace FuseBox
                         (!startPoint && component.Slots == 0))
                     {
                         throw new InvalidOperationException(
-                            $"Некорректная ширина устройства {component.Name}.");
+                            $"Invalid width for device {component.Name}.");
                     }
                 }
 
@@ -574,8 +571,7 @@ namespace FuseBox
                 if (blockWidth > shieldWidth)
                 {
                     throw new ArgumentException(
-                        $"Группа {block[0].Name} занимает {blockWidth} слотов, " +
-                        $"но ширина ряда — {shieldWidth}. Увеличьте ширину щита.");
+                        $"Group {block[0].Name} occupies {blockWidth} slots, but the row width is {shieldWidth}. Increase the panel width.");
                 }
 
                 if (currentLevel < 0)
@@ -605,7 +601,7 @@ namespace FuseBox
             if (groups.Any(group => group.Components.Count == 0))
             {
                 throw new InvalidOperationException(
-                    "После размещения остался пустой ряд.");
+                    "An empty row remained after placement.");
             }
 
             fuseBoxManager.BindComponentsToGroups();
@@ -847,3 +843,4 @@ namespace FuseBox
 
 
 */
+

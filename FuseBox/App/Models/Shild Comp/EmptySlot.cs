@@ -1,4 +1,4 @@
-﻿namespace FuseBox
+namespace FuseBox
 {
     public class EmptySlot : Component
     {
@@ -8,7 +8,7 @@
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(slots),
-                    "Пустой участок должен занимать хотя бы один слот.");
+                    "An empty section must occupy at least one slot.");
             }
 
             Name = "Empty Slot";
@@ -24,3 +24,4 @@
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
 using FuseBox.App.Models.Shild_Comp;
 using System.Collections.Generic;
@@ -81,7 +81,7 @@ namespace FuseBox.App.Factorys
         }
         public Component CreateCrossBlockModule()
         {
-            return new Component("CrossBlock", 63, 2, 35, CopyPorts(0));
+            return new Component("CrossBlock", 63, 4, 35, CopyPorts(0));
         }
         public Component CreateStartPoint()
         {
@@ -155,7 +155,7 @@ namespace FuseBox.App.Factorys
             if (consumers == null || consumers.Count == 0)
             {
                 throw new ArgumentException(
-                    "Нельзя создать автомат без потребителей.");
+                    "A circuit breaker cannot be created without consumers.");
             }
 
             int nominal = consumers[0].BreakerAmperage;
@@ -166,8 +166,8 @@ namespace FuseBox.App.Factorys
                 c.RcdMilliAmps != sensitivity))
             {
                 throw new ArgumentException(
-                    "Нельзя объединять под одним автоматом потребителей " +
-                    "с разными параметрами защиты.");
+                    "Consumers with different protection settings cannot be grouped " +
+                    "under the same circuit breaker.");
             }
 
             double totalCurrent = consumers.Sum(c => c.Amper);
@@ -175,8 +175,8 @@ namespace FuseBox.App.Factorys
             if (totalCurrent > nominal)
             {
                 throw new ArgumentException(
-                    $"Суммарный ток группы {totalCurrent:F2} А превышает C{nominal}. " +
-                    "Измените группировку или исходные параметры.");
+                    $"The group current {totalCurrent:F2} A exceeds C{nominal}. " +
+                    "Change the grouping or the input parameters.");
             }
 
             return new Fuse("AV", nominal, 1, 10, consumers);
@@ -195,3 +195,5 @@ namespace FuseBox.App.Factorys
         }
     }
 }
+
+
