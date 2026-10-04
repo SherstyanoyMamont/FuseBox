@@ -1,0 +1,45 @@
+{
+  "name": "fuse-box-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "verify:vr-stage1": "node scripts/verify-vr-stage1.mjs",
+    "verify:vr-stage2": "node scripts/verify-vr-stage2.mjs",
+    "verify:vr-stage3": "node scripts/verify-vr-stage3.mjs",
+    "verify:vr-stage4": "node scripts/verify-vr-stage4.mjs",
+    "verify:vr-stage5": "node scripts/verify-vr-stage5.mjs",
+    "verify:vr-stage6": "node scripts/verify-vr-stage6.mjs",
+    "verify:vr-stage7": "node scripts/verify-vr-stage7.mjs",
+    "verify:vr-stage8": "node scripts/verify-vr-stage8.mjs",
+    "verify:vr-stage9": "node scripts/verify-vr-stage9.mjs",
+    "verify:vr-stage9-locomotion": "node scripts/verify-vr-stage9-locomotion.mjs",
+    "verify:vr-stage10": "node scripts/verify-vr-stage10.mjs"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.494.0",
+    "next": "15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "0.186.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19",
+    "@types/three": "0.186.0",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

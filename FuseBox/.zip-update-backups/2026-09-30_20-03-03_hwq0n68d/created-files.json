@@ -1,0 +1,7 @@
+[
+  "App\\Ai\\SchemaAiService.cs",
+  "App\\Ai\\SchemaAiCommandFactory.cs",
+  "App\\Ai\\SchemaAiTools.cs",
+  "App\\Ai\\SchemaAiContracts.cs",
+  "App\\Ai\\SchemaAiEndpointExtensions.cs"
+]
