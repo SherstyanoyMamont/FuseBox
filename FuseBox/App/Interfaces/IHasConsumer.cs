@@ -6,6 +6,6 @@ namespace FuseBox.App.Interfaces
     public interface IHasConsumer
     {
         [JsonProperty(Order = 9)]
-        public List<Component> Electricals { get; set; }
+        public List<Consumer> Electricals { get; set; }
     }
 }

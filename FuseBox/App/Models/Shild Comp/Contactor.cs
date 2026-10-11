@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Interfaces;
 using Newtonsoft.Json;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Xml.Linq;
@@ -9,7 +9,7 @@ namespace FuseBox
 {
     public class Contactor : Component, IHasConsumer
     {
-        public List<Component> Electricals { get; set; } = new List<Component>();
+        public List<Consumer> Electricals { get; set; } = new List<Consumer>();
 
         public Contactor(string name, int amper, int slots, decimal price, List<Port> ports) : base(name, amper, slots, price)
         {

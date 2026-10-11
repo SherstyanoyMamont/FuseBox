@@ -7,8 +7,9 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace FuseBox
 {
-    public class RCD : Component, IHasConsumer
+    public class RCD : Component
     {
+        [JsonProperty(Order = 9)]
         public List<Component> Electricals { get; set; } = new List<Component>();
 
         [JsonProperty(Order = 8)]
