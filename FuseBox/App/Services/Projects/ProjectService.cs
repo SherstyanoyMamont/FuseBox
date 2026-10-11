@@ -446,6 +446,20 @@ namespace FuseBox.App.Services.Projects
             BindGeneratedGraph(project);
         }
 
+        internal static void PrepareGuestDraft(
+            Project project,
+            string? requestedName)
+        {
+            var now = DateTime.UtcNow;
+
+            PrepareDraft(
+                project,
+                userId: 0,
+                requestedName,
+                createdAtUtc: now,
+                updatedAtUtc: now);
+        }
+
         private static string NormalizeProjectName(
             string? requestedName,
             DateTime now)

@@ -103,6 +103,51 @@ namespace FuseBox.App.Controllers
             }
         }
 
+        [HttpPost("guest/schema")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateGuestSchema(
+            [FromBody] ProjectSaveRequest request)
+        {
+            if (!ModelState.IsValid)
+                return ValidationFailed();
+
+            if (request.InitialSettings?.PhasesCount != 1)
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    Error(
+                        ApiErrorCodes.FeatureThreePhaseRequired,
+                        "Guest calculation supports one-phase panels only."));
+            }
+
+            try
+            {
+                var draft = ProjectRequestMapper.ToProject(request);
+                ProjectService.PrepareGuestDraft(draft, request.Name);
+
+                return Content(
+                    ProjectResponseFactory.BuildSchemaJson(draft),
+                    "application/json");
+            }
+            catch (ArgumentException exception)
+            {
+                return BadRequest(Error(
+                    ApiErrorCodes.ValidationFailed,
+                    exception.Message));
+            }
+            catch (InvalidOperationException exception)
+            {
+                _logger.LogWarning(
+                    exception,
+                    "Guest schema generation failed.");
+
+                return Conflict(Error(
+                    ApiErrorCodes.ProjectConflict,
+                    "The guest panel could not be calculated."));
+            }
+        }
+
         [HttpDelete("{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProject(
