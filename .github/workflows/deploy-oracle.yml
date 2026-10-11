@@ -1,4 +1,5 @@
 name: Deploy backend to Oracle
+# SSH key normalization is kept here so Windows-copied secrets work in Actions.
 
 on:
   push:
