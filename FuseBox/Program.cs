@@ -290,15 +290,18 @@ namespace FuseBox
             });
             app.Use(async (context, next) =>
             {
-                var remote = context.Connection.RemoteIpAddress;
+                var publicApiHost = string.Equals(
+                    context.Request.Host.Host,
+                    "api.voltcrafting.com",
+                    StringComparison.OrdinalIgnoreCase);
+                var cloudflareRequest = context.Request.Headers.ContainsKey("CF-Ray");
                 var forwardedHttps = string.Equals(
                     context.Request.Headers["X-Forwarded-Proto"].ToString(),
                     "https",
                     StringComparison.OrdinalIgnoreCase);
                 var cloudflareHttps = context.Request.Headers["CF-Visitor"].ToString()
                     .Contains("\"scheme\":\"https\"", StringComparison.OrdinalIgnoreCase);
-                if (remote is not null &&
-                    (System.Net.IPAddress.IsLoopback(remote) && (forwardedHttps || cloudflareHttps)))
+                if (publicApiHost && cloudflareRequest && (forwardedHttps || cloudflareHttps || !context.Request.IsHttps))
                 {
                     context.Request.Scheme = "https";
                 }
