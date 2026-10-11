@@ -1,0 +1,122 @@
+name: Deploy backend to Oracle
+
+on:
+  push:
+    branches:
+      - main
+      - Database+Frontend
+    paths:
+      - 'FuseBox/**'
+      - 'deployment/oracle/compose.yaml'
+      - '.github/workflows/deploy-oracle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oracle-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ORACLE_HOST: ${{ secrets.ORACLE_HOST }}
+      ORACLE_USER: ${{ secrets.ORACLE_USER }}
+      ORACLE_APP_PATH: ${{ secrets.ORACLE_APP_PATH }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish backend
+        run: dotnet publish FuseBox/FuseBox.csproj --configuration Release --output publish --no-self-contained
+
+      - name: Prepare SSH
+        shell: bash
+        env:
+          ORACLE_SSH_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+          ORACLE_KNOWN_HOSTS: ${{ secrets.ORACLE_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$ORACLE_HOST"
+          test -n "$ORACLE_USER"
+          test -n "$ORACLE_SSH_KEY"
+          mkdir -p "$RUNNER_TEMP/ssh"
+          printf '%s\n' "$ORACLE_SSH_KEY" > "$RUNNER_TEMP/ssh/id_ed25519"
+          chmod 600 "$RUNNER_TEMP/ssh/id_ed25519"
+          if [ -n "${ORACLE_KNOWN_HOSTS:-}" ]; then
+            printf '%s\n' "$ORACLE_KNOWN_HOSTS" > "$RUNNER_TEMP/ssh/known_hosts"
+          else
+            ssh-keyscan -H "$ORACLE_HOST" > "$RUNNER_TEMP/ssh/known_hosts"
+          fi
+          chmod 600 "$RUNNER_TEMP/ssh/known_hosts"
+
+      - name: Package release
+        run: tar -czf backend.tar.gz -C publish .
+
+      - name: Upload release
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp -i "$RUNNER_TEMP/ssh/id_ed25519" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/ssh/known_hosts" \
+            backend.tar.gz "$ORACLE_USER@$ORACLE_HOST:/home/opc/voltcrafting/backend.tar.gz.new"
+
+      - name: Deploy and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i "$RUNNER_TEMP/ssh/id_ed25519" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/ssh/known_hosts" \
+            "$ORACLE_USER@$ORACLE_HOST" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          app=/home/opc/voltcrafting
+          cd "$app"
+          stamp=$(date -u +%Y%m%d%H%M%S)
+          backup="$app/backups/deploy-$stamp"
+          mkdir -p "$backup"
+          cp -a publish "$backup/publish"
+          mv backend.tar.gz.new backend.tar.gz
+          rm -rf publish.next
+          mkdir publish.next
+          tar -xzf backend.tar.gz -C publish.next
+          mv publish.next publish.new
+          mv publish publish.old
+          mv publish.new publish
+          if ! sudo -n docker compose run --rm api --migrate-database; then
+            rm -rf publish
+            mv publish.old publish
+            exit 1
+          fi
+          sudo -n docker compose up -d --no-deps --force-recreate api
+          ready=0
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error http://127.0.0.1:5001/ready >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            sudo -n docker compose logs --tail=80 api || true
+            sudo -n docker compose stop api || true
+            rm -rf publish
+            mv publish.old publish
+            sudo -n docker compose up -d --no-deps api
+            exit 1
+          fi
+          rm -rf publish.old backend.tar.gz
+          find "$app/backups" -mindepth 1 -maxdepth 1 -type d -mtime +14 -exec rm -rf {} +
+          REMOTE
+
+      - name: Clean up SSH material
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/ssh" backend.tar.gz publish
