@@ -1,5 +1,6 @@
 name: Deploy backend to Oracle
 # SSH key normalization is kept here so Windows-copied secrets work in Actions.
+# Deployment is intentionally driven from the repository's master branch.
 
 on:
   push:
