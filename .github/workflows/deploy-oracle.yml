@@ -101,7 +101,9 @@ jobs:
           mv publish.next publish.new
           mv publish publish.old
           mv publish.new publish
-          if ! sudo -n docker compose run --rm api --migrate-database; then
+          # Compose otherwise inherits this SSH here-document as stdin and can
+          # consume the remaining deployment commands after migrations finish.
+          if ! sudo -n docker compose run --rm -T api --migrate-database </dev/null; then
             rm -rf publish
             mv publish.old publish
             exit 1
