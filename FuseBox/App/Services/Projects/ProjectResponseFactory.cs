@@ -153,7 +153,11 @@ namespace FuseBox.App.Services.Projects
                                                 ? (int?)null
                                                 : component.SerialNumber,
         
-                                        DatabaseId = component.Id,
+                                        DatabaseId = component.Id > 0
+                                            ? component.Id
+                                            : component is EmptySlot
+                                                ? ((rowIndex + 1) * 10000) + start + 1
+                                                : component.SerialNumber,
         
                                         Name = component.Name?
                                             .Replace(" ", ""),
@@ -175,6 +179,22 @@ namespace FuseBox.App.Services.Projects
                                         Electricals =
                                             component is Fuse fuse
                                                 ? fuse.Electricals
+                                                    .Select((electrical, index) => new
+                                                    {
+                                                        Id = electrical.Id > 0
+                                                            ? electrical.Id
+                                                            : index + 1,
+                                                        electrical.Name,
+                                                        electrical.Amper,
+                                                        RoomId = electrical.RoomId > 0
+                                                            ? electrical.RoomId
+                                                            : 1,
+                                                        Room = electrical.Room?.Name,
+                                                        electrical.PowerWatts,
+                                                        electrical.BreakerAmperage,
+                                                        electrical.RcdMilliAmps
+                                                    })
+                                                    .ToList()
                                                 : null
                                     };
                                 })
