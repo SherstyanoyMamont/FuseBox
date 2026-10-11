@@ -288,6 +288,22 @@ namespace FuseBox
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor |
                                    ForwardedHeaders.XForwardedProto
             });
+            app.Use(async (context, next) =>
+            {
+                var remote = context.Connection.RemoteIpAddress;
+                var forwardedHttps = string.Equals(
+                    context.Request.Headers["X-Forwarded-Proto"].ToString(),
+                    "https",
+                    StringComparison.OrdinalIgnoreCase);
+                var cloudflareHttps = context.Request.Headers["CF-Visitor"].ToString()
+                    .Contains("\"scheme\":\"https\"", StringComparison.OrdinalIgnoreCase);
+                if (remote is not null &&
+                    (System.Net.IPAddress.IsLoopback(remote) && (forwardedHttps || cloudflareHttps)))
+                {
+                    context.Request.Scheme = "https";
+                }
+                await next();
+            });
             app.UseHttpsRedirection();
 
             app.UseCors("AllowFrontend");
