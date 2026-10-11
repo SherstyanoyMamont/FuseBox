@@ -410,6 +410,8 @@ namespace FuseBox
                         $"RCD #{rcd.SerialNumber} does not contain any circuit breakers.");
                 }
 
+                Component upstream = rcd;
+
                 foreach (var child in rcd.Electricals)
                 {
                     if (child is not Fuse breaker)
@@ -437,8 +439,9 @@ namespace FuseBox
                             $"Protection settings for circuit breaker #{breaker.SerialNumber} do not match its RCD.");
                     }
 
-                    // Автомат получает фазу своего RCD.
-                    AddConnection(rcd, breaker, phase);
+                    // Автоматическая цепь: RCD -> первый AV -> следующий AV.
+                    AddConnection(upstream, breaker, phase);
+                    upstream = breaker;
                 }
             }
 
@@ -503,7 +506,9 @@ namespace FuseBox
 
                 if (component is RCD rcd)
                 {
-                    foreach (var child in rcd.Electricals)
+                    Component upstream = rcd;
+
+                foreach (var child in rcd.Electricals)
                     {
                         if (child is not Fuse ||
                             !shieldModuleSet.Contains(child) ||
