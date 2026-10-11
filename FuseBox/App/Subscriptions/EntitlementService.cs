@@ -71,7 +71,7 @@ namespace FuseBox.App.Subscriptions
                 CanUseThreePhase: effectivePlan == PlanCode.Pro,
                 CanUseSchemaEditor: true,
                 CanUseThreeD: true,
-                CanUseVrMr: true,
+                CanUseVrMr: effectivePlan == PlanCode.Pro,
                 AiRequestsPerDay: Math.Clamp(configuredLimit, 0, 100000));
         }
 

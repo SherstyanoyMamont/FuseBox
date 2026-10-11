@@ -121,6 +121,32 @@ namespace FuseBox.App.Controllers
                         "Guest calculation supports one-phase panels only."));
             }
 
+            string calculationMode;
+            try
+            {
+                calculationMode = ProjectRequestMapper
+                    .NormalizeCalculationMode(request.CalculationMode);
+            }
+            catch (ArgumentException exception)
+            {
+                return BadRequest(Error(
+                    ApiErrorCodes.ValidationFailed,
+                    exception.Message));
+            }
+
+            if (calculationMode != "realistic" ||
+                request.FuseBox?.ModularContactor == true ||
+                request.FuseBox?.NDisconnectableLine == true)
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new
+                    {
+                        code = ApiErrorCodes.FeatureAdvancedPanelRequired,
+                        requiredPlan = "pro"
+                    });
+            }
+
             try
             {
                 var draft = ProjectRequestMapper.ToProject(request);

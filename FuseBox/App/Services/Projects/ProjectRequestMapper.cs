@@ -18,6 +18,12 @@ namespace FuseBox.App.Services.Projects
                     "number (0, 1 or 2).");
             }
 
+            var calculationMode = NormalizeCalculationMode(
+                request.CalculationMode);
+            var isMaximumSafety =
+                calculationMode == "maximum-safety";
+            var isEconomy = calculationMode == "economy";
+
             var project = new Project
             {
                 Name = NormalizeRequiredName(
@@ -26,21 +32,15 @@ namespace FuseBox.App.Services.Projects
 
                 FloorGrouping = new FloorGrouping
                 {
-                    IndividualFloorGrouping =
-                        request.FloorGrouping
-                            .IndividualFloorGrouping,
-
-                    SeparateUZOPerFloor =
-                        request.FloorGrouping
-                            .SeparateRcdPerFloor
+                    IndividualFloorGrouping = !isEconomy,
+                    SeparateUZOPerFloor = !isEconomy
                 },
 
                 GlobalGrouping = new GlobalGrouping
                 {
-                    Sockets = request.GlobalGrouping.Sockets,
-                    Lighting = request.GlobalGrouping.Lighting,
-                    Conditioners =
-                        request.GlobalGrouping.Conditioners
+                    Sockets = isMaximumSafety ? 5 : isEconomy ? 0 : 1,
+                    Lighting = isMaximumSafety ? 5 : isEconomy ? 0 : 1,
+                    Conditioners = isMaximumSafety ? 5 : isEconomy ? 0 : 1
                 },
 
                 InitialSettings =
@@ -179,6 +179,23 @@ namespace FuseBox.App.Services.Projects
             return double.IsFinite(value) &&
                    Math.Abs(value - Math.Round(value)) <
                    0.0000001;
+        }
+
+        public static string NormalizeCalculationMode(string? value)
+        {
+            var normalized = value?.Trim().ToLowerInvariant();
+
+            if (string.IsNullOrWhiteSpace(normalized))
+                return "realistic";
+
+            return normalized switch
+            {
+                "realistic" => normalized,
+                "maximum-safety" => normalized,
+                "economy" => normalized,
+                _ => throw new ArgumentException(
+                    "CalculationMode must be realistic, maximum-safety or economy.")
+            };
         }
 
         private static string NormalizeRequiredName(

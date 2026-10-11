@@ -399,18 +399,33 @@ namespace FuseBox.App.Services.Projects
             Project draft,
             CancellationToken cancellationToken)
         {
-            if (draft?.InitialSettings?.PhasesCount != 3)
-                return;
-
-            var canUseThreePhase = await _entitlements.HasAsync(
+            var entitlements = await _entitlements.GetForUserAsync(
                 userId,
-                EntitlementService.ThreePhaseFeature,
                 cancellationToken);
 
-            if (!canUseThreePhase)
+            if (draft?.InitialSettings?.PhasesCount == 3 &&
+                !entitlements.CanUseThreePhase)
             {
                 throw FeatureEntitlementRequiredException
                     .ThreePhase();
+            }
+
+            var usesAdvancedDevices =
+                draft?.FuseBox?.ModularContactor == true ||
+                draft?.FuseBox?.NDiscLine == true;
+
+            var usesAdvancedCalculation =
+                draft?.FloorGrouping?.IndividualFloorGrouping != true ||
+                draft?.FloorGrouping?.SeparateUZOPerFloor != true ||
+                draft?.GlobalGrouping?.Sockets != 1 ||
+                draft?.GlobalGrouping?.Lighting != 1 ||
+                draft?.GlobalGrouping?.Conditioners != 1;
+
+            if ((usesAdvancedDevices || usesAdvancedCalculation) &&
+                entitlements.Plan != PlanCode.Pro)
+            {
+                throw FeatureEntitlementRequiredException
+                    .AdvancedPanel();
             }
         }
 

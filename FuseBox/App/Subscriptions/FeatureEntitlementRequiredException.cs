@@ -22,5 +22,11 @@ namespace FuseBox.App.Subscriptions
                 ApiErrorCodes.FeatureThreePhaseRequired,
                 "pro",
                 "3-phase calculation is available on Pro.");
+
+        public static FeatureEntitlementRequiredException AdvancedPanel() =>
+            new(
+                ApiErrorCodes.FeatureAdvancedPanelRequired,
+                "pro",
+                "Advanced devices and calculation modes are available on Pro.");
     }
 }

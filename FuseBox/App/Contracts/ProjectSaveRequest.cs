@@ -8,6 +8,8 @@ namespace FuseBox.App.Contracts.Projects
         [StringLength(120, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
 
+        public string CalculationMode { get; set; } = "realistic";
+
         [Required]
         public FloorGroupingRequest FloorGrouping { get; set; } = new();
 

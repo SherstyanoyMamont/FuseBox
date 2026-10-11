@@ -16,6 +16,8 @@ namespace FuseBox.App.Contracts.Common
 
         public const string FeatureThreePhaseRequired =
             "feature.three_phase_required";
+        public const string FeatureAdvancedPanelRequired =
+            "feature.advanced_panel_required";
 
         public const string ProjectNotFound = "project.not_found";
         public const string ProjectConflict = "project.conflict";

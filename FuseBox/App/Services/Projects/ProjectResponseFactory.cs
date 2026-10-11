@@ -244,12 +244,25 @@ namespace FuseBox.App.Services.Projects
 
             var settings = project.InitialSettings;
             var devices = project.FuseBox;
+            var calculationMode =
+                !project.FloorGrouping.IndividualFloorGrouping ||
+                !project.FloorGrouping.SeparateUZOPerFloor ||
+                project.GlobalGrouping.Sockets == 0 ||
+                project.GlobalGrouping.Lighting == 0 ||
+                project.GlobalGrouping.Conditioners == 0
+                    ? "economy"
+                    : project.GlobalGrouping.Sockets >= 5 &&
+                      project.GlobalGrouping.Lighting >= 5 &&
+                      project.GlobalGrouping.Conditioners >= 5
+                        ? "maximum-safety"
+                        : "realistic";
 
             var result = new
             {
                 version = 1,
                 projectId = project.Id,
                 projectName = project.Name,
+                calculationMode,
 
                 primarySettings = new
                 {
