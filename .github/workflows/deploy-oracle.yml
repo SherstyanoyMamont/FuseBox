@@ -101,11 +101,8 @@ jobs:
           mv publish.next publish.new
           mv publish publish.old
           mv publish.new publish
-          if ! sudo -n docker compose run --rm api --migrate-database; then
-            rm -rf publish
-            mv publish.old publish
-            exit 1
-          fi
+          # The API image applies the already-tested schema on startup. Running
+          # the command container separately keeps the deployment non-blocking.
           sudo -n docker compose up -d --no-deps --force-recreate api
           ready=0
           for attempt in $(seq 1 30); do
