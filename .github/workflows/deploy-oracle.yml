@@ -103,6 +103,7 @@ jobs:
           mv publish.new publish
           # The API image applies the already-tested schema on startup. Running
           # the command container separately keeps the deployment non-blocking.
+          # The readiness probe below remains the deployment gate.
           sudo -n docker compose up -d --no-deps --force-recreate api
           ready=0
           for attempt in $(seq 1 30); do
