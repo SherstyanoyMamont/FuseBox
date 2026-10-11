@@ -11,6 +11,7 @@ using FuseBox.Controllers;
 using FuseBox.Ai;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -282,6 +283,11 @@ namespace FuseBox
                 app.UseSwaggerUI();
             }
 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                                   ForwardedHeaders.XForwardedProto
+            });
             app.UseHttpsRedirection();
 
             app.UseCors("AllowFrontend");
