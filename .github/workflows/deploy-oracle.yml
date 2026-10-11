@@ -49,8 +49,13 @@ jobs:
           test -n "$ORACLE_USER"
           test -n "$ORACLE_SSH_KEY"
           mkdir -p "$RUNNER_TEMP/ssh"
-          printf '%s\n' "$ORACLE_SSH_KEY" > "$RUNNER_TEMP/ssh/id_ed25519"
+          # GitHub multiline secrets may arrive with CRLF or literal escaped newlines.
+          # Normalize both forms before OpenSSH reads the key.
+          key=${ORACLE_SSH_KEY//$'\\r'/}
+          key=${key//$'\\n'/$'\n'}
+          printf '%s\n' "$key" > "$RUNNER_TEMP/ssh/id_ed25519"
           chmod 600 "$RUNNER_TEMP/ssh/id_ed25519"
+          ssh-keygen -y -f "$RUNNER_TEMP/ssh/id_ed25519" >/dev/null
           if [ -n "${ORACLE_KNOWN_HOSTS:-}" ]; then
             printf '%s\n' "$ORACLE_KNOWN_HOSTS" > "$RUNNER_TEMP/ssh/known_hosts"
           else
