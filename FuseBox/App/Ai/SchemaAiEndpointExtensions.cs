@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FuseBox.App.Usage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -11,19 +12,42 @@ namespace FuseBox.Ai;
 
 public static class SchemaAiEndpointExtensions
 {
-    public static IEndpointRouteBuilder MapFuseBoxSchemaAi(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapFuseBoxSchemaAi(
+        this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost(
             "/api/ai/schema/chat",
-            async (SchemaChatRequest request, SchemaAiService service, CancellationToken cancellationToken) =>
+            async (
+                HttpContext httpContext,
+                SchemaChatRequest request,
+                SchemaAiService service,
+                UsageService usage,
+                CancellationToken cancellationToken) =>
             {
+                var quotaFailure = await AiQuotaGuard.TryConsumeAsync(
+                    httpContext,
+                    usage,
+                    cancellationToken);
+
+                if (quotaFailure != null)
+                {
+                    return quotaFailure;
+                }
+
                 try
                 {
-                    return Results.Ok(await service.ChatAsync(request, cancellationToken));
+                    return Results.Ok(
+                        await service.ChatAsync(
+                            request,
+                            cancellationToken));
                 }
                 catch (ArgumentException error)
                 {
-                    return Results.BadRequest(new { code = "ai.invalid_request", message = error.Message });
+                    return Results.BadRequest(new
+                    {
+                        code = "ai.invalid_request",
+                        message = error.Message
+                    });
                 }
                 catch (OperationCanceledException)
                 {
@@ -35,7 +59,10 @@ public static class SchemaAiEndpointExtensions
                         statusCode: StatusCodes.Status502BadGateway,
                         title: "AI schema assistant request failed",
                         detail: error.Message,
-                        extensions: new Dictionary<string, object?> { ["code"] = "ai.provider_error" });
+                        extensions: new Dictionary<string, object?>
+                        {
+                            ["code"] = "ai.provider_error"
+                        });
                 }
             })
             .RequireAuthorization()

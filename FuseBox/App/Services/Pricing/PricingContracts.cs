@@ -107,6 +107,5 @@ internal sealed record SchneiderCatalogItem(
     string Name,
     string Mpn,
     decimal? ReferenceUnitNetEur,
-    string ReferenceNote);
-
-
+    string ReferenceNote,
+    string Manufacturer = "Schneider Electric");

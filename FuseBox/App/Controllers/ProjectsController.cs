@@ -2,8 +2,10 @@ using System.Security.Claims;
 using FuseBox.App.Contracts.Common;
 using FuseBox.App.Contracts.Projects;
 using FuseBox.App.Services.Projects;
+using FuseBox.App.Subscriptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FuseBox.App.Controllers
 {
@@ -65,11 +67,28 @@ namespace FuseBox.App.Controllers
                     $"/api/projects/{created.Id}/configuration",
                     created);
             }
+            catch (FeatureEntitlementRequiredException exception)
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new
+                    {
+                        code = exception.Code,
+                        requiredPlan = exception.RequiredPlan
+                    });
+            }
             catch (ArgumentException exception)
             {
                 return BadRequest(Error(
                     ApiErrorCodes.ValidationFailed,
                     exception.Message));
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogError(exception, "Project persistence failed for user {UserId}.", userId);
+                return StatusCode(StatusCodes.Status500InternalServerError, Error(
+                    ApiErrorCodes.ProjectStorageFailed,
+                    "The project could not be saved. Please try again."));
             }
             catch (InvalidOperationException exception)
             {
@@ -106,6 +125,13 @@ namespace FuseBox.App.Controllers
                 return deleted
                     ? NoContent()
                     : ProjectNotFound();
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogError(exception, "Project persistence failed for user {UserId}.", userId);
+                return StatusCode(StatusCodes.Status500InternalServerError, Error(
+                    ApiErrorCodes.ProjectStorageFailed,
+                    "The project could not be saved. Please try again."));
             }
             catch (InvalidOperationException exception)
             {
@@ -155,6 +181,16 @@ namespace FuseBox.App.Controllers
                     ? ProjectNotFound()
                     : Ok(updated);
             }
+            catch (FeatureEntitlementRequiredException exception)
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new
+                    {
+                        code = exception.Code,
+                        requiredPlan = exception.RequiredPlan
+                    });
+            }
             catch (ArgumentException exception)
             {
                 return BadRequest(Error(
@@ -166,6 +202,13 @@ namespace FuseBox.App.Controllers
                 return Conflict(Error(
                     ApiErrorCodes.SchemaCustomizationConflict,
                     exception.Message));
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogError(exception, "Project persistence failed for user {UserId}.", userId);
+                return StatusCode(StatusCodes.Status500InternalServerError, Error(
+                    ApiErrorCodes.ProjectStorageFailed,
+                    "The project could not be saved. Please try again."));
             }
             catch (InvalidOperationException exception)
             {
@@ -217,6 +260,13 @@ namespace FuseBox.App.Controllers
                     title: "Schema catalog unavailable.",
                     detail: "The backend schema catalog could not be loaded. Rebuild and restart the backend.",
                     statusCode: StatusCodes.Status500InternalServerError);
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogError(exception, "Project persistence failed for user {UserId}.", userId);
+                return StatusCode(StatusCodes.Status500InternalServerError, Error(
+                    ApiErrorCodes.ProjectStorageFailed,
+                    "The project could not be saved. Please try again."));
             }
             catch (InvalidOperationException exception)
             {
@@ -328,5 +378,3 @@ namespace FuseBox.App.Controllers
         }
     }
 }
-
-

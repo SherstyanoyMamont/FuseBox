@@ -1,5 +1,12 @@
+
+using FuseBox.App.Accounts;
+using FuseBox.App.Administration;
+using FuseBox.App.Billing;
+using FuseBox.App.Catalog;
 using FuseBox.App.Models;
 using FuseBox.App.SchemaEditor;
+using FuseBox.App.Subscriptions;
+using FuseBox.App.Usage;
 using FuseBox.App.Models.Shild_Comp;
 using FuseBox.FuseBox;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +16,14 @@ namespace FuseBox.App.DataBase
     public class AppDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<AdminAuditLog> AdminAuditLogs { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<UserEntitlementOverride> UserEntitlementOverrides { get; set; }
+        public DbSet<BillingWebhookEvent> BillingWebhookEvents { get; set; }
+        public DbSet<ManagedComponentCatalogItem> ManagedComponentCatalogItems { get; set; }
+        public DbSet<UsageCounter> UsageCounters { get; set; }
         public DbSet<FloorGrouping> FloorGroupings { get; set; }
         public DbSet<GlobalGrouping> GlobalGroupings { get; set; }
         public DbSet<InitialSettings> InitialSettings { get; set; }
@@ -64,6 +77,18 @@ namespace FuseBox.App.DataBase
                 entity.Property(user => user.PasswordHash)
                     .HasMaxLength(512);
 
+                entity.Property(user => user.Role)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasDefaultValue(UserRole.User);
+
+                entity.Property(user => user.Status)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasDefaultValue(UserStatus.Active);
+
                 entity.Property(user => user.SecurityStamp)
                     .IsRequired()
                     .HasMaxLength(64);
@@ -76,6 +101,209 @@ namespace FuseBox.App.DataBase
                 entity.HasMany(user => user.PasswordResetTokens)
                     .WithOne(token => token.User)
                     .HasForeignKey(token => token.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(user => user.Subscription)
+                    .WithOne(subscription => subscription.User)
+                    .HasForeignKey<UserSubscription>(subscription => subscription.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<UserSubscription>(entity =>
+            {
+                entity.Property(subscription => subscription.Provider)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasDefaultValue(SubscriptionProvider.Internal);
+
+                entity.Property(subscription => subscription.ProviderEnvironment)
+                    .HasMaxLength(16);
+
+                entity.Property(subscription => subscription.ProviderCustomerId)
+                    .HasMaxLength(64);
+
+                entity.Property(subscription => subscription.ProviderSubscriptionId)
+                    .HasMaxLength(64);
+
+                entity.Property(subscription => subscription.Plan)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasDefaultValue(PlanCode.Free);
+
+                entity.Property(subscription => subscription.Status)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16)
+                    .HasDefaultValue(SubscriptionStatus.Active);
+
+                entity.Property(subscription => subscription.CancelAtPeriodEnd)
+                    .HasDefaultValue(false);
+
+                entity.HasIndex(subscription => subscription.UserId)
+                    .IsUnique();
+
+                entity.HasIndex(subscription => subscription.ProviderCustomerId)
+                    .IsUnique();
+
+                entity.HasIndex(subscription => subscription.ProviderSubscriptionId)
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<UserEntitlementOverride>(entity =>
+            {
+                entity.ToTable("UserEntitlementOverrides");
+
+                entity.Property(item => item.Plan)
+                    .HasConversion<string>()
+                    .IsRequired()
+                    .HasMaxLength(16);
+
+                entity.HasIndex(item => item.UserId)
+                    .IsUnique();
+
+                entity.HasIndex(item => item.ExpiresAtUtc);
+
+                entity.HasOne(item => item.User)
+                    .WithOne(user => user.EntitlementOverride)
+                    .HasForeignKey<UserEntitlementOverride>(item => item.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<AdminAuditLog>(entity =>
+            {
+                entity.ToTable("AdminAuditLogs");
+
+                entity.Property(item => item.ActorEmail)
+                    .IsRequired()
+                    .HasMaxLength(254);
+
+                entity.Property(item => item.Action)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(item => item.TargetEmail)
+                    .HasMaxLength(254);
+
+                entity.Property(item => item.Details)
+                    .HasMaxLength(1024);
+
+                entity.HasIndex(item => item.CreatedAtUtc);
+                entity.HasIndex(item => item.ActorUserId);
+                entity.HasIndex(item => item.TargetUserId);
+                entity.HasIndex(item => item.Action);
+            });
+
+            modelBuilder.Entity<ManagedComponentCatalogItem>(entity =>
+            {
+                entity.ToTable("ManagedComponentCatalogItems");
+
+                entity.Property(item => item.CatalogTypeId)
+                    .IsRequired()
+                    .HasMaxLength(96);
+
+                entity.Property(item => item.TemplateCatalogTypeId)
+                    .IsRequired()
+                    .HasMaxLength(96);
+
+                entity.Property(item => item.DisplayName)
+                    .IsRequired()
+                    .HasMaxLength(160);
+
+                entity.Property(item => item.Category)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(item => item.Description)
+                    .HasMaxLength(2000);
+
+                entity.Property(item => item.Manufacturer)
+                    .HasMaxLength(160);
+
+                entity.Property(item => item.Mpn)
+                    .HasMaxLength(128);
+
+                entity.Property(item => item.ReferencePriceEur)
+                    .HasPrecision(12, 2);
+
+                entity.Property(item => item.DatasheetUrl)
+                    .HasMaxLength(1024);
+
+                entity.Property(item => item.ImageUrl)
+                    .HasMaxLength(1024);
+
+                entity.Property(item => item.Model3dUrl)
+                    .HasMaxLength(1024);
+
+                entity.Property(item => item.ModelScale)
+                    .HasDefaultValue(1d);
+
+                entity.Property(item => item.IsDeleted)
+                    .HasDefaultValue(false);
+
+                entity.HasIndex(item => item.CatalogTypeId)
+                    .IsUnique();
+
+                entity.HasIndex(item => item.TemplateCatalogTypeId);
+                entity.HasIndex(item => item.Category);
+                entity.HasIndex(item => new { item.IsDeleted, item.IsActive });
+                entity.HasIndex(item => item.SortOrder);
+            });
+
+            modelBuilder.Entity<BillingWebhookEvent>(entity =>
+            {
+                entity.ToTable("BillingWebhookEvents");
+
+                entity.Property(item => item.Provider)
+                    .IsRequired()
+                    .HasMaxLength(16);
+
+                entity.Property(item => item.ProviderEnvironment)
+                    .IsRequired()
+                    .HasMaxLength(16);
+
+                entity.Property(item => item.ProviderEventId)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(item => item.EventType)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(item => item.PayloadSha256)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.HasIndex(item => new
+                    {
+                        item.ProviderEnvironment,
+                        item.ProviderEventId
+                    })
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<UsageCounter>(entity =>
+            {
+                entity.ToTable("UsageCounters");
+
+                entity.HasKey(counter => new
+                {
+                    counter.UserId,
+                    counter.Metric,
+                    counter.PeriodStartUtc
+                });
+
+                entity.Property(counter => counter.Metric)
+                    .IsRequired()
+                    .HasMaxLength(64);
+
+                entity.Property(counter => counter.Count)
+                    .HasDefaultValue(0);
+
+                entity.HasOne<User>()
+                    .WithMany()
+                    .HasForeignKey(counter => counter.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
@@ -189,6 +417,14 @@ namespace FuseBox.App.DataBase
                 .HasForeignKey(component => component.FuseBoxComponentGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Unconnected terminals have no cable; removing a wire must not
+            // delete the terminal that belongs to an electrical component.
+            modelBuilder.Entity<Port>()
+                .HasOne(port => port.cableType)
+                .WithMany()
+                .HasForeignKey(port => port.CableId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<Component>()
                 .HasMany(component => component.Ports)
                 .WithOne(port => port.Component)
@@ -217,5 +453,3 @@ namespace FuseBox.App.DataBase
         }
     }
 }
-
-

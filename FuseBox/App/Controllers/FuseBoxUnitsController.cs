@@ -3,6 +3,7 @@ using AutoMapper;
 using FuseBox.App.Contracts.Common;
 using FuseBox.App.Models.DTO;
 using FuseBox.App.Services.Projects;
+using FuseBox.App.Subscriptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -97,6 +98,16 @@ namespace FuseBox.Controllers
                         },
                         Formatting.Indented),
                     "application/json");
+            }
+            catch (FeatureEntitlementRequiredException exception)
+            {
+                return StatusCode(
+                    StatusCodes.Status403Forbidden,
+                    new
+                    {
+                        code = exception.Code,
+                        requiredPlan = exception.RequiredPlan
+                    });
             }
             catch (ArgumentException exception)
             {

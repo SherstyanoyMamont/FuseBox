@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using FuseBox.App.Usage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -20,10 +21,22 @@ public static class ConfiguratorAiEndpointExtensions
         endpoints.MapPost(
             "/api/ai/configurator/chat",
             async (
+                HttpContext httpContext,
                 ConfiguratorChatRequest request,
                 ConfiguratorAiService service,
+                UsageService usage,
                 CancellationToken cancellationToken) =>
             {
+                var quotaFailure = await AiQuotaGuard.TryConsumeAsync(
+                    httpContext,
+                    usage,
+                    cancellationToken);
+
+                if (quotaFailure != null)
+                {
+                    return quotaFailure;
+                }
+
                 return await RunChatAsync(
                     () => service.ChatAsync(request, cancellationToken)
                 );
@@ -37,8 +50,10 @@ public static class ConfiguratorAiEndpointExtensions
         endpoints.MapPost(
             "/api/ai/configurator/chat-with-files",
             async (
+                HttpContext httpContext,
                 HttpRequest httpRequest,
                 ConfiguratorAiService service,
+                UsageService usage,
                 CancellationToken cancellationToken) =>
             {
                 return await RunChatAsync(async () =>
@@ -95,6 +110,16 @@ public static class ConfiguratorAiEndpointExtensions
                         ));
                     }
 
+                    var quotaFailure = await AiQuotaGuard.TryConsumeAsync(
+                        httpContext,
+                        usage,
+                        cancellationToken);
+
+                    if (quotaFailure != null)
+                    {
+                        throw new AiQuotaRejectedException(quotaFailure);
+                    }
+
                     return await service.ChatAsync(
                         request,
                         attachments,
@@ -111,8 +136,10 @@ public static class ConfiguratorAiEndpointExtensions
         endpoints.MapPost(
             "/api/ai/configurator/transcribe",
             async (
+                HttpContext httpContext,
                 HttpRequest httpRequest,
                 ConfiguratorAiService service,
+                UsageService usage,
                 CancellationToken cancellationToken) =>
             {
                 try
@@ -135,6 +162,16 @@ public static class ConfiguratorAiEndpointExtensions
                     await using var stream = file.OpenReadStream();
                     using var memory = new MemoryStream();
                     await stream.CopyToAsync(memory, cancellationToken);
+
+                    var quotaFailure = await AiQuotaGuard.TryConsumeAsync(
+                        httpContext,
+                        usage,
+                        cancellationToken);
+
+                    if (quotaFailure != null)
+                    {
+                        return quotaFailure;
+                    }
 
                     var text = await service.TranscribeAsync(
                         Path.GetFileName(file.FileName),
@@ -189,6 +226,10 @@ public static class ConfiguratorAiEndpointExtensions
             var result = await action();
             return Results.Ok(result);
         }
+        catch (AiQuotaRejectedException rejected)
+        {
+            return rejected.Result;
+        }
         catch (ArgumentException error)
         {
             return Results.BadRequest(new
@@ -213,5 +254,15 @@ public static class ConfiguratorAiEndpointExtensions
                 }
             );
         }
+    }
+
+    private sealed class AiQuotaRejectedException : Exception
+    {
+        public AiQuotaRejectedException(IResult result)
+        {
+            Result = result;
+        }
+
+        public IResult Result { get; }
     }
 }

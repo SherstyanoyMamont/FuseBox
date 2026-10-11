@@ -4,33 +4,131 @@ using Newtonsoft.Json;
 namespace FuseBox.App.SchemaEditor;
 
 /// <summary>
-/// Existing generator device types, shared with frontend component-catalog.v1.json.
-/// No manufacturer pinout or product substitution is inferred from legacy routing.
+/// Electrical/schema catalog. Built-in entries remain embedded and immutable.
+/// Stage 15 adds runtime aliases that inherit a built-in template so admins can
+/// add commercial product variants without editing terminals or validation code.
 /// </summary>
 public static class ComponentCatalog
 {
     public const string ResourceName = "FuseBox.SchemaEditor.component-catalog.v1.json";
 
     private static readonly Lazy<CatalogData> Data = new(Load);
-    public static IReadOnlyList<CatalogEntry> Entries => Data.Value.Components.AsReadOnly();
+    private static readonly object AliasLock = new();
+    private static IReadOnlyDictionary<string, CatalogEntry> _managedAliases =
+        new Dictionary<string, CatalogEntry>(StringComparer.Ordinal);
+    private static IReadOnlySet<string> _unavailableForPlacement =
+        new HashSet<string>(StringComparer.Ordinal);
+
+    public static IReadOnlyList<CatalogEntry> BuiltInEntries =>
+        Data.Value.Components.AsReadOnly();
+
+    public static IReadOnlyList<CatalogEntry> Entries
+    {
+        get
+        {
+            lock (AliasLock)
+            {
+                if (_managedAliases.Count == 0 &&
+                    _unavailableForPlacement.Count == 0)
+                {
+                    return BuiltInEntries;
+                }
+
+                return BuiltInEntries
+                    .Where(entry => !_unavailableForPlacement.Contains(entry.Id))
+                    .Concat(_managedAliases
+                        .Where(pair => !_unavailableForPlacement.Contains(pair.Key))
+                        .Select(pair => pair.Value))
+                    .ToArray();
+            }
+        }
+    }
 
     public static string NormalizeName(string? name) =>
         string.Concat((name ?? string.Empty).Where(c => !char.IsWhiteSpace(c)))
             .ToLowerInvariant();
 
+    // Legacy generator names intentionally resolve only built-in entries.
     public static CatalogEntry? Resolve(string? legacyName) =>
-        Entries.FirstOrDefault(entry => entry.LegacyName == NormalizeName(legacyName));
+        BuiltInEntries.FirstOrDefault(entry =>
+            entry.LegacyName == NormalizeName(legacyName));
+
+    public static CatalogEntry? ResolveBuiltInById(string? catalogTypeId)
+    {
+        if (string.IsNullOrWhiteSpace(catalogTypeId))
+            return null;
+
+        var id = catalogTypeId.Trim();
+        return BuiltInEntries.FirstOrDefault(entry =>
+            string.Equals(entry.Id, id, StringComparison.Ordinal));
+    }
 
     public static CatalogEntry? ResolveById(string? catalogTypeId)
     {
         if (string.IsNullOrWhiteSpace(catalogTypeId))
             return null;
 
-        return Entries.FirstOrDefault(entry =>
-            string.Equals(
-                entry.Id,
-                catalogTypeId.Trim(),
-                StringComparison.Ordinal));
+        var id = catalogTypeId.Trim();
+        var builtIn = ResolveBuiltInById(id);
+        if (builtIn != null)
+            return builtIn;
+
+        lock (AliasLock)
+        {
+            return _managedAliases.GetValueOrDefault(id);
+        }
+    }
+
+    public static bool IsAvailableForPlacement(string? catalogTypeId)
+    {
+        if (string.IsNullOrWhiteSpace(catalogTypeId))
+            return false;
+
+        var id = catalogTypeId.Trim();
+        lock (AliasLock)
+        {
+            if (_unavailableForPlacement.Contains(id))
+                return false;
+
+            var entry = ResolveBuiltInById(id) ??
+                        _managedAliases.GetValueOrDefault(id);
+            return entry != null &&
+                   entry.Mounting == "din" &&
+                   entry.Slots > 0 &&
+                   entry.Role != "spacer";
+        }
+    }
+
+    public static void ApplyManagedAliases(IEnumerable<ManagedCatalogAlias> aliases)
+    {
+        var next = new Dictionary<string, CatalogEntry>(StringComparer.Ordinal);
+        var unavailable = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var alias in aliases)
+        {
+            if (string.IsNullOrWhiteSpace(alias.CatalogTypeId) ||
+                string.IsNullOrWhiteSpace(alias.TemplateCatalogTypeId))
+                continue;
+
+            var id = alias.CatalogTypeId.Trim();
+            if (!alias.Selectable)
+                unavailable.Add(id);
+
+            if (alias.IsBuiltIn || ResolveBuiltInById(id) != null)
+                continue;
+
+            var template = ResolveBuiltInById(alias.TemplateCatalogTypeId);
+            if (template == null)
+                continue;
+
+            next[id] = CloneAsAlias(template, id);
+        }
+
+        lock (AliasLock)
+        {
+            _managedAliases = next;
+            _unavailableForPlacement = unavailable;
+        }
     }
 
     // Document-scoped identity. Regeneration starts a new generated document;
@@ -41,6 +139,33 @@ public static class ComponentCatalog
             throw new ArgumentOutOfRangeException(nameof(schemaId));
         return "generated:" + schemaId.ToString(CultureInfo.InvariantCulture);
     }
+
+    private static CatalogEntry CloneAsAlias(CatalogEntry template, string id) =>
+        new()
+        {
+            Id = id,
+            // Reusing template legacy name is deliberate: pricing and electrical
+            // behavior follow the template while stable product identity is id.
+            LegacyName = template.LegacyName,
+            Role = template.Role,
+            Mounting = template.Mounting,
+            Slots = template.Slots,
+            TerminalModel = template.TerminalModel,
+            Terminals = template.Terminals.Select(CloneTerminal).ToList(),
+            LegacyTerminals = template.LegacyTerminals.Select(CloneTerminal).ToList()
+        };
+
+    private static CatalogTerminal CloneTerminal(CatalogTerminal terminal) =>
+        new()
+        {
+            Id = terminal.Id,
+            Type = terminal.Type,
+            Conductor = terminal.Conductor,
+            X = terminal.X,
+            Y = terminal.Y,
+            PhaseSelectable = terminal.PhaseSelectable,
+            Color = terminal.Color
+        };
 
     private static CatalogData Load()
     {
@@ -74,6 +199,12 @@ public static class ComponentCatalog
     }
 }
 
+public sealed record ManagedCatalogAlias(
+    string CatalogTypeId,
+    string TemplateCatalogTypeId,
+    bool IsBuiltIn,
+    bool Selectable);
+
 public sealed class CatalogEntry
 {
     public string Id { get; set; } = string.Empty;
@@ -97,11 +228,8 @@ public sealed class CatalogTerminal
     public string? Color { get; set; }
 }
 
-
 // A deployment/catalog failure is not evidence of an inconsistent stored project.
 public sealed class SchemaCatalogException : Exception
 {
     public SchemaCatalogException(string message) : base(message) { }
 }
-
-

@@ -1,4 +1,5 @@
 using FuseBox.App.Contracts.Projects;
+using FuseBox.App.Subscriptions;
 using FuseBox.App.DataBase;
 using FuseBox.App.Factorys;
 using FuseBox.App.Interfaces;
@@ -12,10 +13,14 @@ namespace FuseBox.App.Services.Projects
     public sealed class ProjectService
     {
         private readonly AppDbContext _context;
+        private readonly EntitlementService _entitlements;
 
-        public ProjectService(AppDbContext context)
+        public ProjectService(
+            AppDbContext context,
+            EntitlementService entitlements)
         {
             _context = context;
+            _entitlements = entitlements;
         }
 
         public async Task<IReadOnlyList<ProjectSummaryResponse>>
@@ -63,6 +68,11 @@ namespace FuseBox.App.Services.Projects
                 throw new InvalidOperationException(
                     "Authenticated account no longer exists.");
             }
+
+            await EnsureGenerationAllowedAsync(
+                userId,
+                draft,
+                cancellationToken);
 
             var now = DateTime.UtcNow;
 
@@ -140,6 +150,11 @@ namespace FuseBox.App.Services.Projects
 
             if (metadata == null)
                 return null;
+
+            await EnsureGenerationAllowedAsync(
+                userId,
+                draft,
+                cancellationToken);
 
             if (!discardCustomization &&
                 !string.Equals(
@@ -376,6 +391,27 @@ namespace FuseBox.App.Services.Projects
             await _context.Connections
                 .Where(connection => connection.FuseBoxUnitId == fuseBoxId)
                 .ExecuteDeleteAsync(cancellationToken);
+        }
+
+
+        private async Task EnsureGenerationAllowedAsync(
+            int userId,
+            Project draft,
+            CancellationToken cancellationToken)
+        {
+            if (draft?.InitialSettings?.PhasesCount != 3)
+                return;
+
+            var canUseThreePhase = await _entitlements.HasAsync(
+                userId,
+                EntitlementService.ThreePhaseFeature,
+                cancellationToken);
+
+            if (!canUseThreePhase)
+            {
+                throw FeatureEntitlementRequiredException
+                    .ThreePhase();
+            }
         }
 
         private static void PrepareDraft(
@@ -846,5 +882,3 @@ namespace FuseBox.App.Services.Projects
         }
     }
 }
-
-

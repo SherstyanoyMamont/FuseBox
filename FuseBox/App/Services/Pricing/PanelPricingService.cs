@@ -1,6 +1,7 @@
 using System.Globalization;
 using global::FuseBox;
 using FuseBox.App.SchemaEditor;
+using FuseBox.App.Catalog;
 using FuseBox.FuseBox;
 using Microsoft.Extensions.Options;
 
@@ -10,13 +11,16 @@ public sealed class PanelPricingService
 {
     private readonly TmeApiClient _tme;
     private readonly PricingOptions _options;
+    private readonly ManagedComponentCatalogService _managedCatalog;
 
     public PanelPricingService(
         TmeApiClient tme,
-        IOptions<PricingOptions> options)
+        IOptions<PricingOptions> options,
+        ManagedComponentCatalogService managedCatalog)
     {
         _tme = tme;
         _options = options.Value;
+        _managedCatalog = managedCatalog;
     }
 
     public async Task<ProjectPricingResponse> CalculateAsync(
@@ -31,13 +35,20 @@ public sealed class PanelPricingService
             "Schneider reference prices are static public list-price snapshots in this first stage. TME Germany is the live market source; a live Schneider provider can replace the snapshots later."
         };
 
+        var managedCatalog = await _managedCatalog.GetByCatalogTypeIdsAsync(
+            activeSchema.Components.Select(component => component.CatalogTypeId),
+            cancellationToken);
+
         var candidates = BuildCatalogCandidates(
             activeSchema,
             settings,
-            warnings);
+            warnings,
+            managedCatalog);
 
         var mpns = candidates
-            .Where(candidate => candidate.Catalog != null)
+            .Where(candidate =>
+                candidate.Catalog != null &&
+                !string.IsNullOrWhiteSpace(candidate.Catalog.Mpn))
             .Select(candidate => candidate.Catalog!.Mpn)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
@@ -66,9 +77,13 @@ public sealed class PanelPricingService
             }
 
             var catalog = candidate.Catalog;
-            quotes.TryGetValue(
-                TmePriceCacheStore.NormalizeKey(catalog.Mpn),
-                out var quote);
+            TmeCachedQuote? quote = null;
+            if (!string.IsNullOrWhiteSpace(catalog.Mpn))
+            {
+                quotes.TryGetValue(
+                    TmePriceCacheStore.NormalizeKey(catalog.Mpn),
+                    out quote);
+            }
 
             var marketUnit = quote?.GetUnitNetForQuantity(
                 candidate.Quantity);
@@ -122,7 +137,8 @@ public sealed class PanelPricingService
     private List<CatalogCandidate> BuildCatalogCandidates(
         SchemaDocument schema,
         InitialSettings settings,
-        List<string> warnings)
+        List<string> warnings,
+        IReadOnlyDictionary<string, ManagedComponentCatalogItem> managedCatalog)
     {
         var candidates = new List<CatalogCandidate>();
         var components = schema.Components
@@ -138,7 +154,14 @@ public sealed class PanelPricingService
             var catalog = SchneiderProductCatalog.ResolveEditorComponent(
                 sample,
                 settings);
-            var description = DescribeEditorComponent(sample);
+
+            if (sample.CatalogTypeId != null &&
+                managedCatalog.TryGetValue(sample.CatalogTypeId, out var managed))
+            {
+                catalog = ApplyManagedCatalogPricing(managed, catalog);
+            }
+
+            var description = catalog?.Name ?? DescribeEditorComponent(sample);
             var manualCount = group.Count(component =>
                 string.Equals(component.Origin, "manual", StringComparison.Ordinal));
 
@@ -189,6 +212,54 @@ public sealed class PanelPricingService
         }
 
         return candidates;
+    }
+
+    private static SchneiderCatalogItem? ApplyManagedCatalogPricing(
+        ManagedComponentCatalogItem managed,
+        SchneiderCatalogItem? fallback)
+    {
+        var hasManagedCommercialData =
+            managed.ReferencePriceEur.HasValue ||
+            !string.IsNullOrWhiteSpace(managed.Mpn) ||
+            !string.IsNullOrWhiteSpace(managed.Manufacturer);
+
+        // Seeded built-in rows are metadata overlays. Until an admin adds
+        // commercial overrides, preserve the existing precise Schneider
+        // variant mapping (for example C16 vs C32 MCB names/prices).
+        if (managed.IsBuiltIn && !hasManagedCommercialData)
+            return fallback;
+
+        if (!managed.IsBuiltIn)
+        {
+            // A custom product inherits electrical behavior from its template,
+            // never the template's commercial identity or price. Missing custom
+            // commercial data must remain visibly unpriced rather than silently
+            // becoming a Schneider product.
+            return new SchneiderCatalogItem(
+                managed.DisplayName,
+                managed.Mpn ?? string.Empty,
+                managed.ReferencePriceEur,
+                "Commercial metadata is managed from the FuseBox admin component catalog.",
+                string.IsNullOrWhiteSpace(managed.Manufacturer)
+                    ? "Custom"
+                    : managed.Manufacturer);
+        }
+
+        return new SchneiderCatalogItem(
+            string.IsNullOrWhiteSpace(managed.DisplayName)
+                ? fallback?.Name ?? managed.CatalogTypeId
+                : managed.DisplayName,
+            string.IsNullOrWhiteSpace(managed.Mpn)
+                ? fallback?.Mpn ?? string.Empty
+                : managed.Mpn,
+            managed.ReferencePriceEur ?? fallback?.ReferenceUnitNetEur,
+            JoinNotes(
+                fallback?.ReferenceNote,
+                "Commercial metadata is managed from the FuseBox admin component catalog.")
+                ?? "Managed FuseBox component catalog.",
+            string.IsNullOrWhiteSpace(managed.Manufacturer)
+                ? fallback?.Manufacturer ?? "Custom"
+                : managed.Manufacturer);
     }
 
     private void AddWireLines(
@@ -357,7 +428,7 @@ public sealed class PanelPricingService
         {
             Category = category,
             Name = catalog.Name,
-            Manufacturer = "Schneider Electric",
+            Manufacturer = catalog.Manufacturer,
             Mpn = catalog.Mpn,
             TmeSymbol = quote?.Symbol,
             Quantity = quantity,
@@ -378,9 +449,19 @@ public sealed class PanelPricingService
                 : knownTotals.Max(),
             StockQuantity = quote?.StockQuantity,
             PriceSource = marketUnit.HasValue
-                ? "TME Germany + Schneider reference"
+                ? string.Equals(
+                    catalog.Manufacturer,
+                    "Schneider Electric",
+                    StringComparison.OrdinalIgnoreCase)
+                    ? "TME Germany + Schneider reference"
+                    : "TME Germany + catalog reference"
                 : referenceUnit.HasValue
-                    ? "Schneider reference fallback"
+                    ? string.Equals(
+                        catalog.Manufacturer,
+                        "Schneider Electric",
+                        StringComparison.OrdinalIgnoreCase)
+                        ? "Schneider reference fallback"
+                        : "Managed catalog reference"
                     : "unavailable",
             PriceUpdatedAtUtc = quote?.FetchedAtUtc,
             Estimated = false,
@@ -479,16 +560,19 @@ public sealed class PanelPricingService
         InitialSettings settings)
     {
         var type = component.CatalogTypeId ?? "unknown";
+        var catalog = ComponentCatalog.ResolveById(component.CatalogTypeId);
 
-        return type switch
-        {
-            "fusebox.av" => $"{type}:{component.Amperage:0.###}",
-            "fusebox.rcd" => $"{type}:{component.RcdMilliAmps}",
-            "fusebox.introductory" or
-            "fusebox.introductory3p" or
-            "fusebox.introductory3pn" => $"{type}:{settings.MainAmperage}",
-            _ => type
-        };
+        if (catalog?.Role == "mcb")
+            return $"{type}:{component.Amperage:0.###}";
+
+        if (catalog?.LegacyName == "rcd")
+            return $"{type}:{component.RcdMilliAmps}";
+
+        if (catalog?.LegacyName is
+            "introductory" or "introductory3p" or "introductory3pn")
+            return $"{type}:{settings.MainAmperage}";
+
+        return type;
     }
 
     private static string DescribeEditorComponent(EditorComponent component)

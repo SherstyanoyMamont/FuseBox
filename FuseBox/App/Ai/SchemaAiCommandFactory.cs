@@ -52,8 +52,12 @@ internal static class SchemaAiCommandFactory
         var catalogTypeId = RequiredString(arguments, "catalogTypeId", 120);
         var catalog = ComponentCatalog.ResolveById(catalogTypeId);
 
-        if (catalog == null || catalog.Mounting != "din" || catalog.Slots <= 0 || catalog.Role == "spacer")
-            throw new InvalidOperationException("catalogTypeId is not a placeable DIN component.");
+        if (catalog == null ||
+            !ComponentCatalog.IsAvailableForPlacement(catalogTypeId))
+        {
+            throw new InvalidOperationException(
+                "catalogTypeId is not an active, placeable DIN component.");
+        }
 
         var result = new JsonObject
         {

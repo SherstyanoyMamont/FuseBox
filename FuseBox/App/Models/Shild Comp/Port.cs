@@ -1,4 +1,4 @@
-﻿using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -35,9 +35,9 @@ namespace FuseBox
         public string? connectorColour { get; set; } // Цвет разьема
 
         // Связь с Cable
-        public int CableId { get; set; }
+        public int? CableId { get; set; }
         [JsonIgnore]
-        public Cable cableType { get; set; }
+        public Cable? cableType { get; set; }
 
         // Связь с Component
         public int ComponentId { get; set; }

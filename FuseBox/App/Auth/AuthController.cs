@@ -1,10 +1,13 @@
+
 using System.Security.Claims;
 using System.Security.Cryptography;
+using FuseBox.App.Accounts;
 using FuseBox.App.Contracts.Auth;
 using FuseBox.App.Contracts.Common;
 using FuseBox.App.DataBase;
 using FuseBox.App.Models;
 using FuseBox.App.Services.Auth;
+using FuseBox.App.Subscriptions;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -28,6 +31,8 @@ namespace FuseBox.App.Controllers
         private readonly IAntiforgery _antiforgery;
         private readonly IPasswordResetSender _passwordResetSender;
         private readonly ILogger<AuthController> _logger;
+        private readonly SubscriptionService _subscriptions;
+        private readonly EntitlementService _entitlements;
         private readonly string _dummyPasswordHash;
 
         public AuthController(
@@ -35,13 +40,17 @@ namespace FuseBox.App.Controllers
             IPasswordHasher<User> passwordHasher,
             IAntiforgery antiforgery,
             IPasswordResetSender passwordResetSender,
-            ILogger<AuthController> logger)
+            ILogger<AuthController> logger,
+            SubscriptionService subscriptions,
+            EntitlementService entitlements)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _antiforgery = antiforgery;
             _passwordResetSender = passwordResetSender;
             _logger = logger;
+            _subscriptions = subscriptions;
+            _entitlements = entitlements;
 
             _dummyPasswordHash = _passwordHasher.HashPassword(
                 new User(),
@@ -96,7 +105,9 @@ namespace FuseBox.App.Controllers
             {
                 Email = email,
                 NormalizedEmail = normalizedEmail,
-                SecurityStamp = NewSecurityStamp(),
+                Role = UserRole.User,
+                Status = UserStatus.Active,
+                SecurityStamp = AccountService.CreateSecurityStamp(),
                 CreatedAtUtc = now,
                 UpdatedAtUtc = now
             };
@@ -104,6 +115,7 @@ namespace FuseBox.App.Controllers
             user.PasswordHash = _passwordHasher.HashPassword(
                 user,
                 request.Password);
+            user.Subscription = _subscriptions.CreateFree(user, now);
 
             _context.Users.Add(user);
 
@@ -148,6 +160,8 @@ namespace FuseBox.App.Controllers
             var normalizedEmail = EmailNormalizer.Normalize(request.Email);
 
             var user = await _context.Users
+                .Include(candidate => candidate.Subscription)
+                .Include(candidate => candidate.EntitlementOverride)
                 .FirstOrDefaultAsync(
                     candidate =>
                         candidate.NormalizedEmail == normalizedEmail,
@@ -173,6 +187,13 @@ namespace FuseBox.App.Controllers
             if (verification == PasswordVerificationResult.Failed)
             {
                 return InvalidCredentials();
+            }
+
+            // Check suspension only after password verification so this endpoint
+            // does not disclose account state for arbitrary email addresses.
+            if (user.Status == UserStatus.Suspended)
+            {
+                return AccountSuspended();
             }
 
             if (verification ==
@@ -213,11 +234,15 @@ namespace FuseBox.App.Controllers
 
             var user = await _context.Users
                 .AsNoTracking()
+                .Include(candidate => candidate.Subscription)
+                .Include(candidate => candidate.EntitlementOverride)
                 .FirstOrDefaultAsync(
                     candidate => candidate.Id == userId.Value,
                     cancellationToken);
 
-            if (user == null || string.IsNullOrWhiteSpace(user.PasswordHash))
+            if (user == null ||
+                string.IsNullOrWhiteSpace(user.PasswordHash) ||
+                user.Status != UserStatus.Active)
             {
                 await HttpContext.SignOutAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme);
@@ -328,7 +353,7 @@ namespace FuseBox.App.Controllers
             user.PasswordHash = _passwordHasher.HashPassword(
                 user,
                 request.NewPassword);
-            user.SecurityStamp = NewSecurityStamp();
+            user.SecurityStamp = AccountService.CreateSecurityStamp();
             user.UpdatedAtUtc = now;
 
             var outstandingTokens = await _context.PasswordResetTokens
@@ -359,6 +384,7 @@ namespace FuseBox.App.Controllers
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, user.Role.ToString()),
                 new(AuthCookieEvents.SecurityStampClaim, user.SecurityStamp)
             };
 
@@ -399,6 +425,15 @@ namespace FuseBox.App.Controllers
                 "Authentication is required."));
         }
 
+        private IActionResult AccountSuspended()
+        {
+            return StatusCode(
+                StatusCodes.Status403Forbidden,
+                Error(
+                    ApiErrorCodes.AccountSuspended,
+                    "This account is suspended."));
+        }
+
         private IActionResult ValidationFailed()
         {
             var errors = ModelState
@@ -431,18 +466,33 @@ namespace FuseBox.App.Controllers
             };
         }
 
-        private static CurrentUserResponse ToResponse(User user)
+        private CurrentUserResponse ToResponse(User user)
         {
+            var entitlements = _entitlements.Resolve(
+                user.Subscription,
+                user.EntitlementOverride);
+
             return new CurrentUserResponse
             {
                 Id = user.Id,
-                Email = user.Email
+                Email = user.Email,
+                Role = user.Role.ToString().ToLowerInvariant(),
+                Status = user.Status.ToString().ToLowerInvariant(),
+                Plan = entitlements.Plan.ToString().ToLowerInvariant(),
+                Features = new CurrentUserFeaturesResponse
+                {
+                    OnePhase = entitlements.CanUseOnePhase,
+                    ThreePhase = entitlements.CanUseThreePhase,
+                    SchemaEditor = entitlements.CanUseSchemaEditor,
+                    ThreeD = entitlements.CanUseThreeD,
+                    VrMr = entitlements.CanUseVrMr
+                },
+                Limits = new CurrentUserLimitsResponse
+                {
+                    AiRequestsPerDay = entitlements.AiRequestsPerDay
+                }
             };
         }
 
-        private static string NewSecurityStamp()
-        {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-        }
     }
 }

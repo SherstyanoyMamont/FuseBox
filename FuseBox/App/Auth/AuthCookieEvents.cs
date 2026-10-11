@@ -1,4 +1,6 @@
+
 using System.Security.Claims;
+using FuseBox.App.Accounts;
 using FuseBox.App.DataBase;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -26,6 +28,9 @@ namespace FuseBox.App.Services.Auth
             var cookieSecurityStamp = context.Principal?
                 .FindFirstValue(SecurityStampClaim);
 
+            var cookieRole = context.Principal?
+                .FindFirstValue(ClaimTypes.Role);
+
             if (!int.TryParse(userIdValue, out var userId) ||
                 string.IsNullOrWhiteSpace(cookieSecurityStamp))
             {
@@ -39,16 +44,27 @@ namespace FuseBox.App.Services.Auth
                 .Select(candidate => new
                 {
                     candidate.PasswordHash,
-                    candidate.SecurityStamp
+                    candidate.SecurityStamp,
+                    candidate.Role,
+                    candidate.Status
                 })
                 .FirstOrDefaultAsync(context.HttpContext.RequestAborted);
 
             if (user == null ||
                 string.IsNullOrWhiteSpace(user.PasswordHash) ||
+                user.Status != UserStatus.Active ||
                 !string.Equals(
                     user.SecurityStamp,
                     cookieSecurityStamp,
-                    StringComparison.Ordinal))
+                    StringComparison.Ordinal) ||
+                // Cookies issued before Role was introduced have no role claim.
+                // Keep normal users signed in during rollout; any role change
+                // rotates SecurityStamp and therefore forces a fresh cookie.
+                (!string.IsNullOrWhiteSpace(cookieRole) &&
+                    !string.Equals(
+                        user.Role.ToString(),
+                        cookieRole,
+                        StringComparison.Ordinal)))
             {
                 await RejectAsync(context);
             }

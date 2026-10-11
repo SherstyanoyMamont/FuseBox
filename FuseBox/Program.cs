@@ -1,5 +1,12 @@
+
 using System.Security.Claims;
+using System.Net;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using System.Threading.RateLimiting;
+using FuseBox.App.Accounts;
+using FuseBox.App.Billing;
+using FuseBox.App.Catalog;
 using FuseBox.App.Controllers;
 using FuseBox.App.DataBase;
 using FuseBox.App.Models;
@@ -7,6 +14,8 @@ using FuseBox.App.Services.Auth;
 using FuseBox.App.Services.Projects;
 using FuseBox.App.Services.Pricing;
 using FuseBox.App.SchemaEditor;
+using FuseBox.App.Subscriptions;
+using FuseBox.App.Usage;
 using FuseBox.Controllers;
 using FuseBox.Ai;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -21,7 +31,7 @@ namespace FuseBox
 {
     public partial class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +78,26 @@ namespace FuseBox
                 });
             });
 
+            // Trust only explicitly configured reverse proxies; never all networks.
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                    ForwardedHeaders.XForwardedProto;
+                foreach (var proxy in builder.Configuration
+                    .GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? Array.Empty<string>())
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(proxy));
+                }
+            });
+
+            var keyDirectory = builder.Configuration["DataProtection:KeyDirectory"];
+            if (!string.IsNullOrWhiteSpace(keyDirectory))
+            {
+                builder.Services.AddDataProtection()
+                    .SetApplicationName("FuseBox")
+                    .PersistKeysToFileSystem(new DirectoryInfo(keyDirectory));
+            }
+
             builder.Services.AddControllersWithViews();
 
             // Controllers return one stable validation envelope themselves.
@@ -77,6 +107,7 @@ namespace FuseBox
             });
 
             builder.Services.AddAutoMapper(
+                _ => { },
                 typeof(FuseBoxUnitProfile).Assembly);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -102,6 +133,27 @@ namespace FuseBox
                 PasswordHasher<User>>();
 
             builder.Services.AddScoped<AuthCookieEvents>();
+            builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<SubscriptionService>();
+            builder.Services.AddScoped<EntitlementService>();
+            builder.Services.AddScoped<UsageService>();
+            builder.Services.AddScoped<BillingService>();
+            builder.Services.AddScoped<PaddleWebhookVerifier>();
+            builder.Services.AddScoped<PaddleWebhookProcessor>();
+            builder.Services.AddScoped<BillingReconciliationService>();
+            builder.Services.AddScoped<BillingProductionReadinessService>();
+            builder.Services.AddScoped<ManagedComponentCatalogService>();
+            builder.Services.AddHostedService<ComponentCatalogBootstrapHostedService>();
+            builder.Services.AddHostedService<BillingReconciliationHostedService>();
+            builder.Services.AddHttpClient<PaddleClient>(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(20);
+            });
+            builder.Services.Configure<PlanEntitlementsOptions>(
+                builder.Configuration.GetSection("Plans"));
+            builder.Services.Configure<PaddleBillingOptions>(
+                builder.Configuration.GetSection(
+                    PaddleBillingOptions.SectionName));
 
             // Project persistence and ownership checks are centralized here.
             // Controllers never accept an owner from JSON.
@@ -144,31 +196,32 @@ namespace FuseBox
                 {
                     options.Cookie.Name = "FuseBox.Auth";
                     options.Cookie.HttpOnly = true;
-                    options.Cookie.SameSite = SameSiteMode.Lax;
-
-                    options.Cookie.SecurePolicy =
-                        builder.Environment.IsDevelopment()
-                            ? CookieSecurePolicy.SameAsRequest
-                            : CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
                     options.ExpireTimeSpan = TimeSpan.FromDays(7);
                     options.SlidingExpiration = true;
                     options.EventsType = typeof(AuthCookieEvents);
                 });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy(
+                    "Admin",
+                    policy =>
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole(UserRole.Admin.ToString());
+                    });
+            });
 
             builder.Services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-CSRF-TOKEN";
                 options.Cookie.Name = "FuseBox.Csrf";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-
-                options.Cookie.SecurePolicy =
-                    builder.Environment.IsDevelopment()
-                        ? CookieSecurePolicy.SameAsRequest
-                        : CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
             builder.Services.AddRateLimiter(options =>
@@ -195,7 +248,8 @@ namespace FuseBox
                             });
                     });
 
-                // AI cost guard: one independent 24-hour quota per signed-in user.
+                // Technical protection only. Commercial Free/Pro AI quota is
+                // enforced separately by UsageService inside the AI endpoints.
                 // Edit OpenAI:Configurator:DailyRequestLimit in appsettings.json.
                 options.AddPolicy(
                     "ai-daily",
@@ -276,15 +330,33 @@ namespace FuseBox
 
             var app = builder.Build();
 
+            var accountCommandExitCode =
+                await TryRunAccountCommandAsync(app, args);
+
+            if (accountCommandExitCode.HasValue)
+            {
+                Environment.ExitCode = accountCommandExitCode.Value;
+                return;
+            }
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
 
+            // CORS must wrap static catalog assets too: Three.js loads GLB
+            // files from the backend origin during local development.
             app.UseCors("AllowFrontend");
+            var staticFileContentTypes = new FileExtensionContentTypeProvider();
+            staticFileContentTypes.Mappings[".glb"] = "model/gltf-binary";
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = staticFileContentTypes
+            });
             app.UseRateLimiter();
 
             app.UseAuthentication();
@@ -294,10 +366,101 @@ namespace FuseBox
             app.MapFuseBoxConfiguratorAi();
             app.MapFuseBoxSchemaAi();
 
-            app.Run();
+            await app.RunAsync();
+        }
+
+        private static async Task<int?> TryRunAccountCommandAsync(
+            WebApplication app,
+            string[] args)
+        {
+            if (args.Length == 0)
+            {
+                return null;
+            }
+
+            // Explicit deployment command; normal startup never changes the schema.
+            if (args.Length == 1 && string.Equals(args[0], "--migrate-database",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                await using var migrationScope = app.Services.CreateAsyncScope();
+                var database = migrationScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await database.Database.MigrateAsync();
+                Console.WriteLine("Database migrations completed.");
+                return 0;
+            }
+
+            if (string.Equals(
+                args[0],
+                "--promote-admin",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 2 || string.IsNullOrWhiteSpace(args[1]))
+                {
+                    Console.Error.WriteLine(
+                        "Usage: dotnet run -- --promote-admin user@example.com");
+                    return 2;
+                }
+
+                await using var scope = app.Services.CreateAsyncScope();
+                var accounts = scope.ServiceProvider
+                    .GetRequiredService<AccountService>();
+
+                var user = await accounts.PromoteToAdminAsync(args[1]);
+
+                if (user == null)
+                {
+                    Console.Error.WriteLine(
+                        $"No registered account found for '{args[1]}'.");
+                    return 3;
+                }
+
+                Console.WriteLine(
+                    $"User '{user.Email}' is now Admin. " +
+                    "Existing authentication cookies for that account are invalidated.");
+
+                return 0;
+            }
+
+            if (string.Equals(
+                args[0],
+                "--set-plan",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                if (args.Length != 3 ||
+                    string.IsNullOrWhiteSpace(args[1]) ||
+                    !Enum.TryParse<PlanCode>(
+                        args[2],
+                        ignoreCase: true,
+                        out var plan))
+                {
+                    Console.Error.WriteLine(
+                        "Usage: dotnet run -- --set-plan user@example.com free|pro");
+                    return 2;
+                }
+
+                await using var scope = app.Services.CreateAsyncScope();
+                var subscriptions = scope.ServiceProvider
+                    .GetRequiredService<SubscriptionService>();
+
+                var user = await subscriptions.SetPlanByEmailAsync(
+                    args[1],
+                    plan);
+
+                if (user == null)
+                {
+                    Console.Error.WriteLine(
+                        $"No registered account found for '{args[1]}'.");
+                    return 3;
+                }
+
+                Console.WriteLine(
+                    $"User '{user.Email}' is now on the {plan} plan. " +
+                    "Refresh the frontend session to see updated entitlements.");
+
+                return 0;
+            }
+
+            return null;
         }
     }
 }
-
-
-
