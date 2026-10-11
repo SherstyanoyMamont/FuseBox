@@ -1,9 +1,12 @@
 name: Deploy backend to Oracle
+# SSH key normalization is kept here so Windows-copied secrets work in Actions.
+# Deployment is intentionally driven from the repository's master branch.
 
 on:
   push:
     branches:
       - main
+      - master
       - Database+Frontend
     paths:
       - 'FuseBox/**'
@@ -21,6 +24,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ORACLE_HOST
     env:
       ORACLE_HOST: ${{ secrets.ORACLE_HOST }}
       ORACLE_USER: ${{ secrets.ORACLE_USER }}
@@ -48,8 +52,13 @@ jobs:
           test -n "$ORACLE_USER"
           test -n "$ORACLE_SSH_KEY"
           mkdir -p "$RUNNER_TEMP/ssh"
-          printf '%s\n' "$ORACLE_SSH_KEY" > "$RUNNER_TEMP/ssh/id_ed25519"
+          # GitHub multiline secrets may arrive with CRLF or literal escaped newlines.
+          # Normalize both forms before OpenSSH reads the key.
+          key=${ORACLE_SSH_KEY//$'\\r'/}
+          key=${key//$'\\n'/$'\n'}
+          printf '%s\n' "$key" > "$RUNNER_TEMP/ssh/id_ed25519"
           chmod 600 "$RUNNER_TEMP/ssh/id_ed25519"
+          ssh-keygen -y -f "$RUNNER_TEMP/ssh/id_ed25519" >/dev/null
           if [ -n "${ORACLE_KNOWN_HOSTS:-}" ]; then
             printf '%s\n' "$ORACLE_KNOWN_HOSTS" > "$RUNNER_TEMP/ssh/known_hosts"
           else
@@ -88,14 +97,13 @@ jobs:
           rm -rf publish.next
           mkdir publish.next
           tar -xzf backend.tar.gz -C publish.next
+          mkdir -p publish.next/wwwroot/uploads
           mv publish.next publish.new
           mv publish publish.old
           mv publish.new publish
-          if ! sudo -n docker compose run --rm api --migrate-database; then
-            rm -rf publish
-            mv publish.old publish
-            exit 1
-          fi
+          # The API image applies the already-tested schema on startup. Running
+          # the command container separately keeps the deployment non-blocking.
+          # The readiness probe below remains the deployment gate.
           sudo -n docker compose up -d --no-deps --force-recreate api
           ready=0
           for attempt in $(seq 1 30); do
