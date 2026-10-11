@@ -97,6 +97,7 @@ jobs:
           rm -rf publish.next
           mkdir publish.next
           tar -xzf backend.tar.gz -C publish.next
+          mkdir -p publish.next/wwwroot/uploads
           mv publish.next publish.new
           mv publish publish.old
           mv publish.new publish
