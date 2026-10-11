@@ -290,6 +290,7 @@ namespace FuseBox
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/ready", () => Results.Ok(new { status = "ready" }));
             app.MapControllers();
             app.MapFuseBoxConfiguratorAi();
             app.MapFuseBoxSchemaAi();
