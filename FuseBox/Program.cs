@@ -345,7 +345,31 @@ namespace FuseBox
                 app.UseSwaggerUI();
             }
 
-            app.UseForwardedHeaders();
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                                   ForwardedHeaders.XForwardedProto
+            });
+            app.Use(async (context, next) =>
+            {
+                var publicApiHost = string.Equals(
+                    context.Request.Host.Host,
+                    "api.voltcrafting.com",
+                    StringComparison.OrdinalIgnoreCase);
+                var cloudflareRequest = context.Request.Headers.ContainsKey("CF-Ray");
+                var forwardedHttps = string.Equals(
+                    context.Request.Headers["X-Forwarded-Proto"].ToString(),
+                    "https",
+                    StringComparison.OrdinalIgnoreCase);
+                var cloudflareHttps = context.Request.Headers["CF-Visitor"].ToString()
+                    .Contains("\"scheme\":\"https\"", StringComparison.OrdinalIgnoreCase);
+                if (publicApiHost && cloudflareRequest &&
+                    (forwardedHttps || cloudflareHttps || !context.Request.IsHttps))
+                {
+                    context.Request.Scheme = "https";
+                }
+                await next();
+            });
             app.UseHttpsRedirection();
 
             // CORS must wrap static catalog assets too: Three.js loads GLB
@@ -362,6 +386,7 @@ namespace FuseBox
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/ready", () => Results.Ok(new { status = "ready" }));
             app.MapControllers();
             app.MapFuseBoxConfiguratorAi();
             app.MapFuseBoxSchemaAi();
