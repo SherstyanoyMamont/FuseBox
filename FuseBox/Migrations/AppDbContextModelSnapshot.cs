@@ -22,7 +22,7 @@ namespace FuseBox.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("FuseBox.App.Controllers.User", b =>
+            modelBuilder.Entity("FuseBox.App.Models.CableConnection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,41 +30,17 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("FuseBox.App.Models.BaseAbstract.BaseElectrical", b =>
-                {
-                    b.Property<int>("Id")
+                    b.Property<int>("FuseBoxUnitId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Amper")
-                        .HasColumnType("double");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("varchar(21)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BaseElectrical");
+                    b.HasIndex("FuseBoxUnitId");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseElectrical");
-
-                    b.UseTphMappingStrategy();
+                    b.ToTable("Connections");
                 });
 
             modelBuilder.Entity("FuseBox.App.Models.Position", b =>
@@ -75,7 +51,7 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ConnectionId")
+                    b.Property<int>("ConnectionPositionId")
                         .HasColumnType("int");
 
                     b.Property<int>("IndexFinish")
@@ -89,7 +65,7 @@ namespace FuseBox.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConnectionId")
+                    b.HasIndex("ConnectionPositionId")
                         .IsUnique();
 
                     b.ToTable("Positions");
@@ -103,7 +79,7 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ConnectionId")
+                    b.Property<int?>("ConnectionCableId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Length")
@@ -112,21 +88,22 @@ namespace FuseBox.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.Property<decimal>("Section")
+                    b.Property<decimal?>("Section")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("Сolour")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConnectionId")
+                    b.HasIndex("ConnectionCableId")
                         .IsUnique();
 
                     b.ToTable("Cables");
                 });
 
-            modelBuilder.Entity("FuseBox.Connection", b =>
+            modelBuilder.Entity("FuseBox.App.Models.PasswordResetToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,17 +111,177 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FuseBoxId")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("UsedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "ExpiresAtUtc");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
+            modelBuilder.Entity("FuseBox.App.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("varchar(254)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("varchar(254)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("SecurityStamp")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("FuseBox.Component", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amper")
+                        .HasColumnType("double");
+
+                    b.Property<int?>("ContactorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
+
+                    b.Property<int>("FuseBoxComponentGroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int?>("RCDId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SerialNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Slots")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FuseBoxId");
+                    b.HasIndex("ContactorId");
 
-                    b.ToTable("Connections");
+                    b.HasIndex("FuseBoxComponentGroupId");
+
+                    b.HasIndex("RCDId");
+
+                    b.ToTable("Component");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Component");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("FuseBox.Consumer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Amper")
+                        .HasColumnType("double");
+
+                    b.Property<int>("BreakerAmperage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(16);
+
+                    b.Property<string>("CatalogTypeId")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<int?>("FuseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PowerSource")
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<double?>("PowerWatts")
+                        .HasColumnType("double");
+
+                    b.Property<int>("RcdMilliAmps")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(30);
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FuseId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Consumer");
                 });
 
             modelBuilder.Entity("FuseBox.Floor", b =>
@@ -236,9 +373,15 @@ namespace FuseBox.Migrations
             modelBuilder.Entity("FuseBox.FuseBoxComponentGroup", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("FuseBoxId")
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FuseBoxComponentGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FuseBoxUnitId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -246,9 +389,9 @@ namespace FuseBox.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FuseBoxId");
+                    b.HasIndex("FuseBoxUnitId");
 
-                    b.ToTable("FuseBoxComponentGroup");
+                    b.ToTable("ComponentGroups");
                 });
 
             modelBuilder.Entity("FuseBox.FuseBoxUnit", b =>
@@ -315,7 +458,7 @@ namespace FuseBox.Migrations
                     b.HasIndex("ProjectId")
                         .IsUnique();
 
-                    b.ToTable("FuseBoxes");
+                    b.ToTable("FuseBoxes", (string)null);
                 });
 
             modelBuilder.Entity("FuseBox.GlobalGrouping", b =>
@@ -357,23 +500,56 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CableId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.Property<string>("PortIn")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("connectionsCount")
                         .HasColumnType("int");
 
                     b.Property<string>("portOut")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CableId");
+
+                    b.HasIndex("ComponentId");
+
                     b.ToTable("Ports");
+                });
+
+            modelBuilder.Entity("FuseBox.App.SchemaEditor.SchemaEditorState", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DocumentJson")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Mode")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<int>("Revision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("ProjectId");
+
+                    b.ToTable("SchemaEditorStates");
                 });
 
             modelBuilder.Entity("FuseBox.Project", b =>
@@ -384,13 +560,21 @@ namespace FuseBox.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Name")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)");
 
                     b.Property<double>("TotalPower")
                         .HasColumnType("double");
 
-                    b.Property<int?>("UserId")
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -419,61 +603,6 @@ namespace FuseBox.Migrations
                     b.HasIndex("FloorId");
 
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("FuseBox.Component", b =>
-                {
-                    b.HasBaseType("FuseBox.App.Models.BaseAbstract.BaseElectrical");
-
-                    b.Property<int?>("ContactorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseBoxUnitId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseBoxUnitId1")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseBoxUnitId2")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FuseId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int?>("RCDId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Slots")
-                        .HasColumnType("int");
-
-                    b.HasIndex("ContactorId");
-
-                    b.HasIndex("FuseBoxUnitId");
-
-                    b.HasIndex("FuseBoxUnitId1");
-
-                    b.HasIndex("FuseBoxUnitId2");
-
-                    b.HasIndex("FuseId");
-
-                    b.HasIndex("RCDId");
-
-                    b.HasDiscriminator().HasValue("Component");
-                });
-
-            modelBuilder.Entity("FuseBox.Consumer", b =>
-                {
-                    b.HasBaseType("FuseBox.Component");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("RoomId");
-
-                    b.HasDiscriminator().HasValue("Consumer");
                 });
 
             modelBuilder.Entity("FuseBox.Contactor", b =>
@@ -527,7 +656,7 @@ namespace FuseBox.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.ToTable("BaseElectrical", t =>
+                    b.ToTable("Component", t =>
                         {
                             t.Property("Capacity")
                                 .HasColumnName("RCDFire_Capacity");
@@ -536,20 +665,22 @@ namespace FuseBox.Migrations
                     b.HasDiscriminator().HasValue("RCDFire");
                 });
 
-            modelBuilder.Entity("FuseBox.App.Models.BaseAbstract.BaseElectrical", b =>
+            modelBuilder.Entity("FuseBox.App.Models.CableConnection", b =>
                 {
-                    b.HasOne("FuseBox.FuseBoxComponentGroup", null)
-                        .WithMany("Components")
-                        .HasForeignKey("Id")
+                    b.HasOne("FuseBox.FuseBoxUnit", "FuseBoxUnit")
+                        .WithMany("CableConnections")
+                        .HasForeignKey("FuseBoxUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("FuseBoxUnit");
                 });
 
             modelBuilder.Entity("FuseBox.App.Models.Position", b =>
                 {
-                    b.HasOne("FuseBox.Connection", "Connection")
+                    b.HasOne("FuseBox.App.Models.CableConnection", "Connection")
                         .WithOne("CabelWay")
-                        .HasForeignKey("FuseBox.App.Models.Position", "ConnectionId")
+                        .HasForeignKey("FuseBox.App.Models.Position", "ConnectionPositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -558,31 +689,57 @@ namespace FuseBox.Migrations
 
             modelBuilder.Entity("FuseBox.App.Models.Shild_Comp.Cable", b =>
                 {
-                    b.HasOne("FuseBox.Connection", "Connection")
+                    b.HasOne("FuseBox.App.Models.CableConnection", "Connection")
                         .WithOne("Cable")
-                        .HasForeignKey("FuseBox.App.Models.Shild_Comp.Cable", "ConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FuseBox.App.Models.Shild_Comp.Cable", "ConnectionCableId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Connection");
                 });
 
-            modelBuilder.Entity("FuseBox.Connection", b =>
+            modelBuilder.Entity("FuseBox.Component", b =>
                 {
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("CableConnections")
-                        .HasForeignKey("FuseBoxId")
+                    b.HasOne("FuseBox.Contactor", null)
+                        .WithMany("Electricals")
+                        .HasForeignKey("ContactorId");
+
+                    b.HasOne("FuseBox.FuseBoxComponentGroup", "FuseBoxComponentGroup")
+                        .WithMany("Components")
+                        .HasForeignKey("FuseBoxComponentGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("FuseBox.RCD", null)
+                        .WithMany("Electricals")
+                        .HasForeignKey("RCDId");
+
+                    b.Navigation("FuseBoxComponentGroup");
+                });
+
+            modelBuilder.Entity("FuseBox.Consumer", b =>
+                {
+                    b.HasOne("FuseBox.Fuse", null)
+                        .WithMany("Electricals")
+                        .HasForeignKey("FuseId");
+
+                    b.HasOne("FuseBox.Room", "Room")
+                        .WithMany("Consumer")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("FuseBox.Floor", b =>
                 {
-                    b.HasOne("FuseBox.Project", null)
+                    b.HasOne("FuseBox.Project", "Project")
                         .WithMany("Floors")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("FuseBox.FloorGrouping", b =>
@@ -609,19 +766,13 @@ namespace FuseBox.Migrations
 
             modelBuilder.Entity("FuseBox.FuseBoxComponentGroup", b =>
                 {
-                    b.HasOne("FuseBox.FuseBoxUnit", "FuseBox")
-                        .WithMany()
-                        .HasForeignKey("FuseBoxId")
+                    b.HasOne("FuseBox.FuseBoxUnit", "FuseBoxUnit")
+                        .WithMany("ComponentGroups")
+                        .HasForeignKey("FuseBoxUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("Components")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FuseBox");
+                    b.Navigation("FuseBoxUnit");
                 });
 
             modelBuilder.Entity("FuseBox.FuseBoxUnit", b =>
@@ -646,70 +797,88 @@ namespace FuseBox.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("FuseBox.Port", b =>
+                {
+                    b.HasOne("FuseBox.App.Models.Shild_Comp.Cable", "cableType")
+                        .WithMany()
+                        .HasForeignKey("CableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FuseBox.Component", "Component")
+                        .WithMany("Ports")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Component");
+
+                    b.Navigation("cableType");
+                });
+
+            modelBuilder.Entity("FuseBox.App.Models.PasswordResetToken", b =>
+                {
+                    b.HasOne("FuseBox.App.Models.User", "User")
+                        .WithMany("PasswordResetTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FuseBox.App.SchemaEditor.SchemaEditorState", b =>
+                {
+                    b.HasOne("FuseBox.Project", "Project")
+                        .WithOne("SchemaEditorState")
+                        .HasForeignKey("FuseBox.App.SchemaEditor.SchemaEditorState", "ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("FuseBox.Project", b =>
                 {
-                    b.HasOne("FuseBox.App.Controllers.User", null)
+                    b.HasOne("FuseBox.App.Models.User", "User")
                         .WithMany("Projects")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FuseBox.Room", b =>
                 {
-                    b.HasOne("FuseBox.Floor", null)
+                    b.HasOne("FuseBox.Floor", "Floor")
                         .WithMany("Rooms")
                         .HasForeignKey("FloorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Floor");
                 });
 
-            modelBuilder.Entity("FuseBox.Component", b =>
-                {
-                    b.HasOne("FuseBox.Contactor", null)
-                        .WithMany("Electricals")
-                        .HasForeignKey("ContactorId");
-
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("Contactor")
-                        .HasForeignKey("FuseBoxUnitId");
-
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("CriticalLine")
-                        .HasForeignKey("FuseBoxUnitId1");
-
-                    b.HasOne("FuseBox.FuseBoxUnit", null)
-                        .WithMany("Electricals")
-                        .HasForeignKey("FuseBoxUnitId2");
-
-                    b.HasOne("FuseBox.Fuse", null)
-                        .WithMany("Electricals")
-                        .HasForeignKey("FuseId");
-
-                    b.HasOne("FuseBox.RCD", null)
-                        .WithMany("Electricals")
-                        .HasForeignKey("RCDId");
-                });
-
-            modelBuilder.Entity("FuseBox.Consumer", b =>
-                {
-                    b.HasOne("FuseBox.Room", null)
-                        .WithMany("Consumer")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FuseBox.App.Controllers.User", b =>
-                {
-                    b.Navigation("Projects");
-                });
-
-            modelBuilder.Entity("FuseBox.Connection", b =>
+            modelBuilder.Entity("FuseBox.App.Models.CableConnection", b =>
                 {
                     b.Navigation("CabelWay")
                         .IsRequired();
 
                     b.Navigation("Cable")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FuseBox.App.Models.User", b =>
+                {
+                    b.Navigation("PasswordResetTokens");
+
+                    b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("FuseBox.Component", b =>
+                {
+                    b.Navigation("Ports");
                 });
 
             modelBuilder.Entity("FuseBox.Floor", b =>
@@ -726,13 +895,7 @@ namespace FuseBox.Migrations
                 {
                     b.Navigation("CableConnections");
 
-                    b.Navigation("Components");
-
-                    b.Navigation("Contactor");
-
-                    b.Navigation("CriticalLine");
-
-                    b.Navigation("Electricals");
+                    b.Navigation("ComponentGroups");
                 });
 
             modelBuilder.Entity("FuseBox.Project", b =>
@@ -750,6 +913,8 @@ namespace FuseBox.Migrations
 
                     b.Navigation("InitialSettings")
                         .IsRequired();
+
+                    b.Navigation("SchemaEditorState");
                 });
 
             modelBuilder.Entity("FuseBox.Room", b =>
@@ -775,3 +940,7 @@ namespace FuseBox.Migrations
         }
     }
 }
+
+
+
+

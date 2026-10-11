@@ -1,0 +1,11 @@
+[
+  "App\\Services\\Projects\\CustomizedSchemaConflictException.cs",
+  "App\\Controllers\\SchemaEditorController.cs",
+  "App\\SchemaEditor\\GeneratedSchemaDocumentFactory.cs",
+  "App\\SchemaEditor\\SchemaEditorContracts.cs",
+  "App\\SchemaEditor\\SchemaEditorService.cs",
+  "App\\SchemaEditor\\SchemaEditorState.cs",
+  "App\\SchemaEditor\\SchemaEditorValidator.cs",
+  "Migrations\\20260929164000_AddSchemaEditorState.Designer.cs",
+  "Migrations\\20260929164000_AddSchemaEditorState.cs"
+]

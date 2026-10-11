@@ -1,7 +1,11 @@
 ﻿using FuseBox.App.Interfaces;
+using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Models.DTO;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {
@@ -50,23 +54,40 @@ namespace FuseBox
 
         public decimal Price { get; set; } // $
 
-        // Список не отключаемых устройств
-        public List<Component> CriticalLine { get; set; } = new();                          // Нужно добавить устройства с фронтэнд-части
 
-        // Список подключенных к контактору устройств
-        public List<Consumer> ContactorConsumers { get; set; } = new();                     // Список потребителей подключенных к контактору (приходят с фронт-энд)
-        //public List<Component> ContactorComponents { get; set; } = new();                   // Список компонентов, который подключены к контактору                                                                    
-        public Contactor Contactor { get; set; }
-        public List<FuseBoxComponentGroup> Components { get; set; } = new()                 // Итоговый список компонентов щита. Создана первая строка для работы логики комплектования щитовой
+        public void BindComponentsToGroups()
         {
-            new FuseBoxComponentGroup(),
-        }; 
+            foreach (var group in ComponentGroups)
+            {
+                foreach (var component in group.Components)
+                {
+                    component.FuseBoxComponentGroup = group;
+                }
+            }
+        }
 
-        public List<Connection> CableConnections { get; set; } = new();                     // Лучше перенести это поле в Components
+        //// Список подключенных к контактору устройств
+        //public List<Consumer> Contactor { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
+
+        [ForeignKey("FuseBoxComponentGroupId")]
+        public List<FuseBoxComponentGroup> ComponentGroups { get; set; } = new(); // Итоговый список устройств. Создана первая строка для работы логики комплектования щитовой
+
+
+
+        //[NotMapped]
+        //Список не отключаемых устройств
+        //public List<Component> CriticalLine { get; set; } = new(); // Нужно добавить устройства с фронтэнд-части
+
+        //public List<Component> Electricals { get; set; } = new(); // Базовый список 
+
+        public List<CableConnection> CableConnections { get; set; } = new(); // Лучше перенести это поле в Components
+
 
         // Связь с проектом
         public int ProjectId { get; set; }
+        [JsonIgnore]
         public Project Project { get; set; }
+
 
         public FuseBoxUnit() { }
 
@@ -90,16 +111,5 @@ namespace FuseBox
             CrossModule = crossModule;
 
         }
-    }
-
-    public class FuseBoxComponentGroup : BaseEntity
-    {
-        // Компоненты в группе
-        public List<BaseElectrical> Components { get; set; } = new();
-
-        // Связь с FuseBox
-        public int FuseBoxId { get; set; }
-        public FuseBoxUnit FuseBox { get; set; }
-
     }
 }

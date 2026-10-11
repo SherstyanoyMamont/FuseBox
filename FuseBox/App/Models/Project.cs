@@ -1,8 +1,8 @@
-﻿using FuseBox.App.Controllers;
+using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
-using FuseBox;
-using System.Text.Json.Serialization;
 using FuseBox.FuseBox;
+using FuseBox.App.SchemaEditor;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {
@@ -13,7 +13,19 @@ namespace FuseBox
         public InitialSettings InitialSettings { get; set; }
         public FuseBoxUnit FuseBox { get; set; }
         public List<Floor> Floors { get; set; } = new();
-        public double TotalPower { get; set; } // A
+        public double TotalPower { get; set; } // W
+
+        public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
+
+        // Project ownership is assigned by the server.
+        public int UserId { get; set; }
+
+        [JsonIgnore]
+        public User User { get; set; } = null!;
+
+        [JsonIgnore]
+        public SchemaEditorState? SchemaEditorState { get; set; }
 
         public Project()
         {
@@ -24,7 +36,11 @@ namespace FuseBox
             Floors = new List<Floor>();
         }
 
-        public Project(FuseBoxUnit fuseBox, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)     // Конструктор для тестов
+        public Project(
+            FuseBoxUnit fuseBox,
+            FloorGrouping floorGrouping,
+            GlobalGrouping globalGrouping,
+            List<Floor> floors)
         {
             FuseBox = fuseBox;
             FloorGrouping = floorGrouping;
@@ -32,21 +48,31 @@ namespace FuseBox
             Floors = floors;
         }
 
-        public Project(InitialSettings initialSettings, FloorGrouping floorGrouping, GlobalGrouping globalGrouping, List<Floor> floors)      // Конструктор для тестов
+        public Project(
+            InitialSettings initialSettings,
+            FloorGrouping floorGrouping,
+            GlobalGrouping globalGrouping,
+            List<Floor> floors)
         {
             InitialSettings = initialSettings;
             FloorGrouping = floorGrouping;
             GlobalGrouping = globalGrouping;
             Floors = floors;
         }
-        public Project(FuseBoxUnit fuseBox, InitialSettings initialSettings, FloorGrouping floorGrouping)      // Конструктор для тестов
+
+        public Project(
+            FuseBoxUnit fuseBox,
+            InitialSettings initialSettings,
+            FloorGrouping floorGrouping)
         {
             FuseBox = fuseBox;
             InitialSettings = initialSettings;
             FloorGrouping = floorGrouping;
         }
 
-        public double CalculateTotalPower() // Calculates the total power of the entire object
+        // Historical name: this currently returns total current (A), not watts.
+        // Stage 8 will separate current and power explicitly.
+        public double CalculateTotalPower()
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
@@ -54,11 +80,37 @@ namespace FuseBox
                 .Sum(equipment => equipment.Amper);
         }
 
-        public int GetTotalNumberOfRooms() // Returns the total number of rooms in the project
+        public int GetTotalNumberOfRooms()
         {
             return Floors
                 .SelectMany(floor => floor.Rooms)
                 .Count();
         }
+
+        public decimal CalculateWireCrossSection()
+        {
+            decimal wireSection = 0;
+
+            var copperWireTable = new Dictionary<double, double>
+            {
+                { 1.5, 18 },
+                { 2.5, 25 },
+                { 4, 32 },
+                { 6, 40 },
+                { 10, 63 },
+                { 16, 80 }
+            };
+
+            // Preserve the existing selection behavior in stage 5.
+            foreach (var wire in copperWireTable)
+            {
+                if (CalculateTotalPower() <= wire.Value)
+                    wireSection = (decimal)wire.Key;
+            }
+
+            return wireSection;
+        }
     }
 }
+
+

@@ -1,0 +1,1856 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "id": "fusebox.startpoint",
+      "legacyName": "startpoint",
+      "role": "supply",
+      "mounting": "virtual",
+      "slots": 0,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 10,
+          "y": -150,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 60,
+          "y": -150,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 10,
+          "y": -150,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 60,
+          "y": -150,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.startpoint3p",
+      "legacyName": "startpoint3p",
+      "role": "supply",
+      "mounting": "virtual",
+      "slots": 0,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 10,
+          "y": -150,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 60,
+          "y": -150,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 110,
+          "y": -150,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 160,
+          "y": -150,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 10,
+          "y": -150,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 60,
+          "y": -150,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 110,
+          "y": -150,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 160,
+          "y": -150,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.introductory",
+      "legacyName": "introductory",
+      "role": "switch",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.introductory3p",
+      "legacyName": "introductory3p",
+      "role": "switch",
+      "mounting": "din",
+      "slots": 3,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L3"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.introductory3pn",
+      "legacyName": "introductory3pn",
+      "role": "switch",
+      "mounting": "din",
+      "slots": 4,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.spd",
+      "legacyName": "spd",
+      "role": "spd",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.spd3",
+      "legacyName": "spd3",
+      "role": "spd",
+      "mounting": "din",
+      "slots": 4,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.rcd",
+      "legacyName": "rcd",
+      "role": "rcd",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1",
+          "phaseSelectable": true
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1",
+          "phaseSelectable": true
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "outputup",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.av",
+      "legacyName": "av",
+      "role": "mcb",
+      "mounting": "din",
+      "slots": 1,
+      "terminalModel": "schematic",
+      "terminals": [
+        {
+          "id": "L_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1",
+          "phaseSelectable": true
+        },
+        {
+          "id": "L_OUT",
+          "type": "output",
+          "conductor": "L1",
+          "x": 26,
+          "y": 230,
+          "phaseSelectable": true
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.loadswitch",
+      "legacyName": "loadswitch",
+      "role": "switch",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.dinrailmeter",
+      "legacyName": "dinrailmeter",
+      "role": "meter",
+      "mounting": "din",
+      "slots": 6,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.dinrailmeter3p",
+      "legacyName": "dinrailmeter3p",
+      "role": "meter",
+      "mounting": "din",
+      "slots": 6,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 234,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 286,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 234,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 286,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 234,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 286,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 234,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 286,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.rcdfire",
+      "legacyName": "rcdfire",
+      "role": "rcd",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.rcdfire3p",
+      "legacyName": "rcdfire3p",
+      "role": "rcd",
+      "mounting": "din",
+      "slots": 4,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.voltagerelay",
+      "legacyName": "voltagerelay",
+      "role": "relay",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.voltagerelay1",
+      "legacyName": "voltagerelay1",
+      "role": "relay",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.voltagerelay2",
+      "legacyName": "voltagerelay2",
+      "role": "relay",
+      "mounting": "din",
+      "slots": 3,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.voltagerelay3",
+      "legacyName": "voltagerelay3",
+      "role": "relay",
+      "mounting": "din",
+      "slots": 3,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.voltagerelay3p",
+      "legacyName": "voltagerelay3p",
+      "role": "relay",
+      "mounting": "din",
+      "slots": 3,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    },
+    {
+      "id": "fusebox.dinrailsocket",
+      "legacyName": "dinrailsocket",
+      "role": "socket",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.ndiscline",
+      "legacyName": "ndiscline",
+      "role": "switch",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.modularcontactor",
+      "legacyName": "modularcontactor",
+      "role": "contactor",
+      "mounting": "din",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.crossblock",
+      "legacyName": "crossblock",
+      "role": "distribution",
+      "mounting": "din",
+      "slots": 4,
+      "terminalModel": "legacy-unverified",
+      "terminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "conductor": "N"
+        }
+      ],
+      "legacyTerminals": [
+        {
+          "id": "L1_IN",
+          "type": "input",
+          "x": 26,
+          "y": 0,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_IN",
+          "type": "input",
+          "x": 78,
+          "y": 0,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_IN",
+          "type": "input",
+          "x": 130,
+          "y": 0,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_IN",
+          "type": "input",
+          "x": 182,
+          "y": 0,
+          "color": "Blue",
+          "conductor": "N"
+        },
+        {
+          "id": "L1_OUT",
+          "type": "output",
+          "x": 26,
+          "y": 230,
+          "color": "Red",
+          "conductor": "L1"
+        },
+        {
+          "id": "L2_OUT",
+          "type": "output",
+          "x": 78,
+          "y": 230,
+          "color": "Orange",
+          "conductor": "L2"
+        },
+        {
+          "id": "L3_OUT",
+          "type": "output",
+          "x": 130,
+          "y": 230,
+          "color": "Grey",
+          "conductor": "L3"
+        },
+        {
+          "id": "N_OUT",
+          "type": "output",
+          "x": 182,
+          "y": 230,
+          "color": "Blue",
+          "conductor": "N"
+        }
+      ]
+    },
+    {
+      "id": "fusebox.emptyslot",
+      "legacyName": "emptyslot",
+      "role": "spacer",
+      "mounting": "spacer",
+      "slots": 1,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    },
+    {
+      "id": "fusebox.emptyslot2",
+      "legacyName": "emptyslot2",
+      "role": "spacer",
+      "mounting": "spacer",
+      "slots": 2,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    },
+    {
+      "id": "fusebox.emptyslot3",
+      "legacyName": "emptyslot3",
+      "role": "spacer",
+      "mounting": "spacer",
+      "slots": 3,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    },
+    {
+      "id": "fusebox.emptyslot4",
+      "legacyName": "emptyslot4",
+      "role": "spacer",
+      "mounting": "spacer",
+      "slots": 4,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    },
+    {
+      "id": "fusebox.emptyslot5",
+      "legacyName": "emptyslot5",
+      "role": "spacer",
+      "mounting": "spacer",
+      "slots": 5,
+      "terminalModel": "legacy-unverified",
+      "terminals": [],
+      "legacyTerminals": []
+    }
+  ]
+}

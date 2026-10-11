@@ -1,0 +1,4 @@
+[
+  "App\\Contracts\\Projects\\ConsumerRequest.cs",
+  "App\\Models\\ConsumerPowerSourceValues.cs"
+]

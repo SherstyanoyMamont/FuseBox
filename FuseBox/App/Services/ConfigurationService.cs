@@ -1,12 +1,16 @@
-﻿using FuseBox;
+using FuseBox.App.Factorys;
+using FuseBox.App.Interfaces;
 using FuseBox.App.Models;
 using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
+using FuseBox.App.Services.Providers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms.Mapping;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -18,288 +22,623 @@ namespace FuseBox
     // Сервисный класс, который содержит логику для работы с объектами конфигурации
     public class ConfigurationService
     {
+        private readonly IEnumerable<IShieldConfigurationRule> singlePhaseRules;
+        private readonly IEnumerable<IShieldConfigurationRule> threePhaseRules;
+        private readonly IProjectSettings settingsProvider;
+        private readonly IComponentFactory componentFactory;
+        private readonly IFuseBoxManager fuseBoxManager;
+        private readonly IConnectionFactory connectionFactory;
+        private readonly IProjectGrouping projectGrouping;
+        private readonly IConsumerProvider consumerProvider;
+        private readonly IDistributionService distributionService;
+
         public List<Component> shieldModuleSet = new();
-        //public List<RCD> uzos = new();
-        public List<Port> ports;
-        public List<RCD> uzos = new();
-        public List<RCD> contactorRCDs = new();
-        public Component appartmentEntryPoint;      // нулевой (абстрактный) элемент щита
 
-        public Project project;
-        public FuseBoxUnit fuseBox;
-
-        public decimal WireSection;
-
-        public ConfigurationService(Project Project)
+        public ConfigurationService(IProjectSettings settingsProvider, IComponentFactory componentFactory, IFuseBoxManager fuseBoxManager,
+            IConnectionFactory connectionFactory, IProjectGrouping projectGrouping, IConsumerProvider consumerProvider,
+            IEnumerable<IShieldConfigurationRule> singlePhaseRules, IEnumerable<IShieldConfigurationRule> threePhaseRules, IDistributionService distributionService)
         {
-            project = Project;
-            fuseBox = project.FuseBox;
-            ports = Port.CreateStandardPorts(WireSection);
+            this.singlePhaseRules = singlePhaseRules;
+            this.threePhaseRules = threePhaseRules;
+            this.settingsProvider = settingsProvider;
+            this.componentFactory = componentFactory;
+            this.fuseBoxManager = fuseBoxManager;
+            this.connectionFactory = connectionFactory;
+            this.projectGrouping = projectGrouping;
+            this.consumerProvider = consumerProvider;
+            this.distributionService = distributionService;
+        }
+
+        public void AddShieldingCable(Cable cable, Position position)
+        {
+            fuseBoxManager.AddConnection(cable, position);
+        }
+
+        public void AddComponentOnLevel(int currentLevel, Component component)
+        {
+            fuseBoxManager.AddComponentOnLevel(currentLevel, component);
         }
 
         // Создаем/Модифицируем объект проекта
-        public void GenerateConfiguration()         // Метод возвращает объект ProjectConfiguration
+        public void GenerateConfiguration()
         {
-            ValidateInitialSettings();              // Проверка первичных данных***
+            Console.WriteLine("Starting GenerateConfiguration.");
 
-            CalculateWireCrossSection();            // Расчет сечения провода по мощности
+            try
+            {
+                Console.WriteLine("🔍 Step 3: ConfigureShield");
+                ConfigureShield();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("ConfigureShield failed.", ex);
+            }
 
-            ConfigureShield();                      // Входим в расчеты 1 или 3 фазы
+            try
+            {
+                Console.WriteLine("🔍 Step 4: Distribute");
+                Distribute();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Distribute failed.", ex);
+            }
 
-            Distribute();                           // Логика распределения потребителей и УЗО от нагрузки
+            try
+            {
+                Console.WriteLine("🔍 Step 5: CreateConnections");
+                CreateConnections();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("CreateConnections failed.", ex);
+            }
 
-            CreateConnections();                    // Создаем соединения
+            try
+            {
+                Console.WriteLine("🔍 Step 6: ShieldByLevel");
+                ShieldByLevel();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("ShieldByLevel failed.", ex);
+            }
 
-            AddAndConnectContactorComponents();     // Возвращаем все связанные с контактором компоненты в список и создаём соединения
-
-            ShieldByLevel();                        // Компонуем щит по уровням
-
+            Console.WriteLine("GenerateConfiguration completed successfully.");
         }
+
         // Логика конфигурации устройств...
         public void ConfigureShield()
         {
-            List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
+            //var rules = settingsProvider.GetPhasesCount() == 1
+            //? singlePhaseRules
+            //: threePhaseRules;
 
-            var ports2x2 = SelectPorts(0, 1, 6, 7);
-            var ports2 = SelectPorts(1, 7);
-            var ports2x2i = SelectPorts(1, 3, 5, 7);
-            var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
-            var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
-            var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
-            var ports017 = SelectPorts(0, 1, 7);
-            var ports237 = SelectPorts(2, 3, 7);
-            var ports457 = SelectPorts(4, 5, 7);
+            //foreach (var rule in rules)
+            //{
+            //    if (rule.ShouldApply(settingsProvider))
+            //    {
+            //        shieldModuleSet.Add(rule.CreateComponent(componentFactory));
+            //    }
+            //}
 
-            if (project.InitialSettings.PhasesCount == 1) // Входим в расчеты 1 фазы
+
+
+            if (settingsProvider.GetPhasesCount() == 1)
             {
-                appartmentEntryPoint = new Component("AppartmentEntryPoint", 0, 0, 0, ports2);
-                if (fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory", project.InitialSettings.MainAmperage, 2, 35, ports2x2, "P1", Type3PN.P1)); }
-                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2)); }
-                if (fuseBox.LoadSwitch2P) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
-                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports2x2)); }
-                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports2x2)); }
-                if (fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 40, ports2x2)); }
-                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 2, 22, ports2)); }
-                if (fuseBox.NDiscLine) { shieldModuleSet.Add(new RCD("NDiscLine", 25, 2, 43, ports2, new List<Component>())); }
-                if (fuseBox.LoadSwitch) { shieldModuleSet.Add(new Component("LoadSwitch", 63, 2, 35, ports2x2)); }
-                if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, ports2)); } // !!!
-                if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports2x2)); }
+                shieldModuleSet.Add(componentFactory.CreateStartPoint());
+
+                if (settingsProvider.IsIntroductoryEnabled()) { shieldModuleSet.Add(componentFactory.CreateIntroductoryModule()); }
+
+                if (settingsProvider.IsSurgeProtectionEnabled()) { shieldModuleSet.Add(componentFactory.CreateSurgeProtectionModule()); }
+                if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
+                if (settingsProvider.IsRailMeterEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailMeterModule()); } //!!!
+                if (settingsProvider.IsFireUZOEnabled()) { shieldModuleSet.Add(componentFactory.CreateFireUZOModule()); }
+                if (settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
+
+                if (settingsProvider.IsNDiscLineEnabled()) { shieldModuleSet.Add(componentFactory.CreateNDiscLineModule()); }
+                if (settingsProvider.IsLoadSwitchEnabled()) { shieldModuleSet.Add(componentFactory.CreateLoadSwitchModule()); }
+                if (settingsProvider.IsModularContactorEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); }
+                if (settingsProvider.IsCrossModuleEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }
+                if (settingsProvider.IsRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
             }
-            else // Входим в расчеты 3 фазы
+            else if (settingsProvider.GetPhasesCount() == 3) // Входим в расчеты 3 фазы
             {
-                appartmentEntryPoint = new Component("AppartmentEntryPoint", 0, 0, 0, ports2x2i);
-                if (fuseBox.MainBreaker && !fuseBox.Main3PN) { shieldModuleSet.Add(new Introductory("Introductory 3P", project.InitialSettings.MainAmperage, 2, 35, ports1_6, "P1", Type3PN.P3)); }
-                if (fuseBox.Main3PN && !fuseBox.MainBreaker) { shieldModuleSet.Add(new Introductory("Introductory 3P+N", project.InitialSettings.MainAmperage, 2, 35, ports1_8, "P1", Type3PN.P3_N)); }
-                if (fuseBox.SurgeProtection) { shieldModuleSet.Add(new Component("SPD", 100, 2, 65, ports2x2i)); }
-                if (fuseBox.RailMeter) { shieldModuleSet.Add(new Component("DinRailMeter", 63, 6, 145, ports1_8)); }
-                if (fuseBox.FireUZO) { shieldModuleSet.Add(new RCDFire("RCDFire", 63, 2, 75, ports1_8)); }
-                if (fuseBox.VoltageRelay && !fuseBox.ThreePRelay)
+                shieldModuleSet.Add(componentFactory.CreateStartPoint3p());
+
+                if (settingsProvider.IsIntroductoryEnabled())
                 {
-                    shieldModuleSet.Add(new Component("VoltageRelay1", 16, 2, 40, ports017));
-                    shieldModuleSet.Add(new Component("VoltageRelay2", 16, 2, 40, ports237));
-                    shieldModuleSet.Add(new Component("VoltageRelay3", 16, 2, 40, ports457));
+                    if (settingsProvider.IsIntroductory3pnEnabled())
+                    {
+                        shieldModuleSet.Add(
+                            componentFactory.CreateIntroductory3pnModule());
+                    }
+                    else
+                    {
+                        shieldModuleSet.Add(
+                            componentFactory.CreateIntroductory3pModule());
+                    }
                 }
-                if (fuseBox.ThreePRelay && !fuseBox.VoltageRelay) { shieldModuleSet.Add(new Component("VoltageRelay", 16, 2, 60, ports1_7)); }
-                if (fuseBox.RailSocket) { shieldModuleSet.Add(new Component("DinRailSocket", 16, 3, 22)); }
-                if (fuseBox.ModularContactor) { shieldModuleSet.Add(new Contactor("ModularContactor", 100, 4, 25, ports1_7)); } // !!!
-                if (fuseBox.CrossModule) { shieldModuleSet.Add(new Component("CrossBlock", 100, 4, 25, ports1_8)); }       // CrossModule? 4 slots?
+                if (settingsProvider.IsSPD3Enabled()) { shieldModuleSet.Add(componentFactory.CreateSPD3Module()); }
+                if (settingsProvider.IsDinRailMeter3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateDinRailMeter3pModule()); }
+                if (settingsProvider.IsRCDFireEnabled()) { shieldModuleSet.Add(componentFactory.CreateRCDFire3pModule()); }
+                if (settingsProvider.IsVoltageRelayEnabled() && !settingsProvider.IsVoltageRelay3Enabled())
+                {
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule());
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelay2Module());
+                    shieldModuleSet.Add(componentFactory.CreateVoltageRelay3Module());
+                }
+                if (settingsProvider.IsVoltageRelay3Enabled() && !settingsProvider.IsVoltageRelayEnabled()) { shieldModuleSet.Add(componentFactory.CreateVoltageRelayModule()); }
+                if (settingsProvider.IsModularContactor3pEnabled()) { shieldModuleSet.Add(componentFactory.CreateModularContactorModule()); } // !!!
+                if (settingsProvider.IsCrossBlockEnabled()) { shieldModuleSet.Add(componentFactory.CreateCrossBlockModule()); }       // CrossModule? 4 slots?
+                if (settingsProvider.IsDinRailSocketEnabled()) { shieldModuleSet.Add(componentFactory.CreateRailSocketModule()); }
             }
+            else new Exception("Unexpected phase type!");
         }
+
+        // Логика распределения модулей по уровням...
         public void Distribute()
         {
-            DistributionService distributionService = new(project, uzos, contactorRCDs);
-
             distributionService.DistributeOfConsumers(); // Логика распределения потребителей
             distributionService.DistributeRCDFromLoad(); // Логика распределения УЗО от нагрузки
 
-            shieldModuleSet.AddRange(uzos); // Соеденяем список входных модулей и УЗО
-        }
-        // Логика распределения модулей по уровням...
-        public void ShieldByLevel()
-        {
-            int occupiedSlots = 0;
-            int currentLevel = 0;
-            int shieldWidth = project.InitialSettings.ShieldWidth;
+            List<Component> RSDplusAV = new List<Component>(); // Список входных модулей и УЗО
+            List<RCD> RSD = distributionService.GetDistributedRCDModules();
 
-            for (int i = 0; i < shieldModuleSet.Count; i++)
+            foreach (var rcd in RSD)
             {
-                occupiedSlots += (int)shieldModuleSet[i].Slots;
-
-                if (occupiedSlots < shieldWidth) fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);    // модуль помещается на уровне
-
-                else if (occupiedSlots > shieldWidth)           // модуль не помещается на уровне. 
+                RSDplusAV.Add(rcd); // Добавляем УЗО в список
+                if (rcd.Electricals != null)
                 {
-                    fuseBox.Components[currentLevel].Components.Add(new EmptySlot(shieldWidth - (occupiedSlots - (int)shieldModuleSet[i].Slots)));
-                    currentLevel++;
-                    fuseBox.Components.Add(new FuseBoxComponentGroup());
-
-                    occupiedSlots = (int)shieldModuleSet[i].Slots;
-                    fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);
-                }
-                else if (occupiedSlots == shieldWidth)      // Слотов на уровне аккурат равно длине шины
-                {
-                    fuseBox.Components[currentLevel].Components.Add(shieldModuleSet[i]);
-                    if (shieldModuleSet[i] != shieldModuleSet[^1])
+                    foreach (var av in rcd.Electricals)
                     {
-                        fuseBox.Components.Add(new FuseBoxComponentGroup());
-                        currentLevel++;
-                        occupiedSlots = 0;
+                        RSDplusAV.Add(av); // Добавляем АВ в список
                     }
                 }
-                if (occupiedSlots < shieldWidth && shieldModuleSet[i] == shieldModuleSet[^1])
-                    fuseBox.Components[currentLevel].Components.Add(new EmptySlot(shieldWidth - occupiedSlots));
-            }
-        }
-        // Расчет сечения провода по мощности
-        public void CalculateWireCrossSection()
-        {
-            // Стандартные сечения проводов (в мм²) и их предельный ток (в А) для меди
-            var copperWireTable = new Dictionary<double, double>
-            {
-                { 1.5, 18 }, { 2.5, 25 }, { 4, 32 }, { 6, 40 }, { 10, 63 }, { 16, 80 }
-            };
-
-            // Поиск минимального сечения, подходящего под заданный ток
-            foreach (var wire in copperWireTable)
-            {
-                if (project.CalculateTotalPower() <= wire.Value)
-                    WireSection = (decimal)wire.Key;
-
-                //return (decimal)wire.Key; // Возвращаем сечение, соответствующее току
             }
 
-            // Если ток выше максимального в таблице — требуется индивидуальный расчёт
-            //throw new ArgumentException("Требуется кабель большего сечения, рассчитайте вручную.");
+            shieldModuleSet.AddRange(RSDplusAV); // Соеденяем список входных модулей и УЗО
 
-            // Сечения медного кабеля для прокладки проводки по дому/ квартире:
-            // автомат C10, сечение кабеля 1,5 мм2 для освещения
-            // автомат C16, сечение кабеля 2,5 мм2 для розеток
-            // автомат C32, сечение кабеля 6,0 мм2 для мощных потребителей
-            // Кабель сечением 8 — 10 мм2 для соединения аппаратуры внутри щита. Обычно используется медный кабель типа ВВГнГ плоский трёхжильный монопроволочный.
+            //shieldModuleSet.AddRange(distributionService.GetDistributedRCDModules());
         }
+
         // Создаем соединение проводами
         public void CreateConnections()
         {
-            List<Connection> сableConnections = fuseBox.CableConnections;
-            
-            // Добавляем ID ко всем компонентам
-            for (int i = 0; i < shieldModuleSet.Count; i++) { shieldModuleSet[i].Id = i + 1; }
+            if (shieldModuleSet.Count == 0)
+                throw new InvalidOperationException("The device list is empty.");
 
-            shieldModuleSet.Insert(0, appartmentEntryPoint);                           // Добавляем нулевой элемент, от которого будут идти соединения
-            RemoveModularContactor();                                                  // Удаляем контактор из списка
-
-            for (int i = 0; i < shieldModuleSet.Count; i++)                            // Берем каждый компонент
+            if (shieldModuleSet.Distinct().Count() != shieldModuleSet.Count)
             {
-                Component currentComp = shieldModuleSet[i];                            // module - текущий компонент
-
-                for (int port = 0; port < currentComp.Ports.Count; port++)             // Берем каждый разьем компонента
-                {
-                    Port currentPort = currentComp.Ports[port];                        // currentPort - текущий разьем
-
-                    if ((currentComp.Name == "VoltageRelay3" || currentComp.Name == "VoltageRelay") 
-                        && currentPort.portOut == "Zero" 
-                        && shieldModuleSet[i + 1].Name != "RCD")
-                        continue;                                                      // Эти компоненты не должны передавать ноль последующим компонентам
-
-                    if (currentPort.portOut == null) continue;                         // если порт не выходящий то пропускаем 
-
-                    for (int n = i + 1; n < shieldModuleSet.Count; n++)                // Перебираем следующие компоненты по очереди
-                    {
-                        Component nextModule = shieldModuleSet[n];                     // nextModule - следующий компонент
-
-                        if (nextModule.Ports.Any(e => e.portOut == currentPort.portOut))    // Если у компонента есть такой же тип выхода, то создаем подключение
-                        {
-                            Position connectionIds = new Position(currentComp.Id, shieldModuleSet[n].Id);
-                            сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-                            break;
-                        }
-                    }
-                }
+                throw new InvalidOperationException(
+                    "The same component instance was added to the schema more than once.");
             }
-        }
-        public void ValidateInitialSettings()
-        {
 
-        }
-
-        // Возвращаем контактор в список, добавляем в него все УЗО контактора и создаём соединения
-        private void AddAndConnectContactorComponents()
-        {
-            if (!fuseBox.ModularContactor) { return; }
-            else
-            {
-                shieldModuleSet.Insert(fuseBox.Contactor.Id - 1, fuseBox.Contactor);                             // Возвращаем контактор в список
-                AddAndConnectContactorRCD();
-                ConnectComponentsToContactor();
-            }
-        }
-        private void AddAndConnectContactorRCD()
-        {
-            List<Connection> сableConnections = fuseBox.CableConnections;
-            var lastId = shieldModuleSet[^1].Id;
-            foreach (var rcd in contactorRCDs)                                                              // Создаём соединения между УЗО и контактором
-            {
-                rcd.Id = lastId + 1;                                                                        // Создаём ID для УЗО
-                lastId++;
-                shieldModuleSet.Add(rcd);                                                                   // Добавляем УЗО контактора в общий список
-
-                for (int i = 0; i < rcd.Ports.Count; i++)                                                   // Создаём соединение между УЗО и контактором
-                {
-                    var currentPort = rcd.Ports[i];
-                    Position connectionIds = new Position(fuseBox.Contactor.Id, rcd.Id);
-                    сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-                }
-            }
-        }
-        private void ConnectComponentsToContactor()
-        {
-            List<Connection> сableConnections = fuseBox.CableConnections;
-            for (int component = 0; component < shieldModuleSet.Count; component++)                          // Создаём соединения между контактором и Реле/Противопож Узо
-
-            {
-                if (shieldModuleSet[component].Name == "RCDFire")
-                {
-                    shieldModuleSet[component].Ports[7].portOut = "Zero";                                   // !!! С какого-то хуя после выхода с CreateConnection у fireUzo пропадает этот порт
-                    for (int port = 0; port < shieldModuleSet[component].Ports.Count; port++)
-                    {
-                        var currentPort = shieldModuleSet[component].Ports[port];
-                        if (currentPort.portOut == null)
-                            continue;
-
-                        Position connectionIds = new Position(shieldModuleSet[component].Id, fuseBox.Contactor.Id);
-                        сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-                    }
-                }
-                else if (shieldModuleSet[component].Name == "ThreePRelay" ||
-                         shieldModuleSet[component].Name == "VoltageRelay1" ||
-                         shieldModuleSet[component].Name == "VoltageRelay2" ||
-                         shieldModuleSet[component].Name == "VoltageRelay3")
-                {
-                    for (int port = 0; port < shieldModuleSet[component].Ports.Count; port++)
-                    {
-                        var currentPort = shieldModuleSet[component].Ports[port];
-                        if (currentPort.portOut == null || currentPort.PortIn == "Zero" || currentPort.portOut == "Zero")
-                            continue;
-
-                        Position connectionIds = new Position(shieldModuleSet[component].Id, fuseBox.Contactor.Id);
-                        сableConnections.Add(new Connection(currentPort.cableType, connectionIds));
-                    }
-                }
-            }
-        }
-        private void RemoveModularContactor()
-        {
             for (int i = 0; i < shieldModuleSet.Count; i++)
             {
-                if (shieldModuleSet[i].Name == "ModularContactor")
-                {
-                    fuseBox.Contactor = shieldModuleSet[i] as Contactor;
-                    shieldModuleSet.Remove(shieldModuleSet[i]);
+                shieldModuleSet[i].SerialNumber = i + 1;
+            }
 
+            string NormalizeName(Component component)
+            {
+                return (component.Name ?? "")
+                    .Replace(" ", "")
+                    .ToLowerInvariant();
+            }
+
+            bool IsStartPoint(Component component)
+            {
+                string name = NormalizeName(component);
+
+                return name == "startpoint" ||
+                       name == "startpoint3p";
+            }
+
+            bool IsSupplyChannel(string? channel)
+            {
+                return channel == "Phase1" ||
+                       channel == "Phase2" ||
+                       channel == "Phase3" ||
+                       channel == "Zero";
+            }
+
+            string ColourFor(string channel)
+            {
+                return channel switch
+                {
+                    "Phase1" => "Red",
+                    "Phase2" => "Orange",
+                    "Phase3" => "Grey",
+                    "Zero" => "Blue",
+                    _ => throw new InvalidOperationException(
+                        $"Unknown channel: {channel}")
+                };
+            }
+
+            // В текущей модели эти устройства являются ответвлениями:
+            // они получают питание, но не становятся источником общей магистрали.
+            bool IsBranch(Component component)
+            {
+                string name = NormalizeName(component);
+
+                return name == "dinrailsocket" ||
+                       name == "ndiscline";
+            }
+
+            var planned = new List<(
+                int Start,
+                int Finish,
+                string Colour)>();
+
+            var unique = new HashSet<(
+                int Start,
+                int Finish,
+                string Colour)>();
+
+            void AddConnection(Component start, Component finish, string channel)
+            {
+                if (ReferenceEquals(start, finish))
+                {
+                    throw new InvalidOperationException(
+                        "A component cannot be connected to itself.");
                 }
+
+                var connection = (
+                    Start: start.SerialNumber,
+                    Finish: finish.SerialNumber,
+                    Colour: ColourFor(channel));
+
+                if (unique.Add(connection))
+                {
+                    planned.Add(connection);
+                }
+            }
+
+            var supply = new Dictionary<string, Component>();
+
+            Component GetSupply(string channel, Component target)
+            {
+                if (!supply.TryGetValue(channel, out var source))
+                {
+                    throw new InvalidOperationException(
+                        $"No {channel} source was found for {target.Name} #{target.SerialNumber}.");
+                }
+
+                return source;
+            }
+
+            var incoming = shieldModuleSet
+                .Where(component =>
+                    component is not RCD &&
+                    component is not Fuse &&
+                    component is not EmptySlot)
+                .ToList();
+
+            if (incoming.Count(component => IsStartPoint(component)) != 1 ||
+                !IsStartPoint(incoming[0]))
+            {
+                throw new InvalidOperationException(
+                    "The common part of the schema must start with exactly one StartPoint.");
+            }
+
+            foreach (var component in incoming)
+            {
+                var outputs = component.Ports
+                    .Select(port => port.portOut)
+                    .Where(IsSupplyChannel)
+                    .Select(channel => channel!)
+                    .Distinct()
+                    .ToList();
+
+                if (IsStartPoint(component))
+                {
+                    foreach (var channel in outputs)
+                    {
+                        supply[channel] = component;
+                    }
+
+                    continue;
+                }
+
+                // В существующих пресетах часть питаемых устройств имеет
+                // только portOut. Пока учитываем обе записи как описание каналов.
+                var channels = component.Ports
+                    .SelectMany(port => new[] { port.PortIn, port.portOut })
+                    .Where(IsSupplyChannel)
+                    .Select(channel => channel!)
+                    .Distinct()
+                    .ToList();
+
+                if (channels.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        $"Power-channel metadata is missing for {component.Name}.");
+                }
+
+                foreach (var channel in channels)
+                {
+                    AddConnection(
+                        GetSupply(channel, component),
+                        component,
+                        channel);
+                }
+
+                if (!IsBranch(component))
+                {
+                    foreach (var channel in outputs)
+                    {
+                        supply[channel] = component;
+                    }
+                }
+            }
+
+            var owners = new Dictionary<Fuse, RCD>();
+
+            foreach (var rcd in shieldModuleSet.OfType<RCD>())
+            {
+                var phaseChannels = rcd.Ports
+                    .Select(port => port.portOut)
+                    .Where(channel =>
+                        channel == "Phase1" ||
+                        channel == "Phase2" ||
+                        channel == "Phase3")
+                    .Distinct()
+                    .ToList();
+
+                if (phaseChannels.Count != 1)
+                {
+                    throw new InvalidOperationException(
+                        $"RCD #{rcd.SerialNumber} must have exactly one assigned phase.");
+                }
+
+                string phase = phaseChannels[0]!;
+
+                if (settingsProvider.GetPhasesCount() == 1 &&
+                    phase != "Phase1")
+                {
+                    throw new InvalidOperationException(
+                        "A single-phase RCD was assigned phase L2 or L3.");
+                }
+
+                // Питание RCD берётся из общей части щита.
+                AddConnection(GetSupply(phase, rcd), rcd, phase);
+                AddConnection(GetSupply("Zero", rcd), rcd, "Zero");
+
+                if (rcd.Electricals.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        $"RCD #{rcd.SerialNumber} does not contain any circuit breakers.");
+                }
+
+                Component upstream = rcd;
+
+                foreach (var child in rcd.Electricals)
+                {
+                    if (child is not Fuse breaker)
+                    {
+                        throw new InvalidOperationException(
+                            $"RCD #{rcd.SerialNumber} contains a component that is not a circuit breaker.");
+                    }
+
+                    if (!shieldModuleSet.Contains(breaker))
+                    {
+                        throw new InvalidOperationException(
+                            "An RCD circuit breaker is missing from the schema device list.");
+                    }
+
+                    if (!owners.TryAdd(breaker, rcd))
+                    {
+                        throw new InvalidOperationException(
+                            $"Circuit breaker #{breaker.SerialNumber} is assigned to multiple RCDs.");
+                    }
+
+                    if (breaker.Electricals.Any(consumer =>
+                        consumer.RcdMilliAmps != rcd.Capacity))
+                    {
+                        throw new InvalidOperationException(
+                            $"Protection settings for circuit breaker #{breaker.SerialNumber} do not match its RCD.");
+                    }
+
+                    // Автоматическая цепь: RCD -> первый AV -> следующий AV.
+                    AddConnection(upstream, breaker, phase);
+                    upstream = breaker;
+                }
+            }
+
+            foreach (var breaker in shieldModuleSet.OfType<Fuse>())
+            {
+                if (!owners.ContainsKey(breaker))
+                {
+                    throw new InvalidOperationException(
+                        $"Circuit breaker #{breaker.SerialNumber} is not assigned to an RCD.");
+                }
+            }
+
+            // Записываем результат только после проверки всей структуры.
+            fuseBoxManager.ClearConnections();
+
+            foreach (var connection in planned)
+            {
+                var position = connectionFactory.CreatePositionModule(
+                    connection.Start,
+                    connection.Finish);
+
+                // Сечение 10 сохранено из текущей реализации.
+                // Это заглушка приложения, а не результат подбора кабеля.
+                var cable = connectionFactory.CreateCableModule(
+                    connection.Colour,
+                    10);
+
+                AddShieldingCable(cable, position);
             }
         }
 
+        public void ShieldByLevel()
+        {
+            int shieldWidth = settingsProvider.GetShieldWidth();
+
+            if (shieldWidth <= 0)
+                throw new ArgumentException("Panel width must be greater than zero.");
+
+            var groups = fuseBoxManager.GetComponentGroups();
+
+            // Здесь размещается заново рассчитанный, ещё не сохранённый проект.
+            groups.Clear();
+
+            var blocks = new List<List<Component>>();
+            var assigned = new HashSet<Component>();
+
+            foreach (var component in shieldModuleSet)
+            {
+                if (component is EmptySlot)
+                    continue;
+
+                if (component is Fuse)
+                    continue;
+
+                var block = new List<Component> { component };
+
+                if (!assigned.Add(component))
+                {
+                    throw new InvalidOperationException(
+                        "A component was placed more than once.");
+                }
+
+                if (component is RCD rcd)
+                {
+                    Component upstream = rcd;
+
+                foreach (var child in rcd.Electricals)
+                    {
+                        if (child is not Fuse ||
+                            !shieldModuleSet.Contains(child) ||
+                            !assigned.Add(child))
+                        {
+                            throw new InvalidOperationException(
+                                "Circuit-breaker ownership is inconsistent during placement.");
+                        }
+
+                        block.Add(child);
+                    }
+                }
+
+                blocks.Add(block);
+            }
+
+            if (shieldModuleSet
+                .Where(component => component is not EmptySlot)
+                .Any(component => !assigned.Contains(component)))
+            {
+                throw new InvalidOperationException(
+                    "Some devices were not assigned to placement blocks.");
+            }
+
+            int currentLevel = -1;
+            int occupiedSlots = 0;
+
+            void StartRow()
+            {
+                fuseBoxManager.AddComponentGroup();
+                currentLevel++;
+                occupiedSlots = 0;
+            }
+
+            void FillRemainingSpace()
+            {
+                int freeSlots = shieldWidth - occupiedSlots;
+
+                if (freeSlots > 0)
+                {
+                    AddComponentOnLevel(
+                        currentLevel,
+                        componentFactory.CreateEmptySlotModule(freeSlots));
+                }
+            }
+
+            foreach (var block in blocks)
+            {
+                foreach (var component in block)
+                {
+                    bool startPoint =
+                        component.Name == "StartPoint" ||
+                        component.Name == "StartPoint3p";
+
+                    if (component.Slots < 0 ||
+                        (!startPoint && component.Slots == 0))
+                    {
+                        throw new InvalidOperationException(
+                            $"Invalid width for device {component.Name}.");
+                    }
+                }
+
+                int blockWidth = block.Sum(component => component.Slots);
+
+                if (blockWidth > shieldWidth)
+                {
+                    throw new ArgumentException(
+                        $"Group {block[0].Name} occupies {blockWidth} slots, but the row width is {shieldWidth}. Increase the panel width.");
+                }
+
+                if (currentLevel < 0)
+                {
+                    StartRow();
+                }
+
+                if (occupiedSlots + blockWidth > shieldWidth)
+                {
+                    FillRemainingSpace();
+                    StartRow();
+                }
+
+                foreach (var component in block)
+                {
+                    AddComponentOnLevel(currentLevel, component);
+                }
+
+                occupiedSlots += blockWidth;
+            }
+
+            if (currentLevel >= 0)
+            {
+                FillRemainingSpace();
+            }
+
+            if (groups.Any(group => group.Components.Count == 0))
+            {
+                throw new InvalidOperationException(
+                    "An empty row remained after placement.");
+            }
+
+            fuseBoxManager.BindComponentsToGroups();
+        }
+
+        //public void ReturnAVToMainList()
+        //{
+        //    // Возвращаем все АВ в общий список
+        //    foreach (var group in fuseBoxManager.GetComponentGroups())
+        //    {
+        //        foreach (var component in group.Components)
+        //        {
+        //            if (component is RCD)
+        //            {
+        //                // Добавляем обратно в общий список
+        //                shieldModuleSet.Add(component);
+        //            }
+        //        }
+        //    }
+
+        //    var flatList = new List<Component>();
+
+        //    foreach (var rcd in fuseBoxManager.GetComponentGroups())
+        //    {
+        //        flatList.Add(rcd); // сначала сам RCD
+        //        if (rcd.Electrical != null)
+        //        {
+        //            flatList.AddRange(rcd.Electrical); // затем все его AV-компоненты
+        //        }
+        //    }
+
+        //}
     }
 }
 
@@ -309,171 +648,204 @@ namespace FuseBox
 
 /*
 
-{
+
+
+ {
     "floorGrouping": {
-        "FloorGroupingP": true,
-        "separateUZO": true
+      "FloorGroupingP": true,
+      "separateUZO": true
     },
-  "globalGrouping": {
-    "Sockets": 1,
-    "Lighting": 1,
-    "Conditioners": 1
-  },
-  "initialSettings": {
-    "PhasesCount": 1,
-    "MainAmperage": 25,
-    "ShieldWidth": 16,
-    "VoltageStandard": 220,
-    "PowerCoefficient": 1
-  },
-  "FuseBox": {
-    "MainBreaker": true,
-    "Main3PN": false,
-    "SurgeProtection": true,
-    "LoadSwitch2P": true,
-    "ModularContactor": true,
-    "RailMeter": true,
-    "FireUZO": true,
-    "VoltageRelay": true,
-    "RailSocket": true,
-    "NDisconnectableLine": true,
-    "LoadSwitch": true,
-    "CrossModule": true,
-    "DINLines": 1,
-    "Price": 1000
-  },
+    "globalGrouping": {
+      "Sockets": 1,
+      "Lighting": 1,
+      "Conditioners": 1
+    },
+    "initialSettings": {
+      "PhasesCount": 3,
+      "MainAmperage": 25,
+      "ShieldWidth": 16,
+      "VoltageStandard": 220,
+      "PowerCoefficient": 1
+    },
+    "FuseBox": {
+      "MainBreaker": true,
+      "Main3PN": false,
+      "SurgeProtection": true,
+      "LoadSwitch2P": true,
+      "ModularContactor": true,
+      "RailMeter": true,
+      "FireUZO": true,
+      "VoltageRelay": true,
+      "RailSocket": true,
+      "NDisconnectableLine": true,
+      "LoadSwitch": true,
+      "CrossModule": true,
+      "DINLines": 1,
+      "Price": 1000
+      
+    },
     "floors": [
       {
-      "Name": "Ground Floor",
-      "rooms": [
-        {
-          "Name": "Living Room",
-          "Consumer": [
-            {
-              "Id": 1,
-              "name": "TV",
-              "Amper": 1
-            },
-            {
-              "Id": 2,
-              "name": "Air Conditioner",
-              "Amper": 8
-            },
-            {
-              "Id": 3,
-              "name": "Lighting",
-              "Amper": 1
-            }
-          ],
-          "tPower": 10
-        },
-        {
-          "name": "Kitchen",
-          "Consumer": [
-            {
-              "Id": 4,
-              "name": "Refrigerator",
-              "Amper": 3
-            },
-            {
-              "Id": 5,
-              "name": "Microwave",
-              "Amper": 5
-            },
-            {
-              "Id": 6,
-              "name": "Oven",
-              "Amper": 7
-            }
-          ],
-          "tPower": 15
-        }
-      ]
-    },
-    {
-      "Name": "First Floor",
-      "rooms": [
-        {
-          "name": "Bedroom 1",
-          "Consumer": [
-            {
-              "id": 7,
-              "name": "Heater",
-              "Amper": 13
-            },
-            {
-              "id": 8,
-              "name": "Fan",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        },
-        {
-          "name": "Bathroom",
-          "Consumer": [
-            {
-              "id": 9,
-              "name": "Water Heater",
-              "Amper": 13
-            },
-            {
-              "id": 10,
-              "name": "Hair Dryer",
-              "Amper": 7
-            }
-          ],
-          "tPower": 20
-        }
-      ]
-    },
-    {
-      "Name": "Second Floor",
-      "rooms": [
-        {
-          "name": "Office",
-          "Consumer": [
-            {
-              "id": 11,
-              "name": "Computer",
-              "Amper": 2
-            },
-            {
-              "id": 12,
-              "name": "Printer",
-              "Amper": 1
-            },
-            {
-              "id": 13,
-              "name": "Lighting",
-              "Amper": 2
-            },
-            {
-              "id": 11,
-              "name": "Air Conditioner",
-              "Amper": 2
-            },
-            {
-              "id": 12,
-              "name": "Air Conditioner",
-              "Amper": 1
-            },
-            {
-              "id": 13,
-              "name": "Lighting",
-              "Amper": 2
-            },
-            {
-              "id": 13,
-              "name": "Lighting",
-              "Amper": 2
-            }
-          ],
-          "tPower": 12
-        }
-      ]
-    }
-  ]
-}
+        "Name": "Ground Floor",
+        "rooms": [
+          {
+            "Name": "Living Room",
+            "Consumer": [
+              {
+                "Name": "TV",
+                "Amper": 1
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 8
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 1
+              }
+            ],
+            "tPower": 10
+          },
+          {
+            "Name": "Kitchen",
+            "Consumer": [
+              {
+                "Name": "Refrigerator",
+                "Amper": 3
+              },
+              {
+                "Name": "Microwave",
+                "Amper": 5
+              },
+              {
+                "Name": "Oven",
+                "Amper": 7
+              }
+            ],
+            "tPower": 15
+          }
+        ]
+      },
+      {
+        "Name": "First Floor",
+        "rooms": [
+          {
+            "Name": "Bedroom 1",
+            "Consumer": [
+              {
+                "Name": "Heater",
+                "Amper": 13
+              },
+              {
+                "Name": "Fan",
+                "Amper": 7
+              }
+            ],
+            "tPower": 20
+          },
+          {
+            "Name": "Bathroom",
+            "Consumer": [
+              {
+                "Name": "Water Heater",
+                "Amper": 13
+              },
+              {
+                "Name": "Hair Dryer",
+                "Amper": 7
+              }
+            ],
+            "tPower": 20
+          }
+        ]
+      },
+      {
+        "Name": "Second Floor",
+        "rooms": [
+          {
+            "Name": "Office",
+            "Consumer": [
+              {
+                "Name": "Computer",
+                "Amper": 2
+              },
+              {
+                "Name": "Printer",
+                "Amper": 1
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 2
+              },
+              {
+                "Name": "Air Conditioner",
+                "Amper": 1
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              },
+              {
+                "Name": "Lighting",
+                "Amper": 2
+              }
+            ],
+            "tPower": 12
+          }
+        ]
+      }
+    ]
+  }
+
+
+            //List<Port> SelectPorts(params int[] indices) => indices.Select(i => ports[i]).ToList();
+
+            //var ports2x2 = SelectPorts(0, 1, 6, 7);
+            //var ports2 = SelectPorts(1, 7);
+            //var ports2x2i = SelectPorts(1, 3, 5, 7);
+            //var ports1_6 = SelectPorts(0, 1, 2, 3, 4, 5);
+            //var ports1_7 = SelectPorts(0, 1, 2, 3, 4, 5, 7);
+            //var ports1_8 = SelectPorts(0, 1, 2, 3, 4, 5, 6, 7);
+            //var ports017 = SelectPorts(0, 1, 7);
+            //var ports237 = SelectPorts(2, 3, 7);
+            //var ports457 = SelectPorts(4, 5, 7);
+
+
+            //Dictionary<string, Component> phaseOne = new Dictionary<string, Component>
+            //{
+            //    { "Introductory",     new Introductory(  "Introductory",      settingsProvider.GetMainAmperage(), 2, 35, ports2x2, "P1", Type3PN.P1)},
+            //    { "SPD",              new Component(     "SPD",               100, 2, 65,   ports2  )},
+            //    { "LoadSwitch",       new Component(     "LoadSwitch",        63, 2, 35,    ports2x2)},
+            //    { "DinRailMeter",     new Component(     "DinRailMeter",      63, 6, 145,   ports2x2)},
+            //    { "RCDFire",          new RCDFire  (     "RCDFire",           63, 2, 75,    ports2x2)},
+            //    { "VoltageRelay",     new Component(     "VoltageRelay",      16, 2, 40,    ports2x2)},                                                                        
+            //    { "DinRailSocket",    new Component(     "DinRailSocket",     16, 2, 22,    ports2  )},
+            //    { "NDiscLine",        new RCD      (     "NDiscLine",         25, 2, 43,    ports2, new List<Component>()) },
+            //    { "LoadSwitch",       new Component(     "LoadSwitch",        63, 2, 35,    ports2x2)},
+            //    { "ModularContactor", new Contactor(     "ModularContactor",  100, 4, 25,   ports2  )}, // !!!
+            //    { "CrossBlock",       new Component(     "CrossBlock",        100, 4, 25,   ports2x2)},
+            //};
+
+            //Dictionary<string, Component> phaseThree = new Dictionary<string, Component>
+            //{
+            //    { "Introductory3p",   new Introductory(  "Introductory3p",    settingsProvider.GetMainAmperage(), 3, 35,    ports1_6, "P1", Type3PN.P3)},
+            //    { "Introductory3pn",  new Introductory(  "Introductory3pn",   settingsProvider.GetMainAmperage(), 4, 35,    ports1_8, "P1", Type3PN.P3_N)},
+            //    { "SPD3",             new Component(     "SPD3",                                             100, 4, 65,    ports2x2i)},
+            //    { "DinRailMeter3p",   new Component(     "DinRailMeter3p",                                   63,  6, 145,   ports1_8 )},
+            //    { "RCDFire",          new RCDFire  (     "RCDFire",                                          63,  4, 75,    ports1_8 )},
+            //    { "VoltageRelay1",    new Component(     "VoltageRelay1",                                    16,  2, 40,    ports017 )},
+            //    { "VoltageRelay2",    new Component(     "VoltageRelay2",                                    16,  2, 40,    ports237 )},
+            //    { "VoltageRelay3",    new Component(     "VoltageRelay3",                                    16,  2, 40,    ports457 )},
+            //    { "VoltageRelay",     new Component(     "VoltageRelay",                                     16,  2, 60,    ports1_7 )},
+            //    { "DinRailSocket",    new Component(     "DinRailSocket",                                    16,  2, 22              )},
+            //    { "ModularContactor", new Contactor(     "ModularContactor",                                 100, 4, 25              )},
+            //    { "CrossBlock",       new Component(     "CrossBlock",                                       100, 4, 25,    ports1_8 )},
+            //};
+
 
 */
+

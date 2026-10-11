@@ -1,28 +1,27 @@
-﻿using FuseBox.App.Models.BaseAbstract;
+using FuseBox.App.Interfaces;
+using FuseBox.App.Models.BaseAbstract;
 using FuseBox.App.Models.Shild_Comp;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Xml.Linq;
-using ZstdSharp.Unsafe;
 
 namespace FuseBox
 {
-    public class DistributionService
+    public class DistributionService : IDistributionService
     {
+        private readonly IProjectSettings settingsProvider;
+        private readonly IProjectGrouping projectGrouping;
+        private readonly IConsumerProvider consumerProvider;
+        private readonly IComponentFactory componentFactory;
+
         public List<Consumer> Lightings = new();
         public List<Consumer> Socket = new();
         public List<Consumer> AirConditioner = new();
         public List<Consumer> HeatedFloor = new();
-        public List<Fuse> AVFuses = new();       
-        public List<RCD> uzos;
-        public List<Fuse> contactorFuses = new();
-        public List<RCD> contactorRCDs;
+        public List<Fuse> AVFuses = new();
+        public List<RCD> uzos = new();
 
-        public Project project;
+        //public Project project;
         public double countOfRCD;
-        public double countOfContactorRCD;
 
         // Делаем запас в два раза
         public double RCD16A = 8.00;
@@ -31,163 +30,358 @@ namespace FuseBox
         public double AVPerRCD = 6.00;
         public double RCDPerPhases = 3.00;
 
-        public DistributionService(Project project, List<RCD> uzos, List<RCD> contactorRCDs)
+        public DistributionService(IProjectSettings settingsProvider, IProjectGrouping projectGrouping, IConsumerProvider consumerProvider, IComponentFactory componentFactory)
         {
-            this.project = project;
-            this.uzos = uzos;
-            this.contactorRCDs = contactorRCDs;
+            this.settingsProvider = settingsProvider;
+            this.projectGrouping = projectGrouping;
+            this.consumerProvider = consumerProvider;
+            this.componentFactory = componentFactory;
+        }
+
+        public List<RCD> GetDistributedRCDModules()
+        {
+            return uzos;
         }
 
         // Логика распределения модулей по порядку
         public void DistributeOfConsumers()
         {
-            List<Consumer> AllConsumers = new();
-            // Логика распределения потребителей
-            int heatingPerAV = 1;
-            GlobalGrouping globalGrouping = project.GlobalGrouping;
+            AVFuses.Clear();
 
-            // Собираем все потребители в один список
-            foreach (var floor in project.Floors)
+            var allConsumers = consumerProvider.GetAllConsumers();
+
+            string NormalizeName(string name)
             {
-                foreach (var room in floor.Rooms)
+                return name.Trim().ToLowerInvariant();
+            }
+
+            bool IsGroupedCategory(Consumer consumer)
+            {
+                string name = NormalizeName(consumer.Name);
+
+                return name == "lighting" ||
+                       name == "socket" ||
+                       name == "sockets" ||
+                       name == "air conditioner" ||
+                       name == "heated floor";
+            }
+
+            bool NeedsDedicatedBreaker(Consumer consumer)
+            {
+                return !IsGroupedCategory(consumer) ||
+                       consumer.BreakerAmperage != 16 ||
+                       consumer.RcdMilliAmps != 30;
+            }
+
+            // Приборы и потребители с индивидуальными настройками:
+            // один потребитель — один автомат.
+            foreach (var consumer in allConsumers.Where(NeedsDedicatedBreaker))
+            {
+                AVFuses.Add(
+                    componentFactory.GetAVModule(
+                        new List<Consumer> { consumer }));
+            }
+
+            var shared = allConsumers
+                .Where(c => !NeedsDedicatedBreaker(c))
+                .ToList();
+
+            void AddCategory(
+                int grouping,
+                string category,
+                params string[] names)
+            {
+                var consumers = shared
+                    .Where(c => names.Contains(NormalizeName(c.Name)))
+                    .ToList();
+
+                if (consumers.Count > 0)
                 {
-                    foreach (var equipment in room.Consumer)
-                    {
-                        AllConsumers.Add(equipment);
-                    }
+                    AutomatPerCons(grouping, consumers, category);
                 }
             }
 
-            var consumerGroups = new Dictionary<string, List<Consumer>>
-            {
-                { "Lighting", Lightings },
-                { "Socket", Socket },
-                { "Air Conditioner", AirConditioner },
-                { "Heated Floor", HeatedFloor }
-            };
+            AddCategory(
+                projectGrouping.GetLightingsGrouping(),
+                "Lighting",
+                "lighting");
 
-            foreach (var consumer in AllConsumers)
-            {
-                if (consumerGroups.ContainsKey(consumer.Name))
-                {
-                    consumerGroups[consumer.Name].Add(consumer);
-                }
-            }
+            AddCategory(
+                projectGrouping.GetSocketsGrouping(),
+                "Sockets",
+                "socket",
+                "sockets");
 
-            // Автоматы с учетом сортировки: Свет, Розетки, Кондиционеры
-            if (AllConsumers.Any(e => e.Name.Equals("Lighting", StringComparison.OrdinalIgnoreCase)))
-            {
-                AutomatPerCons(globalGrouping.Lighting, Lightings, "Lighting");
-            }
-            if (AllConsumers.Any(e => e.Name.Equals("Socket", StringComparison.OrdinalIgnoreCase)))
-            {
-                AutomatPerCons(globalGrouping.Sockets, Socket, "Socket");
-            }
-            if (AllConsumers.Any(e => e.Name.Equals("Air Conditioner", StringComparison.OrdinalIgnoreCase)))
-            {
-                AutomatPerCons(globalGrouping.Conditioners, AirConditioner, "Air Conditioner");
-            }
-            if (AllConsumers.Any(e => e.Name.Equals("Heated Floor", StringComparison.OrdinalIgnoreCase)))
-            {
-                AutomatPerCons(heatingPerAV, HeatedFloor, "Heated Floor");
-            }
-            foreach (var consumer in AllConsumers) // Добавляем автоматы без сортировки
-            {
-                if (consumer.Name != "Lighting" && consumer.Name != "Socket" && consumer.Name != "Air Conditioner" && consumer.Name != "Heated Floor")
-                {
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, new List<Consumer> { consumer }));
-                }
-            }
+            AddCategory(
+                projectGrouping.GetConditionersGrouping(),
+                "Air Conditioner",
+                "air conditioner");
+
+            AddCategory(
+                1,
+                "Heated Floor",
+                "heated floor");
         }
 
-        public void AutomatPerCons(int groupingParam, List<Consumer> list, string? name)
+        public void AutomatPerCons(
+            int groupingParam,
+            List<Consumer> consumers,
+            string? name)
         {
+            if (consumers.Count == 0)
+                return;
+
+            if (groupingParam < 0)
+                throw new ArgumentException("Invalid grouping parameter.");
+
             if (groupingParam == 0)
             {
-                var buckets1 = new List<List<Consumer>>();
-
-                // Создаем группы
-                for (int i = 0; i < project.GetTotalNumberOfRooms(); i++)
+                // Group by room first, then automatically split an overloaded
+                // room into as many circuit breakers as necessary.
+                if (consumers.Any(c => c.Room == null))
                 {
-                    buckets1.Add(new List<Consumer>());
+                    throw new ArgumentException(
+                        "A consumer must be assigned to a room before grouping.");
                 }
 
-                // Распределяем потребителей по группам
-                for (int i = 0; i < list.Count; i++)
+                foreach (var roomGroup in consumers.GroupBy(c => c.Room))
                 {
-                    buckets1[i].Add(list[i]);
+                    AddAutoSizedBreakerGroups(
+                        roomGroup.ToList(),
+                        minimumGroupCount: 1,
+                        categoryName: name);
                 }
 
-                // Удаляем пустые группы
-                buckets1.RemoveAll(innerList => innerList == null || innerList.Count == 0);
-
-
-                // Создаём автоматы и добавляем в AVFuses
-                for (int i = 0; i < buckets1.Count; i++)
-                {
-                    var consumers = buckets1[i];
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
-                }
-            }
-            else
-            {
-                var buckets = new List<List<Consumer>>(groupingParam);
-
-                for (int i = 0; i < groupingParam; i++)
-                {
-                    buckets.Add(new List<Consumer>());
-                }
-
-                // Распределяем потребителей по группам
-                for (int i = 0; i < list.Count; i++)
-                {
-                    buckets[i % groupingParam].Add(list[i]);
-                }
-
-                // Создаём автоматы и добавляем в AVFuses
-                for (int i = 0; i < groupingParam; i++)
-                {
-                    var consumers = buckets[i];
-                    AVFuses.Add(new Fuse("AV", 16, 1, 10, consumers));
-                }
+                return;
             }
 
+            // A positive setting is now the minimum desired number of groups.
+            // If that is not enough for the selected breaker rating, the backend
+            // automatically increases the number of groups until every group fits.
+            AddAutoSizedBreakerGroups(
+                consumers,
+                minimumGroupCount: groupingParam,
+                categoryName: name);
         }
 
+        private void AddAutoSizedBreakerGroups(
+            List<Consumer> consumers,
+            int minimumGroupCount,
+            string? categoryName)
+        {
+            if (consumers.Count == 0)
+                return;
+
+            int nominal = consumers[0].BreakerAmperage;
+            int sensitivity = consumers[0].RcdMilliAmps;
+
+            if (consumers.Any(c =>
+                c.BreakerAmperage != nominal ||
+                c.RcdMilliAmps != sensitivity))
+            {
+                throw new ArgumentException(
+                    $"{categoryName ?? "The consumer group"} contains consumers " +
+                    "with different protection settings.");
+            }
+
+            var impossibleConsumer = consumers.FirstOrDefault(c => c.Amper > nominal);
+
+            if (impossibleConsumer != null)
+            {
+                throw new ArgumentException(
+                    $"{impossibleConsumer.Name} draws {impossibleConsumer.Amper:F2} A, " +
+                    $"which exceeds its C{nominal} circuit breaker.");
+            }
+
+            double totalCurrent = consumers.Sum(c => c.Amper);
+
+            // Start with the user's requested minimum, but skip directly to the
+            // theoretical minimum when the total current already requires more.
+            int requiredByTotal = nominal > 0
+                ? (int)Math.Ceiling(totalCurrent / nominal)
+                : consumers.Count;
+
+            int groupCount = Math.Clamp(
+                Math.Max(Math.Max(minimumGroupCount, 1), requiredByTotal),
+                1,
+                consumers.Count);
+
+            while (groupCount <= consumers.Count)
+            {
+                var buckets = Enumerable.Range(0, groupCount)
+                    .Select(_ => new List<Consumer>())
+                    .ToList();
+
+                bool packed = true;
+
+                // Largest loads first. Prefer the currently least-loaded bucket
+                // that can still accept the consumer without exceeding the breaker.
+                foreach (var consumer in consumers.OrderByDescending(c => c.Amper))
+                {
+                    var bucket = buckets
+                        .Select(group => new
+                        {
+                            Group = group,
+                            Load = group.Sum(c => c.Amper)
+                        })
+                        .Where(candidate =>
+                            candidate.Load + consumer.Amper <= nominal + 0.000001)
+                        .OrderBy(candidate => candidate.Load)
+                        .ThenBy(candidate => candidate.Group.Count)
+                        .Select(candidate => candidate.Group)
+                        .FirstOrDefault();
+
+                    if (bucket == null)
+                    {
+                        packed = false;
+                        break;
+                    }
+
+                    bucket.Add(consumer);
+                }
+
+                if (packed)
+                {
+                    foreach (var bucket in buckets.Where(group => group.Count > 0))
+                    {
+                        AVFuses.Add(componentFactory.GetAVModule(bucket));
+                    }
+
+                    return;
+                }
+
+                groupCount++;
+            }
+
+            // In practice this can only be reached when the input data is invalid,
+            // because one consumer per breaker must always fit after the check above.
+            throw new InvalidOperationException(
+                $"{categoryName ?? "The consumer group"} could not be distributed " +
+                "across circuit breakers.");
+        }
         public void DistributeRCDFromLoad()
         {
-            double TAmper = project.CalculateTotalPower();
+            uzos.Clear();
 
-            countOfRCD = Math.Ceiling(TAmper / RCD64A);
+            if (AVFuses.Count == 0)
+            {
+                countOfRCD = 0;
+                return;
+            }
 
-            // Логика распределения УЗО от нагрузки
-            if (TAmper <= RCD16A)
+            int limit = (int)RCD.LimitOfConnectedFuses;
+
+            if (limit <= 0)
+                throw new InvalidOperationException("Invalid circuit-breaker limit for the RCD.");
+
+            // На этом этапе сохраняем используемый в проекте номинал RCD 63 А.
+            // Чувствительность 10/30 мА — отдельный параметр Capacity.
+            const int rcdNominal = 63;
+
+            foreach (var breaker in AVFuses.OrderByDescending(b => b.GetTotalLoad()))
             {
-                // Создаем УЗО
-                uzos.Add(new RCD("RCD", 16, 2, 43, new List<Component>(AVFuses)));
+                if (breaker.Electricals.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        "A circuit breaker without consumers was detected.");
+                }
+
+                int sensitivity = breaker.Electricals[0].RcdMilliAmps;
+
+                if (breaker.Electricals.Any(c =>
+                    c.RcdMilliAmps != sensitivity))
+                {
+                    throw new InvalidOperationException(
+                        "Consumers on the same circuit breaker have different RCD requirements.");
+                }
+
+                double load = breaker.GetTotalLoad();
+
+                if (!double.IsFinite(load) || load < 0 || load > rcdNominal)
+                {
+                    throw new ArgumentException(
+                        "The circuit-breaker load is not supported by the current RCD model.");
+                }
+
+                var target = uzos
+                    .Where(rcd =>
+                        rcd.Capacity == sensitivity &&
+                        rcd.Electricals.Count < limit &&
+                        rcd.TotalLoad + load <= rcd.Amper)
+                    .OrderBy(rcd => rcd.TotalLoad)
+                    .FirstOrDefault();
+
+                if (target == null)
+                {
+                    target = componentFactory.GetRCDModule(
+                        rcdNominal,
+                        new List<Fuse>());
+
+                    target.Capacity = sensitivity;
+                    target.TotalLoad = 0;
+
+                    uzos.Add(target);
+                }
+
+                target.Electricals.Add(breaker);
+                target.TotalLoad += load;
+
             }
-            else if (TAmper > RCD16A && TAmper <= RCD32B)
+
+            countOfRCD = uzos.Count;
+
+            if (settingsProvider.GetPhasesCount() == 3)
             {
-                uzos.Add(new RCD("RCD", 32, 2, 43, new List<Component>(AVFuses)));
-            }
-            else if (TAmper > 16 && TAmper <= 32)
-            {
-                uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>(AVFuses)));
-            }
-            else
-            {
-                Distribute();
-                DistributeFusesToRCDs();
-                DistributePerPhases(uzos, countOfRCD);
-                CreateContactorFusesAndRCD();
+                DistributePerPhases();
             }
         }
 
-        public void Distribute()
+        public void DistributePerPhases()
+        {
+            var phaseLoads = new double[3];
+
+            foreach (var rcd in uzos.OrderByDescending(r => r.TotalLoad))
+            {
+                int phaseIndex = 0;
+
+                if (settingsProvider.GetPhasesCount() == 3)
+                {
+                    phaseIndex = Array.IndexOf(
+                        phaseLoads,
+                        phaseLoads.Min());
+                }
+
+                var phasePort = rcd.Ports.FirstOrDefault(port =>
+                    port.portOut == "Phase1" ||
+                    port.portOut == "Phase2" ||
+                    port.portOut == "Phase3");
+
+                if (phasePort == null)
+                {
+                    throw new InvalidOperationException(
+                        "The RCD does not have a phase port.");
+                }
+
+                phasePort.portOut = $"Phase{phaseIndex + 1}";
+
+                phasePort.connectorColour = phaseIndex switch
+                {
+                    0 => "Red",
+                    1 => "Orange",
+                    _ => "Grey"
+                };
+
+                phaseLoads[phaseIndex] += rcd.TotalLoad;
+            }
+        }
+    }
+}
+
+        /*public void Distribute()
         {
             int AVCount = AVFuses.Count;
 
-            if (project.InitialSettings.PhasesCount == 1)
+            if (settingsProvider.GetPhasesCount() == 1)
             {
                 if (countOfRCD < Math.Ceiling(AVCount / AVPerRCD))
                 {
@@ -195,12 +389,14 @@ namespace FuseBox
                 }
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
+                    //uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
+
+                    uzos.Add(componentFactory.GetRCDModule(63, new List<Fuse>()));
                 }
 
-                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))
+                while (uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses))        //&& uzos.Count < Math.Ceiling(AVCount / RCD.LimitOfConnectedFuses)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
+                    uzos.Add(componentFactory.GetRCDModule(63, new List<Fuse>()));
                     countOfRCD++;
                 }
             }
@@ -213,111 +409,86 @@ namespace FuseBox
                 // Добавляем УЗО
                 for (int i = 0; i < countOfRCD; i++)
                 {
-                    uzos.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
+                    uzos.Add(componentFactory.GetRCDModule(63, new List<Fuse>()));
                 }
             }
         }
 
-        public void DistributePerPhases(List<RCD> rcdList, double rcdCount)      //  Распределить УЗО контактора по фазам
+        public void DistributePerPhases()
         {
-            // Массив с нагрузкой на 3 фазы
-            var phases = new int[3];
+            var phaseLoads = new double[3];
 
-            for (int i = 0; i < rcdCount; i++)
+            foreach (var rcd in uzos.OrderByDescending(r => r.TotalLoad))
             {
-                // Найдем фазу с наименьшей текущей нагрузкой
-                int min = phases.Min();
-                int phaseIndex = Array.IndexOf(phases, min);
+                int phaseIndex = 0;
 
-                // Распределяем по фазам
-                if (phaseIndex == 0)
+                if (settingsProvider.GetPhasesCount() == 3)
                 {
-                    // Оставляем первую фазу
+                    phaseIndex = Array.IndexOf(
+                        phaseLoads,
+                        phaseLoads.Min());
                 }
-                else if (phaseIndex == 1)
+
+                var phasePort = rcd.Ports.FirstOrDefault(port =>
+                    port.portOut == "Phase1" ||
+                    port.portOut == "Phase2" ||
+                    port.portOut == "Phase3");
+
+                if (phasePort == null)
                 {
-                    rcdList[i].Ports[0].portOut = "Phase2";
-                    rcdList[i].Ports[0].cableType.Сolour = "Orange";
+                    throw new InvalidOperationException(
+                        "The RCD does not have a phase port.");
                 }
-                else
+
+                phasePort.portOut = $"Phase{phaseIndex + 1}";
+                phasePort.connectorColour = phaseIndex switch
                 {
-                    rcdList[i].Ports[0].portOut = "Phase3";
-                    rcdList[i].Ports[0].cableType.Сolour = "Grey";
-                }
-                // Добавим нагрузку к фазе с минимальной нагрузкой
-                phases[phaseIndex] = phases[phaseIndex] + Convert.ToInt32(rcdList[i].TotalLoad);
+                    0 => "Red",
+                    1 => "Orange",
+                    _ => "Grey"
+                };
+
+                phaseLoads[phaseIndex] += rcd.TotalLoad;
             }
-        }   
+        }
 
-        public void DistributeFusesToRCDs()
+
+        //public void DistributeFusesToRCDs()
         {
+            List<RCD> filledRCDs = new List<RCD>();
+
             // Сортируем УЗО по их текущей нагрузке, чтобы равномерно распределять
-            var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)         
+            var uzoLoads = uzos.ToDictionary(uzo => uzo, uzo => 0); // Создаем словарь: УЗО -> текущая мощность (нагрузка)
 
             foreach (var breaker in AVFuses)
             {
                 // Вычисляем мощность автомата как сумму всех его потребителей
-                double breakerLoad = breaker.Electricals.Sum(consumer => consumer.Amper);                                                              
-                FindLeastLoadedRCD(uzoLoads, breaker, breakerLoad);               
+                double breakerLoad = breaker.Electricals.Sum(consumer => consumer.Amper);
+
+                // Находим УЗО с минимальной текущей нагрузкой
+                var targetUzo = uzoLoads.OrderBy(uz => uz.Value).First().Key;
+
+                // Удаляем УЗО из списка, если у него уже 5 выключателей
+                if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)
+                {
+                    filledRCDs.Add(targetUzo);
+                    uzoLoads.Remove(targetUzo);
+                    continue;
+                }
+
+                // Добавляем автомат к выбранному УЗО
+                targetUzo.Electricals.Add(breaker);
+
+                //uzos.Add(breaker); // Добавляем УЗО в список, если оно еще не добавлено
+                // 
+                targetUzo.TotalLoad = targetUzo.TotalLoad + breaker.GetTotalLoad();
+                targetUzo.Slots++;                                     // Увеличиваем количество слотов
+                //targetUzo.OrderBreakersId();                         // Добавил функцию класса УЗО, который присвает новый id в порядке возрастания
+                // Увеличиваем нагрузку для этого УЗО
+                uzoLoads[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
             }
         }
-        // Метод создаёт автоматы на основе потребителей из ContactorConsumers во fuseBox,
-        // создаёт под них УЗО и распределяет автоматы, созданные под них
-        public void CreateContactorFusesAndRCD()
-        {
-            foreach (var consumer in project.FuseBox.ContactorConsumers)                    // Создаём автоматы контактора
-            {
-                contactorFuses.Add(new Fuse("AV", 16, 1, 10, new List<Consumer> { consumer }));
-            }
-
-            CreateRCDForContactor();                                                       // Создаём УЗО контактора
-            var contactorRCDsLoads = contactorRCDs.ToDictionary(rcd => rcd, rcd => 0);     // Создаем словарь: УЗО -> текущая мощность (нагрузка)
-
-            foreach (var fuse in contactorFuses)                                           // Распределяем равновмерно автоматы по УЗО
-            {
-                double fuseLoad = fuse.Electricals.Sum(consumer => consumer.Amper);
-                FindLeastLoadedRCD(contactorRCDsLoads, fuse, fuseLoad);
-            }
-            DistributePerPhases(contactorRCDs, countOfContactorRCD);                       // Распределяем равномерно УЗО по фазам
-        }
-
-        public void CreateRCDForContactor()
-        {
-            int contactorFuseCount = contactorFuses.Count();             // Считаем кол-во автоматов подключенные к контактором
-
-            // Считаем сколько УЗО будет подключено к контактору
-            countOfContactorRCD = (int)Math.Ceiling(contactorFuseCount / RCD.LimitOfConnectedFuses);
-
-            // Создаём УЗО под контакторы
-            for (int i = 0; i < countOfContactorRCD; i++)
-            {
-                contactorRCDs.Add(new RCD("RCD", 63, 2, 43, new List<Component>()));
-            }
-        }
-
-        public void FindLeastLoadedRCD(Dictionary<RCD, int> uzoDic, Fuse breaker, double breakerLoad)
-        {
-            RCD targetUzo = uzoDic.OrderBy(uz => uz.Value).First().Key;
-
-            // Удаляем УЗО из списка, если у него уже 5 выключателей
-            if (targetUzo.Electricals.Count >= RCD.LimitOfConnectedFuses)   // Возможно баг - ранний переход на следующую итерацию цикла
-            {
-                uzoDic.Remove(targetUzo);
-                // Ищем новый наименее нагруженное УЗО
-                targetUzo = uzoDic.OrderBy(uz => uz.Value).First().Key;
-            }
-
-            // Добавляем автомат к выбранному УЗО
-            targetUzo.Electricals.Add(breaker);
-            targetUzo.TotalLoad = targetUzo.TotalLoad + breaker.GetTotalLoad();
-            targetUzo.Slots++;     // Увеличиваем количество слотов
-
-            // Увеличиваем нагрузку для этого УЗО
-            uzoDic[targetUzo] += Convert.ToInt32(breakerLoad); /// !!!
-        }
-    }
-}
-
+        */
 //Примерная мощность автомата С16 - 3.6 кВт.
 
 // Примерная мощность УЗО      10А - 2.2 кВт.
@@ -331,6 +502,8 @@ namespace FuseBox
 
 //double TotoalPower = project.TotalPower;
 //decimal WireSection = Convert.ToDecimal(CalculateWireCrossSection(TotoalPower));
+
+
 
 
 

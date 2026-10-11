@@ -1,19 +1,27 @@
-﻿using FuseBox.App.Models.BaseAbstract;
-using Newtonsoft.Json;
-
 namespace FuseBox
 {
-    public class EmptySlot : Component           // изменил с internal на public для тестов
+    public class EmptySlot : Component
     {
-        [JsonProperty(Order = 4)]
-        public int Slots { get; set; }
-
         public EmptySlot(int slots)
         {
+            if (slots <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(slots),
+                    "An empty section must occupy at least one slot.");
+            }
+
             Name = "Empty Slot";
+
+            // Используем унаследованное Component.Slots.
             Slots = slots;
         }
 
-        public EmptySlot() { }
+        // Для Entity Framework.
+        public EmptySlot()
+        {
+            Name = "Empty Slot";
+        }
     }
 }
+

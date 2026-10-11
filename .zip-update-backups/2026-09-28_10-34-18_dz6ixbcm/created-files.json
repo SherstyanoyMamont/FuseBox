@@ -1,0 +1,19 @@
+[
+  "New\\ApiErrorCodes.cs",
+  "New\\ApiErrorResponse.cs",
+  "New\\ConsumerRequest.cs",
+  "New\\CsrfTokenResponse.cs",
+  "New\\CurrentUserResponse.cs",
+  "New\\FloorGroupingRequest.cs",
+  "New\\FloorRequest.cs",
+  "New\\ForgotPasswordRequest.cs",
+  "New\\FuseBoxSettingsRequest.cs",
+  "New\\GlobalGroupingRequest.cs",
+  "New\\InitialSettingsRequest.cs",
+  "New\\LoginRequest.cs",
+  "New\\ProjectSaveRequest.cs",
+  "New\\ProjectSummaryResponse.cs",
+  "New\\RegisterRequest.cs",
+  "New\\ResetPasswordRequest.cs",
+  "New\\RoomRequest.cs"
+]

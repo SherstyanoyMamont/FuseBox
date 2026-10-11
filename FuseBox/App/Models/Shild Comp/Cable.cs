@@ -1,6 +1,7 @@
 ﻿using FuseBox.App.Interfaces;
 using FuseBox.App.Models.BaseAbstract;
 using Newtonsoft.Json.Converters;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace FuseBox.App.Models.Shild_Comp
@@ -16,21 +17,27 @@ namespace FuseBox.App.Models.Shild_Comp
     public class Cable : BaseEntity
     {
         public decimal Length { get; set; } // m
-        public decimal Section { get; set; } // mm^2
-        public string? Сolour { get; set; }
-
-        //[JsonConverter(typeof(StringEnumConverter))]
-        //public ConnectorColour Colour { get; set; }
+        public decimal? Section { get; set; } // mm^2
+        public string Сolour { get; set; }
 
         // Связь с Connection
-        public int ConnectionId { get; set; }
-        public Connection Connection { get; set; }
+        public int? ConnectionCableId { get; set; }
+        [JsonIgnore]
+        [ForeignKey("ConnectionCableId")]
+        public CableConnection? Connection { get; set; }
 
         public Cable() { }
 
-        public Cable(ConnectorColour colour, decimal section) 
+        public Cable(ConnectorColour colour, decimal? section) 
         {
             Сolour = Convert.ToString(colour);
+            Section = section;
+            //this.colour = Convert.ToString(Colour);
+        }
+
+        public Cable(string colour, decimal? section)
+        {
+            Сolour = colour;
             Section = section;
             //this.colour = Convert.ToString(Colour);
         }

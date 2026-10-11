@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace FuseBox
 {
@@ -35,7 +35,7 @@ namespace FuseBox
             }
 
             // Иначе дефолтное сообщение
-            return $"{name} должно быть одним из значений: {string.Join(", ", _allowed)}";
+            return $"{name} must be one of the following values: {string.Join(", ", _allowed)}";
         }
     }
 }
@@ -76,3 +76,4 @@ namespace FuseBox
 //        .ToArray();
 //    }
 //}
+

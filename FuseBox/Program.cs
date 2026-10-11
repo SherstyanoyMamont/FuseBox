@@ -1,395 +1,303 @@
-﻿
-using System;
-using Newtonsoft.Json;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using FuseBox;
+using System.Security.Claims;
+using System.Threading.RateLimiting;
 using FuseBox.App.Controllers;
-using Microsoft.EntityFrameworkCore;
 using FuseBox.App.DataBase;
-
+using FuseBox.App.Models;
+using FuseBox.App.Services.Auth;
+using FuseBox.App.Services.Projects;
+using FuseBox.App.Services.Pricing;
+using FuseBox.App.SchemaEditor;
+using FuseBox.Controllers;
+using FuseBox.Ai;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace FuseBox
 {
-    internal class Program
+    public partial class Program
     {
-        //public static void Main(string[] args)
-        static void Main(string[] args)
-        {           
-            // testing switch
-            if (false)
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddFuseBoxConfiguratorAi(
+                builder.Configuration);
+
+            builder.Services.AddFuseBoxPricing(
+                builder.Configuration);
+
+            var aiDailyRequestLimit = Math.Clamp(
+                builder.Configuration.GetValue<int?>(
+                    "OpenAI:Configurator:DailyRequestLimit") ?? 200,
+                1,
+                100000);
+
+            var aiTranscriptionDailyRequestLimit = Math.Clamp(
+                builder.Configuration.GetValue<int?>(
+                    "OpenAI:Configurator:TranscriptionDailyRequestLimit") ?? 200,
+                1,
+                100000);
+
+            var frontendOrigins = builder.Configuration
+                .GetSection("Frontend:AllowedOrigins")
+                .Get<string[]>()?
+                .Where(origin => !string.IsNullOrWhiteSpace(origin))
+                .Select(origin => origin.TrimEnd('/'))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            if (frontendOrigins == null || frontendOrigins.Length == 0)
             {
+                frontendOrigins = new[] { "http://localhost:3000" };
+            }
 
-                // создание нового экземпляра билдера веб-приложения
-                var builder = WebApplication.CreateBuilder(args);
-
-                //builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-                //new MySqlServerVersion(new Version(8, 0, 41)))); // версия твоей MySQL
-
-                //Конфигурации сервисов
-                builder.Services.AddControllers();
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseMySql(
-                        builder.Configuration.GetConnectionString("DefaultConnection"),
-                        new MySqlServerVersion(new Version(8, 0, 41))
-                    )
-                );
-
-                // Добавляет поддержку контроллеров к фукнционалу веб-приложения
-                // Контроллеры - это классы, которые отвечают за обработку входящих HTTP запросов
-                // Контроллеры обрабатывают запросы и возвращают ответы
-                //builder.Services.AddControllers();
-
-
-                // Добавляет поддержку генерации документации по API
-                builder.Services.AddEndpointsApiExplorer();
-                // Добавляет поддержку Swagger
-                builder.Services.AddSwaggerGen();
-
-                // Билдер создает новый экземпляр веб-приложения на основе указанных настроек
-                var app = builder.Build();
-
-                // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment())
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
                 {
-                    app.UseSwagger();
-                    app.UseSwaggerUI();
+                    policy
+                        .WithOrigins(frontendOrigins)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            builder.Services.AddControllersWithViews();
+
+            // Controllers return one stable validation envelope themselves.
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            builder.Services.AddAutoMapper(
+                typeof(FuseBoxUnitProfile).Assembly);
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseMySql(
+                    builder.Configuration.GetConnectionString(
+                        "DefaultConnection"),
+                    new MySqlServerVersion(new Version(8, 0, 41)));
+
+                if (builder.Environment.IsDevelopment())
+                {
+                    options
+                        .EnableSensitiveDataLogging()
+                        .EnableDetailedErrors()
+                        .LogTo(
+                            Console.WriteLine,
+                            LogLevel.Information);
                 }
+            });
 
-                // Перенаправляет HTTP запросы на HTTPS
-                app.UseHttpsRedirection();
+            builder.Services.AddScoped<
+                IPasswordHasher<User>,
+                PasswordHasher<User>>();
 
-                app.UseAuthorization();
+            builder.Services.AddScoped<AuthCookieEvents>();
 
+            // Project persistence and ownership checks are centralized here.
+            // Controllers never accept an owner from JSON.
+            builder.Services.AddScoped<ProjectService>();
 
-                // Добавляет контроллеры к обработке запросов
-                app.MapControllers();
+            // Schema editor Stage 2: separate persistence, validation and
+            // optimistic-concurrency services over the existing generator.
+            builder.Services.AddSingleton<
+                ISchemaEditorValidationRule,
+                ComponentPlacementValidationRule>();
+            builder.Services.AddSingleton<
+                ISchemaEditorValidationRule,
+                ConnectionValidationRule>();
+            builder.Services.AddSingleton<
+                ISchemaEditorValidationRule,
+                BasicElectricalValidationRule>();
+            builder.Services.AddSingleton<
+                ISchemaEditorValidationRule,
+                ConsumerLinkValidationRule>();
+            builder.Services.AddSingleton<SchemaEditorValidator>();
+            builder.Services.AddScoped<SchemaEditorService>();
 
-                app.Run();
-
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddScoped<
+                    IPasswordResetSender,
+                    DevelopmentPasswordResetSender>();
             }
             else
             {
-                Console.OutputEncoding = Encoding.UTF8;                                       // вывод русских символов в консоль
-                
-
-                //var options = new JsonSerializerOptions
-                //{
-                //    WriteIndented = true,
-                //    Converters = { new JsonStringEnumConverter() }
-                //};
-
-                var settings = new JsonSerializerSettings
-                {
-                    Formatting = Formatting.Indented,  // Для красивого форматирования
-                };
-
-                // JSON-строка с данными о проекте
-                string? inputJsonData = @"
-                {
-                  ""floorGrouping"": {
-                    ""FloorGroupingP"": true,
-                    ""separateUZO"": true
-                    },
-                  ""globalGrouping"": {
-                    ""Sockets"": 1,
-                    ""Lighting"": 1,
-                    ""Conditioners"": 1
-                  },
-                  ""initialSettings"": {
-                    ""PhasesCount"": 3,
-                    ""MainAmperage"": 25,
-                    ""ShieldWidth"": 16,
-                    ""VoltageStandard"": 220,
-                    ""PowerCoefficient"": 1
-                  },
-                  ""FuseBox"": {
-                    ""MainBreaker"": true,
-                    ""Main3PN"": false,
-                    ""SurgeProtection"": true,
-                    ""LoadSwitch2P"": true,
-                    ""ModularContactor"": true,
-                    ""RailMeter"": true,
-                    ""FireUZO"": true,
-                    ""VoltageRelay"": true,
-                    ""ThreePRelay"": false,
-                    ""RailSocket"": true,
-                    ""NDisconnectableLine"": true,
-                    ""LoadSwitch"": true,
-                    ""CrossModule"": true,
-                    ""DINLines"": 1,
-                    ""Price"": 1000,
-                    ""ContactorConsumers"":[
-                     {
-                       ""id"": 0,
-                       ""name"": ""TV"",
-                       ""Amper"": 4
-                       
-                     },
-                     {
-                       ""id"": 1,
-                       ""name"": ""TV"",
-                       ""Amper"": 6
-                     },
-                     {
-                       ""id"": 2,
-                       ""name"": ""Air Conditioner"",
-                       ""Amper"": 12
-                     },
-                     {
-                       ""id"": 3,
-                       ""name"": ""Lighting"",
-                       ""Amper"": 5
-                     },
-                     {
-                       ""id"": 4,
-                       ""name"": ""PC"",
-                       ""Amper"": 3
-                     },
-                     {
-                       ""id"": 5,
-                       ""name"": ""Heater"",
-                       ""Amper"": 7
-                     },
-                     {
-                       ""id"": 6,
-                       ""name"": ""Air Conditioner"",
-                       ""Amper"": 8
-                     },
-                    ],
-                    
-                  },
-                    ""floors"": [
-                      {
-                      ""Id"": 1,
-                      ""Name"": ""Ground Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Living Room"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 1,
-                              ""name"": ""TV"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 2,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 8,
-                            },
-                            {
-                              ""id"": 3,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 1,
-                            }
-                          ],
-                          ""tPower"": 10
-                        },
-                        {
-                          ""name"": ""Kitchen"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 4,
-                              ""name"": ""Refrigerator"",
-                              ""Amper"": 3,
-                            },
-                            {
-                              ""id"": 5,
-                              ""name"": ""Microwave"",
-                              ""Amper"": 5,
-                            },
-                            {
-                              ""id"": 6,
-                              ""name"": ""Oven"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 15
-                        }
-                      ]
-                    },
-                    {
-                      ""Id"": 2,
-                      ""Name"": ""First Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Bedroom 1"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 7,
-                              ""name"": ""Heater"",
-                              ""Amper"": 13,
-                            },
-                            {
-                              ""id"": 8,
-                              ""name"": ""Fan"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 20
-                        },
-                        {
-                          ""name"": ""Bathroom"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 9,
-                              ""name"": ""Water Heater"",
-                              ""Amper"": 13,
-                            },
-                            {
-                              ""id"": 10,
-                              ""name"": ""Hair Dryer"",
-                              ""Amper"": 7,
-                            }
-                          ],
-                          ""tPower"": 20
-                        }
-                      ]
-                    },
-                    {
-                      ""Id"": 3,      
-                      ""Name"": ""Second Floor"",
-                      ""rooms"": [
-                        {
-                          ""name"": ""Office"",
-                          ""Consumer"": [
-                            {
-                              ""id"": 11,
-                              ""name"": ""Computer"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 12,
-                              ""name"": ""Printer"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 13,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 14,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 15,
-                              ""name"": ""Air Conditioner"",
-                              ""Amper"": 1,
-                            },
-                            {
-                              ""id"": 16,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 2,
-                            },
-                            {
-                              ""id"": 17,
-                              ""name"": ""Lighting"",
-                              ""Amper"": 3,
-                            }
-                          ],
-                          ""tPower"": 12
-                        }
-                      ]
-                    }
-                  ]
-                }";
-
-                Project? project = JsonConvert.DeserializeObject<Project>(inputJsonData);           // десериализация данных
-
-                ConfigurationService configurationService = new(project);     // создание экземпляра сервиса конфигурации
-
-                var validationResults = ValidationHelper.Validate(project);
-
-                if (validationResults.Count == 0)
-                {
-                    Console.WriteLine("Validation was successful!");
-                    //Console.WriteLine($"Id: {user.Id}, Name: {user.Name}, Age: {user.Age}");
-                }
-                else
-                {
-                    Console.WriteLine("Validation error:");
-                    foreach (var validationResult in validationResults)
-                    {
-                        Console.WriteLine($" - {validationResult.ErrorMessage}");
-                    }
-                }
-
-                configurationService.GenerateConfiguration();         // генерация конфигурации
-
-
-                //var newProjectSerialized = JsonConvert.SerializeObject(newProject, settings);           // сериализация данных
-                var newFuseBox = JsonConvert.SerializeObject(configurationService.project, settings);           // сериализация данных
-
-                //var configurationS = JsonConvert.SerializeObject(configurationService.ports, settings); // сериализация данных
-
-                // Сериализация с использованием настроек
-                // var newProjectSerialized = System.Text.Json.JsonSerializer.Serialize(newProject, options);
-
-                Console.Write(newFuseBox);
-                Console.WriteLine("\nРазъемы были скрыты в классе Component!\n");
-
-                //Console.Write(configurationS); // вывод данных о разъемах
-
+                builder.Services.AddScoped<
+                    IPasswordResetSender,
+                    SmtpPasswordResetSender>();
             }
+
+            builder.Services
+                .AddAuthentication(
+                    CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "FuseBox.Auth";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+
+                    options.Cookie.SecurePolicy =
+                        builder.Environment.IsDevelopment()
+                            ? CookieSecurePolicy.SameAsRequest
+                            : CookieSecurePolicy.Always;
+
+                    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                    options.SlidingExpiration = true;
+                    options.EventsType = typeof(AuthCookieEvents);
+                });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+                options.Cookie.Name = "FuseBox.Csrf";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+
+                options.Cookie.SecurePolicy =
+                    builder.Environment.IsDevelopment()
+                        ? CookieSecurePolicy.SameAsRequest
+                        : CookieSecurePolicy.Always;
+            });
+
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode =
+                    StatusCodes.Status429TooManyRequests;
+
+                options.AddPolicy(
+                    "password-reset",
+                    httpContext =>
+                    {
+                        var partitionKey =
+                            httpContext.Connection.RemoteIpAddress?
+                                .ToString() ?? "unknown";
+
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            partitionKey,
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = 5,
+                                Window = TimeSpan.FromMinutes(15),
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    });
+
+                // AI cost guard: one independent 24-hour quota per signed-in user.
+                // Edit OpenAI:Configurator:DailyRequestLimit in appsettings.json.
+                options.AddPolicy(
+                    "ai-daily",
+                    httpContext =>
+                    {
+                        var userId = httpContext.User.FindFirstValue(
+                            ClaimTypes.NameIdentifier);
+
+                        var partitionKey = string.IsNullOrWhiteSpace(userId)
+                            ? $"anonymous:{httpContext.Connection.RemoteIpAddress}"
+                            : $"user:{userId}";
+
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            partitionKey,
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = aiDailyRequestLimit,
+                                Window = TimeSpan.FromDays(1),
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    });
+
+                // Voice transcription has a separate quota so recording a
+                // message does not consume the configurator chat quota.
+                options.AddPolicy(
+                    "ai-transcription-daily",
+                    httpContext =>
+                    {
+                        var userId = httpContext.User.FindFirstValue(
+                            ClaimTypes.NameIdentifier);
+
+                        var partitionKey = string.IsNullOrWhiteSpace(userId)
+                            ? $"anonymous:{httpContext.Connection.RemoteIpAddress}"
+                            : $"user:{userId}";
+
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            partitionKey,
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = aiTranscriptionDailyRequestLimit,
+                                Window = TimeSpan.FromDays(1),
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    });
+            });
+
+            builder.Services.AddEndpointsApiExplorer();
+
+            // builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("CSRF", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = "X-CSRF-TOKEN",
+                    In = ParameterLocation.Header,
+                    Description = "Paste the token returned by GET /api/auth/csrf"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "CSRF"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
+
+            var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseCors("AllowFrontend");
+            app.UseRateLimiter();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapControllers();
+            app.MapFuseBoxConfiguratorAi();
+            app.MapFuseBoxSchemaAi();
+
+            app.Run();
         }
     }
 }
 
-//""Contactor"":[
-//                     {
-//                       ""id"": 0,
-//                       ""name"": ""TV"",
-//                       ""Amper"": 1
-                       
-//                     }
-//                    ],
 
-//""Contactor"":[
-// {
-//   ""id"": 1,
-//   ""name"": ""TV"",
-//   ""Amper"": 1,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 2,
-//   ""name"": ""Air Conditioner"",
-//   ""Amper"": 8,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 3,
-//   ""name"": ""Lighting"",
-//   ""Amper"": 1,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 4,
-//   ""name"": ""Refrigerator"",
-//   ""Amper"": 3,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 5,
-//   ""name"": ""Microwave"",
-//   ""Amper"": 5,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 6,
-//   ""name"": ""Oven"",
-//   ""Amper"": 7,
-//   ""IsConnectedToContactor"": true,
-// },
-// {
-//    ""id"": 7,
-//   ""name"": ""Oven"",
-//   ""Amper"": 7,
-//   ""IsConnectedToContactor"": true,
-// }
+

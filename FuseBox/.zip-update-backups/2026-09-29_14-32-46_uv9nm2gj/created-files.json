@@ -1,0 +1,10 @@
+[
+  "App\\Controllers\\ProjectPricingController.cs",
+  "App\\Services\\Pricing\\TmePriceCacheStore.cs",
+  "App\\Services\\Pricing\\TmeApiClient.cs",
+  "App\\Services\\Pricing\\PanelPricingService.cs",
+  "App\\Services\\Pricing\\PricingOptions.cs",
+  "App\\Services\\Pricing\\PricingServiceCollectionExtensions.cs",
+  "App\\Services\\Pricing\\SchneiderProductCatalog.cs",
+  "App\\Services\\Pricing\\PricingContracts.cs"
+]

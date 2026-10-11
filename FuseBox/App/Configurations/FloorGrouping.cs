@@ -1,5 +1,6 @@
 ﻿using FuseBox.App.Models.BaseAbstract;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace FuseBox
 {
@@ -14,7 +15,8 @@ namespace FuseBox
 
         // Связь с проектом
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
+        [JsonIgnore]
+        public Project? Project { get; set; }
 
         public FloorGrouping() { }
 

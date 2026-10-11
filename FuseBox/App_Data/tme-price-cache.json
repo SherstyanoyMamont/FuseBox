@@ -1,0 +1,301 @@
+{
+  "DE|EUR|A9F04225": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9F04225",
+    "symbol": "A9F04225",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 19.81
+      },
+      {
+        "amount": 6,
+        "unitNet": 18.58
+      },
+      {
+        "amount": 12,
+        "unitNet": 17.34
+      }
+    ],
+    "stockQuantity": 30,
+    "fetchedAtUtc": "2026-10-04T11:25:37.9858534Z",
+    "error": null
+  },
+  "DE|EUR|A9L20500": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9L20500",
+    "symbol": "A9L20500",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 61.06
+      },
+      {
+        "amount": 6,
+        "unitNet": 57.24
+      },
+      {
+        "amount": 12,
+        "unitNet": 53.43
+      }
+    ],
+    "stockQuantity": 1,
+    "fetchedAtUtc": "2026-10-04T11:25:37.9858534Z",
+    "error": null
+  },
+  "DE|EUR|A9MEM2000": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9MEM2000",
+    "symbol": null,
+    "priceTiers": [],
+    "stockQuantity": null,
+    "fetchedAtUtc": "2026-10-04T11:25:37.9858534Z",
+    "error": "MPN was not found in the TME DE catalog."
+  },
+  "DE|EUR|A9R24263": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9R24263",
+    "symbol": null,
+    "priceTiers": [],
+    "stockQuantity": null,
+    "fetchedAtUtc": "2026-10-04T11:25:37.9858534Z",
+    "error": "MPN was not found in the TME DE catalog."
+  },
+  "DE|EUR|LVS04040": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "LVS04040",
+    "symbol": null,
+    "priceTiers": [],
+    "stockQuantity": null,
+    "fetchedAtUtc": "2026-10-04T11:25:46.7965141Z",
+    "error": "MPN was not found in the TME DE catalog."
+  },
+  "DE|EUR|A9A15310": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9A15310",
+    "symbol": "A9A15310",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 19.04
+      },
+      {
+        "amount": 5,
+        "unitNet": 17.85
+      },
+      {
+        "amount": 10,
+        "unitNet": 16.66
+      }
+    ],
+    "stockQuantity": 140,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": null
+  },
+  "DE|EUR|A9Z21263": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9Z21263",
+    "symbol": "A9Z21263",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 75.05
+      },
+      {
+        "amount": 6,
+        "unitNet": 70.36
+      },
+      {
+        "amount": 12,
+        "unitNet": 65.67
+      }
+    ],
+    "stockQuantity": 11,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": null
+  },
+  "DE|EUR|A9F04116": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9F04116",
+    "symbol": "A9F04116",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 5.85
+      },
+      {
+        "amount": 6,
+        "unitNet": 5.48
+      },
+      {
+        "amount": 12,
+        "unitNet": 5.15
+      }
+    ],
+    "stockQuantity": 186,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": null
+  },
+  "DE|EUR|13433": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "13433",
+    "symbol": "SCHNEIDER-13433",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 90.77
+      },
+      {
+        "amount": 3,
+        "unitNet": 85.1
+      },
+      {
+        "amount": 5,
+        "unitNet": 79.99
+      }
+    ],
+    "stockQuantity": 1,
+    "fetchedAtUtc": "2026-10-04T11:25:37.9858534Z",
+    "error": null
+  },
+  "DE|EUR|A9F04263": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9F04263",
+    "symbol": "A9F04263",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 33.92
+      },
+      {
+        "amount": 6,
+        "unitNet": 30.99
+      },
+      {
+        "amount": 12,
+        "unitNet": 29.52
+      }
+    ],
+    "stockQuantity": 11,
+    "fetchedAtUtc": "2026-10-04T11:25:46.7965141Z",
+    "error": null
+  },
+  "DE|EUR|A9C20732": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9C20732",
+    "symbol": "A9C20732",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 32.7
+      },
+      {
+        "amount": 12,
+        "unitNet": 26.42
+      }
+    ],
+    "stockQuantity": 32,
+    "fetchedAtUtc": "2026-09-30T17:10:05.8087689Z",
+    "error": null
+  },
+  "DE|EUR|13434": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "13434",
+    "symbol": "SCHNEIDER-13434",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 103.27
+      },
+      {
+        "amount": 3,
+        "unitNet": 96.82
+      },
+      {
+        "amount": 5,
+        "unitNet": 91.01
+      }
+    ],
+    "stockQuantity": 2,
+    "fetchedAtUtc": "2026-09-30T17:10:05.8087689Z",
+    "error": null
+  },
+  "DE|EUR|A9F04363": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9F04363",
+    "symbol": "A9F04363",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 53.49
+      },
+      {
+        "amount": 4,
+        "unitNet": 49.17
+      },
+      {
+        "amount": 12,
+        "unitNet": 46.85
+      }
+    ],
+    "stockQuantity": 28,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": null
+  },
+  "DE|EUR|A9MEM3155": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9MEM3155",
+    "symbol": null,
+    "priceTiers": [],
+    "stockQuantity": null,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": "MPN was not found in the TME DE catalog."
+  },
+  "DE|EUR|A9Z24463": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "A9Z24463",
+    "symbol": "A9Z24463",
+    "priceTiers": [
+      {
+        "amount": 1,
+        "unitNet": 86.33
+      },
+      {
+        "amount": 3,
+        "unitNet": 80.93
+      },
+      {
+        "amount": 12,
+        "unitNet": 75.54
+      }
+    ],
+    "stockQuantity": 5,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": null
+  },
+  "DE|EUR|R9H18603": {
+    "country": "DE",
+    "currency": "EUR",
+    "mpn": "R9H18603",
+    "symbol": null,
+    "priceTiers": [],
+    "stockQuantity": null,
+    "fetchedAtUtc": "2026-10-03T22:44:22.9313317Z",
+    "error": "MPN was not found in the TME DE catalog."
+  }
+}
