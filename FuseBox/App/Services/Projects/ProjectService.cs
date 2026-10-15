@@ -104,24 +104,57 @@ namespace FuseBox.App.Services.Projects
             int projectId,
             CancellationToken cancellationToken)
         {
-            // All project-owned graph entities already use database cascade
-            // foreign keys, including SchemaEditorState. ExecuteDelete keeps
-            // ownership enforcement in the DELETE predicate and avoids loading
-            // a potentially large panel graph only to remove it.
+            // Generated components can be referenced by consumers and by
+            // other generated components through nullable shadow foreign keys
+            // (FuseId, RCDId and ContactorId). Those references must be
+            // detached before the project cascade is executed. Otherwise a
+            // production database with stricter foreign-key enforcement can
+            // reject the DELETE with a 500.
             try
             {
+                var ownsProject = await _context.Projects
+                    .AsNoTracking()
+                    .Where(project =>
+                        project.Id == projectId &&
+                        project.UserId == userId)
+                    .Select(project => project.Id)
+                    .SingleOrDefaultAsync(cancellationToken);
+
+                if (ownsProject == 0)
+                    return false;
+
+                await using var transaction =
+                    await _context.Database
+                        .BeginTransactionAsync(cancellationToken);
+
+                var fuseBoxId = await _context.FuseBoxes
+                    .AsNoTracking()
+                    .Where(fuseBox => fuseBox.ProjectId == projectId)
+                    .Select(fuseBox => (int?)fuseBox.Id)
+                    .SingleOrDefaultAsync(cancellationToken);
+
+                if (fuseBoxId.HasValue)
+                {
+                    await ClearGeneratedSchemaGraphAsync(
+                        projectId,
+                        fuseBoxId.Value,
+                        cancellationToken);
+                }
+
                 var deleted = await _context.Projects
                     .Where(project =>
                         project.Id == projectId &&
                         project.UserId == userId)
                     .ExecuteDeleteAsync(cancellationToken);
 
+                await transaction.CommitAsync(cancellationToken);
+
                 return deleted > 0;
             }
             catch (DbUpdateException exception)
             {
                 throw new InvalidOperationException(
-                    "The project graph could not be deleted.",
+                    "The project graph could not be deleted because one of its related records is still referenced.",
                     exception);
             }
         }
