@@ -49,6 +49,41 @@ internal static class SchneiderProductCatalog
             [63] = new("Acti9 iC60N MCB 3P+N C63", "A9F04763", 390.00m, GermanListNote)
         };
 
+    public static IReadOnlyList<string> GetKnownMpns()
+    {
+        var fixedItems = new[]
+        {
+            new SchneiderCatalogItem("Acti9 iID RCCB 2P 63A Type A 30mA", "A9Z21263", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 iPRD20 surge arrester 1P+N", "A9L20500", null, EuListNote),
+            new SchneiderCatalogItem("Acti9 iSW switch 2P 63A", "A9S65263", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 iCT modular contactor 25A 2NO 230/240V", "A9C20732", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 iEM2000 single-phase energy meter", "A9MEM2000", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 iEM3155 three-phase energy meter", "A9MEM3155", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 DIN rail socket", "A9A15310", null, GermanListNote),
+            new SchneiderCatalogItem("Linergy DX distribution block 4P 63A", "LVS04040", null, GermanListNote),
+            new SchneiderCatalogItem("Acti9 iID RCCB 2P 63A Type A 300mA", "A9R24263", null, EuListNote),
+            new SchneiderCatalogItem("Acti9 iID RCCB 4P 63A Type A 300mA", "A9Z24463", null, GermanListNote),
+            new SchneiderCatalogItem("Kaedra Mini enclosure 1x12 modules", "13444", null, GermanListNote),
+            new SchneiderCatalogItem("Kaedra enclosure 2x12 modules", "13433", null, GermanListNote),
+            new SchneiderCatalogItem("Resi9 enclosure 1x18 modules", "R9H18601", null, EuListNote),
+            new SchneiderCatalogItem("Kaedra enclosure 2x18 modules", "13434", null, GermanListNote),
+            new SchneiderCatalogItem("Resi9 enclosure 3x18 modules", "R9H18603", null, EuListNote),
+            new SchneiderCatalogItem("Resi9 enclosure 4x18 modules", "R9H18604", null, EuListNote),
+            new SchneiderCatalogItem("PrismaSeT XS enclosure 2x24 modules", "LVSXQ224", null, EuListNote),
+            new SchneiderCatalogItem("PrismaSeT XS enclosure 3x24 modules", "LVSXQ324", null, EuListNote),
+            new SchneiderCatalogItem("PrismaSeT XS enclosure 4x24 modules", "LVSXQ424", null, EuListNote)
+        };
+
+        return Mcb1PC.Values
+            .Concat(Main2PC.Values)
+            .Concat(Main3PC.Values)
+            .Concat(Main3PnC.Values)
+            .Concat(fixedItems)
+            .Select(item => item.Mpn)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
     public static SchneiderCatalogItem? ResolveComponent(
         Component component,
         InitialSettings settings)
